@@ -46,24 +46,37 @@
                                         {% endfor %}
                                     </select>
                                     <label for="services">Задание</label>
+                                    <span class="helper-text">Указана цена за 1000</span>
                                 </div>
                             </div>
                             <div class="row no-mar-bot">
                                 <div class="input-field col m6 s12">
-                                    <input id="link" data-task-param="link" type="text">
-                                    <label for="link" class="active">Ссылка</label>
+                                    <input id="link" data-task-param="link" type="text" required>
+                                    <label for="link">Ссылка</label>
+                                    <span class="helper-text sum-help"></span>
                                 </div>
                                 <div class="input-field col m4 s12">
-                                    <input id="quantity" class="validate" min="" max="" data-task-param="quantity"
-                                           type="number">
+                                    <input id="quantity" class="validate" data-task-param="quantity" type="number"
+                                           required>
                                     <label for="quantity">Количество</label>
                                     <span class="helper-text quantity-help"></span>
                                 </div>
                                 <div class="input-field col m2 s12 center">
-                                    <button class="btn waves-effect waves-light green task-action" type="submit"
+                                    <button class="btn btn-action waves-effect waves-light green task-action" type="submit"
                                             name="submit">
                                         Заказать
                                     </button>
+                                    <div class="preloader-wrapper">
+                                        <div class="spinner-layer spinner-blue-only">
+                                            <div class="circle-clipper left">
+                                                <div class="circle"></div>
+                                            </div><div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div><div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="input-field col s12">
                                     <span class="service-desc"></span>
@@ -83,12 +96,44 @@
 
     {% call section() %}
         {% if current_user and current_user.is_authenticated %}
-            <div class="col s12 m8 offset-m2">
+            <div class="col s12">
                 <div class="card">
                     <div class="card-content">
                         <div class="row no-mar-bot">
                             <div class="input-field col m10- s12 center">
-                                <i>История заказов пуста</i>
+                                {% if tasks %}
+                                    <table>
+                                        <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Вид накрутки</th>
+                                            <th>Цена</th>
+                                            <th>Заказ</th>
+                                            <th>Ссылка</th>
+                                            <th>Время</th>
+{#                                            <th>Количество</th>#}
+                                            <th>Статус</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% set states = {0: "В обработке", 1: "Запущен", 2: "Завершен", 3: "Отменен"} %}
+                                        {% for t in tasks %}
+                                        <tr>
+                                            <td>{{ t.id }}</td>
+                                            <td>{{ services[t.tid - 1].title }}</td>
+                                            <td>{{ t.amount }} р.</td>
+                                            <td>{{ t.quantity }}</td>
+                                            <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
+                                            <td>{{ t.date }}</td>
+{#                                            <td></td>#}
+                                            <td>{{ states[t.status] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <i>История заказов пуста</i>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -100,21 +145,18 @@
     {% block scripts %}
         <script type="text/javascript">
             $(document).ready(function () {
+                var pl = $('.preloader-wrapper');
+                pl.hide();
                 $('#new-task').submit(function (event) {
                     event.preventDefault();
-
-                    var sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = {};
-                    sending.addClass('active').show();
-                    btn.fadeOut('fast');
-
+                    var btn = $(this).find('.btn-action');
+                    pl.addClass('active').show();
+                    btn.hide();
                     params = {
-                        'sid': $('#services').val(),
+                        'tid': $('#services').val(),
                         'link': $('#link').val(),
                         'quantity': $('#quantity').val()
                     };
-
-                    console.log(JSON.stringify(params));
-
                     $.ajax({
                         url: '/ajax/' + $(this).attr('id'),
                         type: "POST",
@@ -122,14 +164,26 @@
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         success: function (data) {
-                            M.toast({html: ({0: data['msg'], 1: 'Добавлено'})[data['response']], displayLength: 5 * 1000});
+                            M.toast({
+                                html: ({0: data['msg'], 1: 'Добавлено'})[data['response']],
+                                displayLength: 5 * 1000
+                            });
                             btn.fadeIn('fast');
-                            sending.hide().removeClass('active');
+                            pl.hide().removeClass('active');
                             if (data['response'] === 1) location.reload();
                         }
                     });
-
                 });
+
+                $('#services, #quantity').on('change keyup keypress paste keydown', function () {
+                    var serv = $('#services option:selected'), quantity = $('#quantity');
+                    $('.service-desc').text(serv.attr('data-task-desc'));
+                    $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
+                    $('.sum-help').text('Итоговая сумма: ' + 1 * (serv.attr('data-task-price') / 1000 * quantity.val()).toFixed(2) + ' руб.');
+                    quantity.attr('min', serv.attr('data-task-min'));
+                    quantity.attr('max', serv.attr('data-task-max'));
+                });
+                {#  $('#services option:selected').attr('data-task-min');    #}
             });
         </script>
 

@@ -169,31 +169,37 @@ class Tasks(db.Model):
     id = db.Column('id', db.Integer, unique=True, nullable=False, primary_key=True, index=True)
     uid = db.Column('uid', db.Integer, nullable=False)
     sid = db.Column('sid', db.String(20))
+    tid = db.Column('tid', db.Integer)
     s_type = db.Column('s_type', db.String(20), nullable=False)
     link = db.Column('link', db.String(48))
     quantity = db.Column('quantity', db.String(48))
-    amount = db.Column('amount', db.Integer)
+    amount = db.Column('amount', db.Float)
     status = db.Column('status', db.Integer, default=0)
     # 0 - в обработке / 1 - запущен / 2 - завершен / 3 - отменен
     date = db.Column('date', db.DateTime)
 
-    def __init__(self, uid, s_type):
+    def __init__(self, uid, s_type, tid, link='', quantity='', amount=''):
         self.uid = uid
         self.s_type = s_type
+        self.tid = tid
+        self.link = link
+        self.quantity = quantity
+        self.amount = amount
         self.date = datetime.now()
 
     def __repr__(self):
-        return "<Task(uid='%s', sid='%s', s_type='%s', link='%s', quantity='%s', status='%s')>" % (
-            self.uid, self.sid, self.s_type, self.link, self.quantity, self.status)
+        return "<Task(uid='%s', sid='%s', tid='%s', s_type='%s', link='%s', quantity='%s', status='%s')>" % (
+            self.uid, self.sid, self.tid, self.s_type, self.link, self.quantity, self.status)
 
 
 @app.route('/')
 def index():
     # todo генерировать pm_id фронтом
+    print(current_user.is_anonymous)
     return render_template('index.html', ik={
         'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
         'co_id': app.config['IK_ID_CHECKOUT']
-    }, services=Services.query.all())
+    }, services=Services.query.all(), tasks=(Tasks.query.filter_by(uid=current_user.id).all() if current_user.is_anonymous is not True else None))
 
 
 @app.route('/help')
@@ -277,7 +283,7 @@ def settings():
         return render_template('tasks.html', ik={
             'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
             'co_id': app.config['IK_ID_CHECKOUT']
-        })
+        }, tasks=Tasks.query.filter_by(s_type='manual'), services=Services.query.all(), users=Users.query.all())
 
 
 # TODO удалить GET метод
@@ -340,6 +346,9 @@ def save_settings(section):
                 Services.query.filter_by(id=i['id']).first().desc = i['desc']
                 Services.query.filter_by(id=i['id']).first().price = i['price']
                 Services.query.filter_by(id=i['id']).first().state = i['state']
+        elif section == 'tasks':
+            for i in request.json:
+                Tasks.query.filter_by(id=i['id']).first().status = i['status']
         db.session.commit()
         init_settings()
         return jsonify({'response': 1})
@@ -349,9 +358,16 @@ def save_settings(section):
 @app.route('/ajax/new-task', methods=['POST'])
 @login_required
 def add_task():
-    service = Services.query.filter_by(id=request.json['sid']).first()
-    task = Tasks(current_user.id, service.s_type)
-    if service.s_type == 'nakrutka':
+    service = Services.query.filter_by(id=request.json['tid']).first()
+    amount = service.price / 1000 * float(request.json['quantity'])
+    print(amount)
+    print(current_user.balance)
+    print(amount > current_user.balance)
+    task = Tasks(current_user.id, service.s_type, request.json['tid'], request.json['link'], request.json['quantity'], amount)
+    if amount > current_user.balance:
+        return jsonify({'response': 0, 'msg': 'Недостаточно средств на Вашем счету'})
+    elif service.s_type == 'nakrutka':
+        print('1')
         # https://smm.nakrutka.by/api/?key=6d123fc8e9cb840f64164e82dad3c27d&action=create&service=3&quantity=200&link=https://www.instagram.com/jaholper/
         url = 'https://smm.nakrutka.by/api/?key=' + Settings.query.filter_by(key='nakrutka_apikey').first().value
         url += '&action=create' + '&service=' + str(service.s_id) + '&quantity=' + str(request.json['quantity']) + '&link=' + str(request.json['link'])
@@ -360,7 +376,9 @@ def add_task():
             return jsonify({'response': 0, 'msg': r['Error']})
         elif 'order' in r:
             task.sid = r['order']
+            task.status = 1
     elif service.s_type == 'bigsmm':
+        print('2')
         # http://bigsmm.ru/api/?method=add_order&api_key=586503944eff44fdb212486c28761793&service_id=11&variation_id=54&order_link=instagram.com/test/
         # {"errorcode":"0","msg":"Успешно","order_id":"7307"}
         url = 'http://bigsmm.ru/api/?method=add_order&api_key=' + Settings.query.filter_by(key='bigsmm_apikey').first().value
@@ -372,8 +390,10 @@ def add_task():
         elif ('errorcode' in r) and (r['errorcode'] > 0):
             return jsonify({'response': 0, 'msg': r['msg']})
     elif service.s_type == 'manual':
+        print('3')
         task.quantity = request.json['quantity']
         task.link = request.json['link']
+    current_user.balance -= amount
     db.session.add(task)
     db.session.commit()
     init_settings()

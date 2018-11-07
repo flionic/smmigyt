@@ -357,3 +357,9 @@ h5 {
 .modal .modal-content {
      padding: 0;
 }
+
+.t-link {
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}

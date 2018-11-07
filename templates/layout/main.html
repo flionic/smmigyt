@@ -8,15 +8,15 @@
         Youtube{%- endblock -%}</title>
     <meta name="description"
           content="{% block description %}Здесь вы можете заказать качественную накрутку подписчиков и лайков с гибкими параметрами для различных социальных сетей{% endblock %}">
-    <meta name="application-name" content="{{ app_name }}">
-    <meta name="theme-color" content="#2196F3">
-    <link rel="manifest" href="manifest.webapp.json">
-    <meta name="apple-mobile-web-app-title" content="{{ app_name }}">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-    <link rel="mask-icon" href="{{ url_for('static', filename='img/safari-pinned-tab.svg') }}" color="#5bbad5">
+{#    <meta name="application-name" content="{{ app_name }}">#}
+{#    <meta name="theme-color" content="#2196F3">#}
+{#    <link rel="manifest" href="manifest.webapp.json">#}
+{#    <meta name="apple-mobile-web-app-title" content="{{ app_name }}">#}
+{#    <meta name="msapplication-TileColor" content="#2b5797">#}
+{#    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">#}
+{#    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">#}
+{#    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">#}
+{#    <link rel="mask-icon" href="{{ url_for('static', filename='img/safari-pinned-tab.svg') }}" color="#5bbad5">#}
     <link rel=stylesheet type=text/css media="screen,projection"
           href="{{ url_for('static', filename='css/materialize.min.css') }}">
     <link rel=stylesheet type=text/css media="screen,projection"
@@ -71,7 +71,7 @@
                 {% call navmenu() %}
                     <li>
                         <a class="dropdown-trigger" href="#!" data-target="actions_dd">{{ current_user.email }}
-                            | {{ current_user.balance }} ₽<i class="material-icons right">more_vert</i></a>
+                            | {{ current_user.balance|round(2) }} ₽<i class="material-icons right">more_vert</i></a>
                     </li>
                     <ul id="actions_dd" class="dropdown-content">
 {#                        <li>#}
@@ -279,16 +279,6 @@
                     location.reload();
                 });
         });
-
-        $('#services').on('change', function () {
-            var serv = $('#services option:selected');
-            $('.service-desc').text(serv.attr('data-task-desc'));
-            $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
-            $('#quantity').attr('min', serv.attr('data-task-min'));
-            $('#quantity').attr('max', serv.attr('data-task-max'));
-        });
-
-        {#  $('#services option:selected').attr('data-task-min');    #}
     });
 </script>
 {% block scripts %}{% endblock %}
