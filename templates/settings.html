@@ -2,29 +2,34 @@
 {% block main %}
     {% call section() %}
 
-        <form id="settings-main" class="col s12 m10 offset-m1">
+        <form id="settings-main" data-target="data-cfg-param" class="col s12 m10 offset-m1">
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Системные настройки</span>
                     <div class="section row no-mar-bot">
                         <div class="input-field col s6">
-                            <input id="nakrutka_apikey" name="nakrutka_apikey" type="text" data-cfg-param="nakrutka_apikey" value="{{ config['NAKRUTKA_APIKEY'] }}">
+                            <input id="nakrutka_apikey" name="nakrutka_apikey" type="text"
+                                   data-cfg-param="nakrutka_apikey" value="{{ config['NAKRUTKA_APIKEY'] }}">
                             <label for="nakrutka_apikey">nakrutka.by API Ключ</label>
                         </div>
                         <div class="input-field col s6">
-                            <input id="bigsmm_apikey" name="bigsmm_apikey" type="text" data-cfg-param="bigsmm_apikey" value="{{ config['BIGSMM_APIKEY'] }}">
+                            <input id="bigsmm_apikey" name="bigsmm_apikey" type="text" data-cfg-param="bigsmm_apikey"
+                                   value="{{ config['BIGSMM_APIKEY'] }}">
                             <label for="bigsmm_apikey">bigsmm.ru API Ключ</label>
                         </div>
                         <div class="input-field col s12">
-                            <input id="ik_id_checkout" name="ik_id_checkout" data-cfg-param="ik_id_checkout" type="text" value="{{ config['IK_ID_CHECKOUT'] }}">
+                            <input id="ik_id_checkout" name="ik_id_checkout" data-cfg-param="ik_id_checkout" type="text"
+                                   value="{{ config['IK_ID_CHECKOUT'] }}">
                             <label for="ik_id_checkout">Интеркасса ID Кассы</label>
                         </div>
                         <div class="input-field col s12 m6">
-                            <input id="ik_id" name="ik_id" data-cfg-param="ik_id" type="text" value="{{ config['IK_ID'] }}">
+                            <input id="ik_id" name="ik_id" data-cfg-param="ik_id" type="text"
+                                   value="{{ config['IK_ID'] }}">
                             <label for="ik_id">Интеркасса API Id пользователя</label>
                         </div>
                         <div class="input-field col s12 m6">
-                            <input id="ik_key" name="ik_key" data-cfg-param="ik_key" type="text" value="{{ config['IK_KEY'] }}">
+                            <input id="ik_key" name="ik_key" data-cfg-param="ik_key" type="text"
+                                   value="{{ config['IK_KEY'] }}">
                             <label for="ik_key">Интеркасса API Ключ</label>
                         </div>
                     </div>
@@ -62,325 +67,41 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Услуги</span>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>Inst - Накрутка подписчиков 1</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
+                    {% for s in services %}
+                        <div class="row no-mar-bot service" data-service-id="{{ s.id }}">
+                            <div class="input-field col s12" style="margin: 0">
+                                <span>{{ s.s_type }} - {{ s.name }}</span>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <div class="switch">
+                                    <label>
+                                        Выкл
+                                        {% if s.state == 1 %}
+                                            <input id="service-state-{{ s.id }}" class="service-state" type="checkbox" checked>
+                                        {% else %}
+                                            <input type="checkbox">
+                                        {% endif %}
+                                        <span class="lever"></span>
+                                        Вкл
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input id="service-title-{{ s.id }}" class="service-title validate" data-type-id="2" type="text" value="{{ s.title }}" required>
+                                <label for="service-title-{{ s.id }}" class="black-text">Наименование</label>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <input id="service-price-{{ s.id }}" class="service-price validate" data-type-id="2" type="number" step="0.01" value="{{ s.price }}" style="width: 90%;" required>
+                                <span>₽</span>
+                                <label for="service-price-{{ s.id }}" class="black-text">Цена</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <textarea id="service-desc-{{ s.id }}" class="service-desc materialize-textarea" data-length="1000">{{ s.desc }}</textarea>
+                                <label for="service-desc-{{ s.id }}">Описание</label>
                             </div>
                         </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>Inst - Накрутка подписчиков 2</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>Inst - Накрутка лайков 1</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>Inst - Накрутка лайков 2</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>Inst - Накрутка просмотров на видео 1</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>Inst - Накрутка просмотров на видео 2</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>Inst - Автолайки</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>YT - Накрутка подписчиков</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>YT - накрутка просмотров без гарантий</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>YT - Накрутка просмотров с гарантией</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row no-mar-bot">
-                        <div class="input-field col s12" style="margin: 0">
-                            <span>YT - Накрутка лайков</span>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <div class="switch">
-                                <label>
-                                    Выкл
-                                    <input type="checkbox">
-                                    <span class="lever"></span>
-                                    Вкл
-                                </label>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m6">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="text" required>
-                            <label for="type-price-2" class="black-text">Наименование</label>
-                        </div>
-                        <div class="input-field col s12 m2">
-                            <input id="type-price-2" class="validate" data-type-id="2" type="number" min="0.15" max="999" step="0.01" value="0.3" style="width: 90%;" required>
-                            <span>₽</span>
-                            <label for="type-price-2" class="black-text">Цена</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <textarea id="textarea2" class="materialize-textarea" data-length="120"></textarea>
-                            <label for="textarea2">Описание</label>
-                        </div>
-                    </div>
-                    <br>
+                        <br>
+                    {% endfor %}
                 </div>
                 <div class="card-action">
                     <div class="row">
@@ -401,9 +122,10 @@
         $(document).ready(function () {
             $('.sending').hide();
             $('select').formSelect();
-            $('#settings-main, #settings-services').submit(function (event) {
+            $('#settings-main').submit(function (event) {
                 event.preventDefault();
-                var f_target = $(this).attr('data-target'), f_data = $(this).find('[' + f_target + ']'), sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = {};
+                var f_target = $(this).attr('data-target'), f_data = $(this).find('[' + f_target + ']'),
+                    sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = {};
                 sending.addClass('active').show();
                 btn.fadeOut('fast');
                 for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(f_target)] = $(f_data[i]).val();
@@ -419,6 +141,44 @@
                         sending.hide().removeClass('active');
                     }
                 });
+            });
+
+            $('#settings-services').submit(function (event) {
+                event.preventDefault();
+
+                var sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = [];
+                sending.addClass('active').show();
+                btn.fadeOut('fast');
+
+                {#for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(f_target)] = $(f_data[i]).val();#}
+
+                {#data-service-id#}
+                $('.service').each(function(i,elem) {
+                    params.push({
+                        "id": $(this).attr('data-service-id'),
+                        "title": $(this).find('.service-title').val(),
+                        "desc": $(this).find('.service-desc').val(),
+                        "price": $(this).find('.service-price').val(),
+                        "state": $(this).find('.service-state').is(':checkbox:checked') ? '1' : '0'
+                    });
+                });
+
+                console.log(params);
+                console.log(JSON.stringify(params));
+
+                $.ajax({
+                    url: '/ajax/save/' + $(this).attr('id'),
+                    type: "POST",
+                    data: JSON.stringify(params),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                        btn.fadeIn('fast');
+                        sending.hide().removeClass('active');
+                    }
+                });
+
             });
         });
     </script>

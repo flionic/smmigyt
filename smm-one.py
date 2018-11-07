@@ -139,13 +139,37 @@ class Invoices(db.Model):
             self.user_id, self.ik_inv_id, self.ik_pm_no, self.ik_state)
 
 
+class Services(db.Model):
+    __tablename__ = 'services'
+    # id type name title desc price state
+    id = db.Column('id', db.Integer, unique=True, nullable=False, primary_key=True, index=True)
+    s_type = db.Column('s_type', db.String(12), nullable=False)
+    s_id = db.Column('s_id', db.Integer, default=0)
+    name = db.Column('name', db.String(48), nullable=False)
+    title = db.Column('title', db.String(48), default=name)
+    desc = db.Column('desc', db.String(1000), default='Описание отсутствует')
+    price = db.Column('price', db.Float, default=0)
+    min = db.Column('min', db.String(12), default='0')
+    max = db.Column('max', db.String(12), default='∞')
+    state = db.Column('state', db.Integer, default=1)
+
+    def __init__(self, s_type, s_id, name):
+        self.s_type = s_type
+        self.s_id = s_id
+        self.name = name
+
+    def __repr__(self):
+        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s')>" % (
+            self.title, self.desc, self.price, self.state, self.s_type, self.s_id)
+
+
 @app.route('/')
 def index():
     # todo генерировать pm_id фронтом
     return render_template('index.html', ik={
         'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
         'co_id': app.config['IK_ID_CHECKOUT']
-    })
+    }, services=Services.query.all())
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -198,7 +222,7 @@ def logout():
 @login_required
 def tasks():
     if current_user.status == 7:
-        return render_template('settings.html')
+        return render_template('settings.html', services=Services.query.all())
 
 
 @app.route('/tasks')
@@ -206,14 +230,6 @@ def tasks():
 def settings():
     if current_user.status == 7:
         return render_template('tasks.html')
-
-
-@app.route('/wallet')
-def wallet():
-    return render_template('wallet.html', ik={
-        'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
-        'co_id': app.config['IK_ID_CHECKOUT']
-    })
 
 
 # TODO удалить GET метод
@@ -267,12 +283,16 @@ def payment():
 @login_required
 def save_settings(section):
     if current_user.status == 7:
-        # threading.Thread(target=update_tasks).start()
-        for i in request.json.items():
-            if section == 'settings-main':
+        if section == 'settings-main':
+            for i in request.json.items():
                 Settings.query.filter_by(key=i[0]).first().value = i[1]
-            # elif section == 'price':
-            #     Types.query.filter_by(type=i[0]).first().new_price = i[1]
+        elif section == 'settings-services':
+            for i in request.json:
+                Services.query.filter_by(id=i['id']).first().title = i['title']
+                Services.query.filter_by(id=i['id']).first().desc = i['desc']
+                Services.query.filter_by(id=i['id']).first().price = i['price']
+                Services.query.filter_by(id=i['id']).first().state = i['state']
+
         db.session.commit()
         init_settings()
         return jsonify({'response': 1})

@@ -343,7 +343,7 @@ h5 {
     }
 }
 
-@media only screen and (max-width: 1600px) {
+@media only screen and (min-width: 992px) and (max-width: 1600px) {
     .modal-confirm {
         max-height: 25%;
         width: 35%;
@@ -352,4 +352,8 @@ h5 {
 
 .btn-deposit {
     cursor: pointer;
+}
+
+.modal .modal-content {
+     padding: 0;
 }
