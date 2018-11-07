@@ -172,11 +172,15 @@ class Tasks(db.Model):
     s_type = db.Column('s_type', db.String(20), nullable=False)
     link = db.Column('link', db.String(48))
     quantity = db.Column('quantity', db.String(48))
+    amount = db.Column('amount', db.Integer)
     status = db.Column('status', db.Integer, default=0)
+    # 0 - в обработке / 1 - запущен / 2 - завершен / 3 - отменен
+    date = db.Column('date', db.DateTime)
 
     def __init__(self, uid, s_type):
         self.uid = uid
         self.s_type = s_type
+        self.date = datetime.now()
 
     def __repr__(self):
         return "<Task(uid='%s', sid='%s', s_type='%s', link='%s', quantity='%s', status='%s')>" % (
@@ -336,7 +340,6 @@ def save_settings(section):
                 Services.query.filter_by(id=i['id']).first().desc = i['desc']
                 Services.query.filter_by(id=i['id']).first().price = i['price']
                 Services.query.filter_by(id=i['id']).first().state = i['state']
-
         db.session.commit()
         init_settings()
         return jsonify({'response': 1})
@@ -365,6 +368,7 @@ def add_task():
         r = requests.get(url).json()
         if 'order_id' in r:
             task.sid = r['order_id']
+            task.status = 1
         elif ('errorcode' in r) and (r['errorcode'] > 0):
             return jsonify({'response': 0, 'msg': r['msg']})
     elif service.s_type == 'manual':
