@@ -26,7 +26,7 @@
                                     {% set states = {0: "В обработке", 1: "Запущен", 2: "Завершен", 3: "Отменен"} %}
                                     {% for t in tasks %}
                                         <tr>
-                                            <td>{{ t.uid }}</td>
+                                            <td>{{ users[t.uid - 1].email }}</td>
                                             <td>{{ t.id }}</td>
                                             <td>{{ services[t.tid - 1].title }}</td>
                                             <td>{{ t.amount }}</td>
