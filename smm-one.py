@@ -163,6 +163,26 @@ class Services(db.Model):
             self.title, self.desc, self.price, self.state, self.s_type, self.s_id)
 
 
+class Tasks(db.Model):
+    __tablename__ = 'tasks'
+    # id type name title desc price state
+    id = db.Column('id', db.Integer, unique=True, nullable=False, primary_key=True, index=True)
+    uid = db.Column('uid', db.Integer, nullable=False)
+    sid = db.Column('sid', db.String(20))
+    s_type = db.Column('s_type', db.String(20), nullable=False)
+    link = db.Column('link', db.String(48))
+    quantity = db.Column('quantity', db.String(48))
+    status = db.Column('status', db.Integer, default=0)
+
+    def __init__(self, uid, s_type):
+        self.uid = uid
+        self.s_type = s_type
+
+    def __repr__(self):
+        return "<Task(uid='%s', sid='%s', s_type='%s', link='%s', quantity='%s', status='%s')>" % (
+            self.uid, self.sid, self.s_type, self.link, self.quantity, self.status)
+
+
 @app.route('/')
 def index():
     # todo генерировать pm_id фронтом
@@ -240,14 +260,20 @@ def logout():
 @login_required
 def tasks():
     if current_user.status == 7:
-        return render_template('settings.html', services=Services.query.all())
+        return render_template('settings.html', services=Services.query.all(), ik={
+            'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
+            'co_id': app.config['IK_ID_CHECKOUT']
+        })
 
 
 @app.route('/tasks')
 @login_required
 def settings():
     if current_user.status == 7:
-        return render_template('tasks.html')
+        return render_template('tasks.html', ik={
+            'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
+            'co_id': app.config['IK_ID_CHECKOUT']
+        })
 
 
 # TODO удалить GET метод
@@ -315,6 +341,39 @@ def save_settings(section):
         init_settings()
         return jsonify({'response': 1})
     return abort(403)
+
+
+@app.route('/ajax/new-task', methods=['POST'])
+@login_required
+def add_task():
+    service = Services.query.filter_by(id=request.json['sid']).first()
+    task = Tasks(current_user.id, service.s_type)
+    if service.s_type == 'nakrutka':
+        # https://smm.nakrutka.by/api/?key=6d123fc8e9cb840f64164e82dad3c27d&action=create&service=3&quantity=200&link=https://www.instagram.com/jaholper/
+        url = 'https://smm.nakrutka.by/api/?key=' + Settings.query.filter_by(key='nakrutka_apikey').first().value
+        url += '&action=create' + '&service=' + str(service.s_id) + '&quantity=' + str(request.json['quantity']) + '&link=' + str(request.json['link'])
+        r = requests.get(url).json()
+        if 'Error' in r:
+            return jsonify({'response': 0, 'msg': r['Error']})
+        elif 'order' in r:
+            task.sid = r['order']
+    elif service.s_type == 'bigsmm':
+        # http://bigsmm.ru/api/?method=add_order&api_key=586503944eff44fdb212486c28761793&service_id=11&variation_id=54&order_link=instagram.com/test/
+        # {"errorcode":"0","msg":"Успешно","order_id":"7307"}
+        url = 'http://bigsmm.ru/api/?method=add_order&api_key=' + Settings.query.filter_by(key='bigsmm_apikey').first().value
+        url += '&service_id=' + str(service.s_id) + '&quantity=' + str(request.json['quantity']) + '&order_link=' + str(request.json['link'])
+        r = requests.get(url).json()
+        if 'order_id' in r:
+            task.sid = r['order_id']
+        elif ('errorcode' in r) and (r['errorcode'] > 0):
+            return jsonify({'response': 0, 'msg': r['msg']})
+    elif service.s_type == 'manual':
+        task.quantity = request.json['quantity']
+        task.link = request.json['link']
+    db.session.add(task)
+    db.session.commit()
+    init_settings()
+    return jsonify({'response': 1})
 
 
 def init_settings():

@@ -79,7 +79,7 @@
                                         {% if s.state == 1 %}
                                             <input id="service-state-{{ s.id }}" class="service-state" type="checkbox" checked>
                                         {% else %}
-                                            <input type="checkbox">
+                                            <input id="service-state-{{ s.id }}" class="service-state" type="checkbox">
                                         {% endif %}
                                         <span class="lever"></span>
                                         Вкл

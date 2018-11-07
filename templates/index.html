@@ -36,11 +36,13 @@
                                     <select id="services" data-task-param="service">
                                         <option value="" disabled selected>Мне нужно...</option>
                                         {% for s in services %}
-                                            <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
-                                                    data-task-price="{{ s.price }}"
-                                                    data-task-desc="{{ s.desc }}"
-                                                    value="{{ s.id }}">{{ s.title }} - {{ s.price }} р.
-                                            </option>
+                                            {% if s.state == 1 %}
+                                                <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
+                                                        data-task-price="{{ s.price }}"
+                                                        data-task-desc="{{ s.desc }}"
+                                                        value="{{ s.id }}">{{ s.title }} - {{ s.price }} р.
+                                                </option>
+                                            {% endif %}
                                         {% endfor %}
                                     </select>
                                     <label for="services">Задание</label>
@@ -52,7 +54,8 @@
                                     <label for="link" class="active">Ссылка</label>
                                 </div>
                                 <div class="input-field col m4 s12">
-                                    <input id="quantity" class="validate" min="" max="" data-task-param="quantity" type="number">
+                                    <input id="quantity" class="validate" min="" max="" data-task-param="quantity"
+                                           type="number">
                                     <label for="quantity">Количество</label>
                                     <span class="helper-text quantity-help"></span>
                                 </div>
@@ -94,8 +97,42 @@
         {% endif %}
     {% endcall %}
 
-{#    {% block scripts %}#}
-{##}
-{#    {% endblock %}#}
+    {% block scripts %}
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#new-task').submit(function (event) {
+                    event.preventDefault();
+
+                    var sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = {};
+                    sending.addClass('active').show();
+                    btn.fadeOut('fast');
+
+                    params = {
+                        'sid': $('#services').val(),
+                        'link': $('#link').val(),
+                        'quantity': $('#quantity').val()
+                    };
+
+                    console.log(JSON.stringify(params));
+
+                    $.ajax({
+                        url: '/ajax/' + $(this).attr('id'),
+                        type: "POST",
+                        data: JSON.stringify(params),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            M.toast({html: ({0: data['msg'], 1: 'Добавлено'})[data['response']], displayLength: 5 * 1000});
+                            btn.fadeIn('fast');
+                            sending.hide().removeClass('active');
+                            if (data['response'] === 1) location.reload();
+                        }
+                    });
+
+                });
+            });
+        </script>
+
+    {% endblock %}
 
 {% endblock %}

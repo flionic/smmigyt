@@ -141,8 +141,10 @@
             <div class="modal-footer">
                 <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">
                     <input type="hidden" name="ik_x_userid" value="{{ current_user.id }}"/>
-                    <input type="hidden" name="ik_co_id" value="{{ ik.co_id }}"/>
-                    <input type="hidden" name="ik_pm_no" value="{{ ik.pm_id }}"/>
+                    {% if ik %}
+                        <input type="hidden" name="ik_co_id" value="{{ ik.co_id }}"/>
+                        <input type="hidden" name="ik_pm_no" value="{{ ik.pm_id }}"/>
+                    {% endif %}
                     <input type="hidden" name="ik_cli" value="{{ current_user.email }}"/>
                     <input type="hidden" name="ik_cur" value="RUB"/>
                     {#<input type="hidden" name="ik_cur" value="RUB"/>#}
