@@ -172,6 +172,24 @@ def index():
     }, services=Services.query.all())
 
 
+@app.route('/help')
+def help_page():
+    # todo генерировать pm_id фронтом
+    return render_template('help.html', ik={
+        'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
+        'co_id': app.config['IK_ID_CHECKOUT']
+    })
+
+
+@app.route('/policy')
+def policy_page():
+    # todo генерировать pm_id фронтом
+    return render_template('policy.html', ik={
+        'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
+        'co_id': app.config['IK_ID_CHECKOUT']
+    })
+
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET' or current_user.is_authenticated:

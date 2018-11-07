@@ -110,6 +110,65 @@
 <main>
     {% block main %}
     {% endblock %}
+    {% call section() %}
+
+        <div class="modal modal-confirm modal-login">
+            {#            <div class="modal-content">#}
+            {#                <h5></h5>#}
+            {#            </div>#}
+            <div class="modal-footer">
+                <form id="auth">
+                    <div class="input-field col m6 s12">
+                        <input id="email" type="text" required>
+                        <label for="email" class="active">Email</label>
+                    </div>
+                    <div class="input-field col m6 s12">
+                        <input id="pass" type="password" required>
+                        <label for="pass" class="active">Пароль</label>
+                    </div>
+                </form>
+                <div class="input-field col s12">
+                    <a class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться</a>
+                    <a class="btn waves-effect waves-light green white-text login">Войти</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal modal-confirm modal-deposit">
+            <div class="modal-content center">
+                <h5>Пополнение баланса</h5>
+            </div>
+            <div class="modal-footer">
+                <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">
+                    <input type="hidden" name="ik_x_userid" value="{{ current_user.id }}"/>
+                    <input type="hidden" name="ik_co_id" value="{{ ik.co_id }}"/>
+                    <input type="hidden" name="ik_pm_no" value="{{ ik.pm_id }}"/>
+                    <input type="hidden" name="ik_cli" value="{{ current_user.email }}"/>
+                    <input type="hidden" name="ik_cur" value="RUB"/>
+                    {#<input type="hidden" name="ik_cur" value="RUB"/>#}
+                    <input type="hidden" name="ik_desc" value="Пополнение баланса {{ current_user.email }}"/>
+                    <div class="row">
+                        <div class="col s12 center">
+                            <div class="input-field inline">
+                                <input name="ik_am" id="ik_am" class="validate" type="number" min="1" max="30000"
+                                       required>
+                                <label for="ik_am">Сумма</label>
+                            </div>
+                            <div class="input-field inline">
+                                <span>Руб.</span>
+                            </div>
+                            <div class="input-field inline">
+                                <button class="btn waves-effect waves-light green" type="submit" name="submit">К
+                                    оплате<i class="material-icons right">credit_card</i></button>
+                                <a href="#!" class="btn modal-close waves-effect waves-light red">Отмена</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    {% endcall %}
 </main>
 <footer class="page-footer purple darken-2">
     <div class="container">
@@ -191,6 +250,43 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var modals = M.Modal.init($('.modal'), {'endingTop': '30%'});
+        $('.btn-login').click(function () {
+            var targetBtn = this, modalText = $('.modal-content h5');
+            {#modalText.text($(this).attr('data-tooltip') + ' заказ?');#}
+            modals[0].open();
+        });
+        $('.btn-deposit').click(function () {
+            var targetBtn = this, modalText = $('.modal-content h5');
+            {#modalText.text($(this).attr('data-tooltip') + ' заказ?');#}
+            modals[1].open();
+        });
+        $('.login').click(function () {
+            $.post("login", {"email": $('#email').val(), "password": $('#pass').val()})
+                .done(function (data) {
+                    location.reload();
+                });
+        });
+        $('.signup').click(function () {
+            $.post("signup", {"email": $('#email').val(), "password": $('#pass').val()})
+                .done(function (data) {
+                    location.reload();
+                });
+        });
+
+        $('#services').on('change', function () {
+            var serv = $('#services option:selected');
+            $('.service-desc').text(serv.attr('data-task-desc'));
+            $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
+            $('#quantity').attr('min', serv.attr('data-task-min'));
+            $('#quantity').attr('max', serv.attr('data-task-max'));
+        });
+
+        {#  $('#services option:selected').attr('data-task-min');    #}
     });
 </script>
 {% block scripts %}{% endblock %}
