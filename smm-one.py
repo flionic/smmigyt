@@ -114,7 +114,7 @@ class Users(db.Model):
         return str.encode(str(self.id))
 
     def __repr__(self):
-        return '<User %r>' % self.email
+        return '<User(id=%s, email=%s, balance=%s)>' % (self.id, self.email, self.balance)
 
 
 class Invoices(db.Model):
@@ -195,7 +195,6 @@ class Tasks(db.Model):
 @app.route('/')
 def index():
     # todo генерировать pm_id фронтом
-    print(current_user.is_anonymous)
     return render_template('index.html', ik={
         'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
         'co_id': app.config['IK_ID_CHECKOUT']
@@ -218,6 +217,26 @@ def policy_page():
         'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
         'co_id': app.config['IK_ID_CHECKOUT']
     })
+
+
+@app.route('/settings')
+@login_required
+def tasks():
+    if current_user.status == 7:
+        return render_template('settings.html', services=Services.query.all(), ik={
+            'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
+            'co_id': app.config['IK_ID_CHECKOUT']
+        })
+
+
+@app.route('/tasks')
+@login_required
+def settings():
+    if current_user.status == 7:
+        return render_template('tasks.html', ik={
+            'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
+            'co_id': app.config['IK_ID_CHECKOUT']
+        }, tasks=Tasks.query.filter_by(s_type='manual'), services=Services.query.all(), users=Users.query.all())
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -264,26 +283,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-@app.route('/settings')
-@login_required
-def tasks():
-    if current_user.status == 7:
-        return render_template('settings.html', services=Services.query.all(), ik={
-            'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
-            'co_id': app.config['IK_ID_CHECKOUT']
-        })
-
-
-@app.route('/tasks')
-@login_required
-def settings():
-    if current_user.status == 7:
-        return render_template('tasks.html', ik={
-            'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
-            'co_id': app.config['IK_ID_CHECKOUT']
-        }, tasks=Tasks.query.filter_by(s_type='manual'), services=Services.query.all(), users=Users.query.all())
 
 
 # TODO удалить GET метод
