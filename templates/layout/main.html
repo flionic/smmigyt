@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% set app_name = config['APP_NAME'] %}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>{{ app_name }} — {% block title -%}Накрутка подписчиков, лайков в ВКонтакте, Facebook, Instagram, Twitter,
+        Youtube{%- endblock -%}</title>
+    <meta name="description"
+          content="{% block description %}Здесь вы можете заказать качественную накрутку подписчиков и лайков с гибкими параметрами для различных социальных сетей{% endblock %}">
+    <meta name="application-name" content="{{ app_name }}">
+    <meta name="theme-color" content="#2196F3">
+    <link rel="manifest" href="manifest.webapp.json">
+    <meta name="apple-mobile-web-app-title" content="{{ app_name }}">
+    <meta name="msapplication-TileColor" content="#2b5797">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+    <link rel="mask-icon" href="{{ url_for('static', filename='img/safari-pinned-tab.svg') }}" color="#5bbad5">
+    <link rel=stylesheet type=text/css media="screen,projection"
+          href="{{ url_for('static', filename='css/materialize.min.css') }}">
+    <link rel=stylesheet type=text/css media="screen,projection"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="interkassa-verification" content="46871daa498d3550fb477f1fe2eb4442" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+{#    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-42401203-20"></script>#}
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        gtag('config', 'UA-42401203-20');
+    </script>
+    {% block head %}{% endblock %}
+</head>
+{%- macro section(classes='row', id='') -%}
+    <div class="section" id="{{ id }}">
+        <div class="container">
+            <div class="{{ classes }}">
+                {{ caller() }}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+{%- macro navmenu() -%}
+    {%- if current_user and current_user.is_authenticated %}
+        {% if current_user.status == 7 %}
+            <li><a href="/tasks">Модерация</a></li>
+            <li><a href="/settings">Настройки</a></li>
+        {% endif %}
+        {{ caller() }}
+    {% else -%}
+        <li><a class="btn-login">Вход</a></li>
+    {% endif %}
+{% endmacro %}
+{% macro js() %}
+    <script type="text/javascript">{{ caller() }}</script>
+{% endmacro %}
+<body class="purple darken-3">
+<header>
+    <nav class="purple darken-4" role="navigation">
+        <div class="nav-wrapper container">
+            <a id="logo-container" href="/" class="brand-logo">
+                <i class="material-icons hide-on-small-only">timeline</i>
+                {{- app_name -}}
+            </a>
+            <ul class="right hide-on-med-and-down">
+                {% call navmenu() %}
+                    <li>
+                        <a class="dropdown-trigger" href="#!" data-target="actions_dd">{{ current_user.email }}
+                            | {{ current_user.balance }} ₽<i class="material-icons right">more_vert</i></a>
+                    </li>
+                    <ul id="actions_dd" class="dropdown-content">
+{#                        <li>#}
+{#                            <a class="light-blue-text" href="/tasks">#}
+{#                                <i class="material-icons right light-blue-text">dehaze</i>Мои заказы#}
+{#                            </a>#}
+{#                        </li>#}
+{#                        <li>#}
+{#                            <a class="light-blue-text" href="/tasks/new">#}
+{#                                <i class="material-icons right light-blue-text">add</i>Добавить заказ#}
+{#                            </a>#}
+{#                        </li>#}
+                        <li>
+                            <a class="light-blue-text btn-deposit">
+                                <i class="material-icons right light-blue-text">account_balance_wallet</i>Пополнить счет
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a class="red-text right-align" href="/logout">Выйти</a></li>
+                    </ul>
+                {% endcall %}
+            </ul>
+            <ul id="nav-mobile" class="sidenav">
+                {% call navmenu() %}
+                    <li><a>{{ current_user.email }} ({{ current_user.balance }}р.)</a></li>
+{#                    <li><a href="/tasks">Мои заказы</a></li>#}
+{#                    <li><a href="/tasks/new">Добавить заказ</a></li>#}
+                    <li><a class="btn-deposit">Пополнить счет</a></li>
+                    <li><a href="/logout">Выйти</a></li>
+                {% endcall %}
+            </ul>
+            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
+</header>
+<main>
+    {% block main %}
+    {% endblock %}
+</main>
+<footer class="page-footer purple darken-2">
+    <div class="container">
+        <div class="row">
+            <div class="col l3 s12 offset-l1">
+                <h5 class="white-text">Чаво</h5>
+                <ul>
+                    <li><a class="white-text" href="/help">Помощь</a></li>
+                    <li><a class="white-text" href="/policy">Пользовательское соглашение</a></li>
+                </ul>
+            </div>
+            <div class="col l3 s12 offset-l1">
+                <h5 class="white-text">Контакты</h5>
+                <ul>
+                    <li><a class="white-text" href="mailto://help1smm@ya.ru">Поддержка: help1smm@ya.ru</a></li>
+                    <li><a class="white-text" href="https://t.me/one_smm">Новости сервиса: t.me/one_smm</a></li>
+                    <li><a class="white-text" href="icq://643510696">ICQ: 643510696</a></li>
+                    {#                    <li><a class="white-text" href="tel://+380935714428">Телефон: +380935714428</a></li>#}
+                    {#                    <li><a class="white-text" href="skype://maladoismm">Skype: maladoismm</a></li>#}
+                </ul>
+            </div>
+            <div class="col l3 s12 offset-l1">
+                <h5 class="white-text">Оплата</h5>
+                <ul>
+{#                    <li><a class="white-text" href="/tasks">История заказов</a></li>#}
+                    <li><a class="white-text btn-deposit">Пополнить баланс</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container">
+            <div class="row no-mar-bot">
+                <div class="col m6">
+                    <span>Copyright © </span><a class="pink-text text-lighten-3" href="/">{{ app_name }}, 2018</a>
+                </div>
+                <div class="col m6 right-align">
+                    <a href="https://flionic.me/"><span class="pink-text text-lighten-3">Developed by </span><span
+                            class="white-text">flionic.me</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script defer src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
+<script type="text/javascript">
+    (function () {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/app.js').then(function (registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function (err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    })();
+
+    $(document).ready(function () {
+        $('.sidenav').sidenav();
+        $('.tabs').tabs();
+        $('.collapsible').collapsible();
+        $(".dropdown-trigger").dropdown();
+        $('select').formSelect();
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        M.toast({
+                            html: '<span class="red-text">Ошибка:&nbsp;</span><span>{{ message }}</span>',
+                            displayLength: 10 * 1000
+                        });
+                    {% else %}
+                        M.toast({html: '{{ message }}'});
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    });
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

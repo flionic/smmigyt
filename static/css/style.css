@@ -317,6 +317,15 @@ input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):
     border-radius: 8px;
 }
 
+.section, .icon-block h2, .icon-block h5, .icon-block p {
+    padding: 0;
+    margin: 0;
+}
+
+h5 {
+    padding: 10px 0;
+}
+
 @media only screen and (max-width: 992px) {
     nav .brand-logo {
         left: 40%;
@@ -332,4 +341,15 @@ input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):
         max-height: 25%;
         width: 20%;
     }
+}
+
+@media only screen and (max-width: 1600px) {
+    .modal-confirm {
+        max-height: 25%;
+        width: 35%;
+    }
+}
+
+.btn-deposit {
+    cursor: pointer;
 }

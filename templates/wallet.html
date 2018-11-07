@@ -1,0 +1,45 @@
+{% extends 'layout/main.html' %}
+{% block main %}
+    {% call section() %}
+
+        {% block protected %}
+            <div class="col s12 m6 offset-m3" id="tasks1">
+                <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">
+                    <input type="hidden" name="ik_x_userid" value="{{ current_user.id }}"/>
+                    <input type="hidden" name="ik_co_id" value="{{ ik.co_id }}"/>
+                    <input type="hidden" name="ik_pm_no" value="{{ ik.pm_id }}"/>
+                    <input type="hidden" name="ik_cli" value="{{ current_user.email }}"/>
+                    {#<input type="hidden" name="ik_cur" value="RUB"/>#}
+                    <input type="hidden" name="ik_desc" value="Пополнение баланса {{ current_user.email }}"/>
+                    <div class="row">
+                        <div class="col s12">
+                            <span>Пополнение баланса:</span>
+                            <div class="input-field inline">
+                                <input name="ik_am" id="ik_am" class="validate" type="number" min="1" max="30000" required>
+                                <label for="ik_am">Сумма</label>
+                            </div>
+                            <div class="input-field inline">
+                                <select name="ik_cur" id="ik_cur">
+                                    <option value="RUB" selected>руб.</option>
+                                    <option value="UAH">грн.</option>
+                                </select>
+                                <label for="ik_cur">Валюта платежа</label>
+                            </div>
+                            <div class="input-field inline">
+                                <button class="btn waves-effect waves-light green" type="submit" name="submit">К оплате<i class="material-icons right">credit_card</i></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        {% endblock %}
+        {% block scripts %}
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('select').formSelect();
+                });
+            </script>
+        {% endblock %}
+
+    {% endcall %}
+{% endblock %}

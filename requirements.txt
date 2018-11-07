@@ -1,0 +1,12 @@
+requests
+redis
+gunicorn
+python-dotenv
+bcrypt
+flask
+flask-login
+flask-sqlalchemy
+flask-session
+flask-mail
+flask-mail-sendgrid
+mysqlclient
