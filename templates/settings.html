@@ -92,7 +92,8 @@
                                         <span class="lever"></span>
                                         Вкл
                                     </label>
-                                    <label><input id="service-action-{{ s.id }}" class="service-action" type="hidden" value="upd"></label>
+                                    <label><input id="service-action-{{ s.id }}" class="service-action" type="hidden"
+                                                  value="upd"></label>
                                 </div>
                             </div>
                             {% if s.s_type == 'manual' %}
@@ -130,12 +131,19 @@
         $(document).ready(function () {
             $('.sending').hide();
             $('select').formSelect();
+            /*
             $('#settings-main').submit(function (event) {
                 event.preventDefault();
                 var f_target = $(this).attr('data-target'), f_data = $(this).find('[' + f_target + ']'),
                     sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = {};
                 sending.addClass('active').show();
                 btn.fadeOut('fast');
+
+
+            {#for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(f_target)] = $(f_data[i]).val();#}
+
+
+            {#data-service-id#}
                 for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(f_target)] = $(f_data[i]).val();
                 $.ajax({
                     url: '/ajax/save/' + $(this).attr('id'),
@@ -149,24 +157,29 @@
                         sending.hide().removeClass('active');
                     }
                 });
-            });
-            $('#settings-services').submit(function (event) {
+            }); */
+            $('#settings-main, #settings-services').submit(function (event) {
                 event.preventDefault();
-                var sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = [];
-                sending.addClass('active').show();
+                var pl = $(this).find('.sending'), btn = $(this).find('.btn-action'), fid = $(this).attr('id'), params;
+                pl.addClass('active').show();
                 btn.fadeOut('fast');
-                {#for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(f_target)] = $(f_data[i]).val();#}
-                {#data-service-id#}
-                $('.service').each(function (i, elem) {
-                    params.push({
-                        "id": $(this).attr('data-service-id'),
-                        "title": $(this).find('.service-title').val(),
-                        "desc": $(this).find('.service-desc').val(),
-                        "price": $(this).find('.service-price').val(),
-                        "state": $(this).find('.service-state').is(':checkbox:checked') ? '1' : '0',
-                        "action": $(this).find('.service-action').val()
+                if (fid === 'settings-main') {
+                    params = {};
+                    var target = $(this).attr('data-target'), f_data = $(this).find('[' + target + ']');
+                    for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(target)] = $(f_data[i]).val();
+                } else if (fid === 'settings-services') {
+                    params = [];
+                    $('.service').each(function (i, elem) {
+                        params.push({
+                            "id": $(this).attr('data-service-id'),
+                            "title": $(this).find('.service-title').val(),
+                            "desc": $(this).find('.service-desc').val(),
+                            "price": $(this).find('.service-price').val(),
+                            "state": $(this).find('.service-state').is(':checkbox:checked') ? '1' : '0',
+                            "action": $(this).find('.service-action').val()
+                        });
                     });
-                });
+                }
                 console.log(JSON.stringify(params));
                 $.ajax({
                     url: '/ajax/save/' + $(this).attr('id'),
@@ -177,18 +190,18 @@
                     success: function (data) {
                         M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
                         btn.fadeIn('fast');
-                        sending.hide().removeClass('active');
+                        pl.hide().removeClass('active');
                     }
                 });
             });
-            $('.btn-rm').click(function() {
+            $('.btn-rm').click(function () {
                 event.preventDefault();
                 var service = $(this).closest('.service');
                 console.log(service.attr('data-service-id'));
                 service.fadeOut();
                 service.find('.service-action').val('rm');
             });
-            $('.btn-add').click(function() {
+            $('.btn-add').click(function () {
                 event.preventDefault();
                 var service = $(".service:last-child").clone().appendTo("#settings-services .card .card-content");
                 service.show();
