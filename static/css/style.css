@@ -241,7 +241,7 @@ input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):
     border-radius: 8px;
 }
 
-#task-list .card .card-content {
+#task-list .card .card-content, #tasks .card .card-content {
     overflow: scroll;
 }
 

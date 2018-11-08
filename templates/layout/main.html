@@ -28,16 +28,44 @@
     {#    <meta name="interkassa-verification" content="46871daa498d3550fb477f1fe2eb4442"/>#}
     <!-- Global site tag (gtag.js) - Google Analytics -->
     {#    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-42401203-20"></script>#}
-    <script>
-        window.dataLayer = window.dataLayer || [];
+{#    <script>#}
+{#        window.dataLayer = window.dataLayer || [];#}
+{##}
+{#        function gtag() {#}
+{#            dataLayer.push(arguments);#}
+{#        }#}
+{##}
+{#        gtag('js', new Date());#}
+{#        gtag('config', 'UA-42401203-20');#}
+{#    </script>#}
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+        (function (d, w, c) {
+            (w[c] = w[c] || []).push(function() {
+                try {
+                    w.yaCounter51062585 = new Ya.Metrika2({
+                        id:51062585,
+                        clickmap:true,
+                        trackLinks:true,
+                        accurateTrackBounce:true
+                    });
+                } catch(e) { }
+            });
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
+            var n = d.getElementsByTagName("script")[0],
+                s = d.createElement("script"),
+                f = function () { n.parentNode.insertBefore(s, n); };
+            s.type = "text/javascript";
+            s.async = true;
+            s.src = "https://mc.yandex.ru/metrika/tag.js";
 
-        gtag('js', new Date());
-        gtag('config', 'UA-42401203-20');
+            if (w.opera == "[object Opera]") {
+                d.addEventListener("DOMContentLoaded", f, false);
+            } else { f(); }
+        })(document, window, "yandex_metrika_callbacks2");
     </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/51062585" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
     {%- block head -%}{%- endblock -%}
 </head>
 {%- macro section(classes='row', id='') -%}
