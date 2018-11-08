@@ -156,7 +156,6 @@
                                             <th>Сумма заказа</th>
                                             <th>Ссылка</th>
                                             <th>Время</th>
-                                            {#<th>Количество</th>#}
                                             <th>Статус</th>
                                         </tr>
                                         </thead>
@@ -169,7 +168,6 @@
                                                 <td>{{ t.amount }} р.</td>
                                                 <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
                                                 <td>{{ t.date }}</td>
-                                                {#<td></td>#}
                                                 <td>{{ states[t.status] }}</td>
                                             </tr>
                                         {% endfor %}
@@ -201,7 +199,6 @@
                     quantity.attr('min', serv.attr('data-task-min'));
                     quantity.attr('max', serv.attr('data-task-max'));
                 });
-                {#  $('#services option:selected').attr('data-task-min');    #}
                 $('#new-task').submit(function (event) {
                     event.preventDefault();
                     var btn = $(this).find('.btn-action');

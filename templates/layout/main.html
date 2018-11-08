@@ -200,6 +200,7 @@
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script defer src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
 <script type="text/javascript">
+/*
     (function () {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
@@ -211,7 +212,7 @@
             });
         }
     })();
-
+*/
     $(document).ready(function () {
         $('.sidenav').sidenav();
         $('.tabs').tabs();
@@ -247,8 +248,6 @@
     $(document).ready(function () {
         var modals = M.Modal.init($('.modal'), {'endingTop': '30%'});
         $('.btn-login').click(function () {
-            {#var targetBtn = this, modalText = $('.modal-content h5');#}
-            {#modalText.text($(this).attr('data-tooltip') + ' заказ?');#}
             modals[0].open();
         });
         $('.btn-deposit').click(function () {

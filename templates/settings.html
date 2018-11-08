@@ -131,33 +131,6 @@
         $(document).ready(function () {
             $('.sending').hide();
             $('select').formSelect();
-            /*
-            $('#settings-main').submit(function (event) {
-                event.preventDefault();
-                var f_target = $(this).attr('data-target'), f_data = $(this).find('[' + f_target + ']'),
-                    sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = {};
-                sending.addClass('active').show();
-                btn.fadeOut('fast');
-
-
-            {#for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(f_target)] = $(f_data[i]).val();#}
-
-
-            {#data-service-id#}
-                for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(f_target)] = $(f_data[i]).val();
-                $.ajax({
-                    url: '/ajax/save/' + $(this).attr('id'),
-                    type: "POST",
-                    data: JSON.stringify(params),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (data) {
-                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
-                        btn.fadeIn('fast');
-                        sending.hide().removeClass('active');
-                    }
-                });
-            }); */
             $('#settings-main, #settings-services').submit(function (event) {
                 event.preventDefault();
                 var pl = $(this).find('.sending'), btn = $(this).find('.btn-action'), fid = $(this).attr('id'), params;
@@ -180,7 +153,7 @@
                         });
                     });
                 }
-                console.log(JSON.stringify(params));
+                {#console.log(JSON.stringify(params));#}
                 $.ajax({
                     url: '/ajax/save/' + $(this).attr('id'),
                     type: "POST",
