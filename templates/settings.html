@@ -55,7 +55,7 @@
                     <div class="row">
                         <div class="col s12 right-align">
                             <button class="btn-large waves-effect waves-light green btn-action"
-                                    type="submit" name="submit">Сохранить<i class="material-icons right">save</i>
+                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>
                             </button>
                         </div>
                     </div>
@@ -70,44 +70,52 @@
                     {% for s in services %}
                         <div class="row no-mar-bot service" data-service-id="{{ s.id }}">
                             <div class="input-field col s12" style="margin: 0">
-                                <span>{{ s.s_type }} - {{ s.name }}</span>
+                                <span class="service-name">{{ s.s_type }} - {{ s.name }}</span>
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <input id="service-title-{{ s.id }}" class="service-title validate" data-type-id="2"
+                                       type="text" value="{{ s.title }}" required>
+                                <label for="service-title-{{ s.id }}">Заголовок</label>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <input id="service-price-{{ s.id }}" class="service-price validate" data-type-id="2"
+                                       type="number" step="0.01" value="{{ s.price }}" style="width: 90%;" required>
+                                <span>₽</span>
+                                <label for="service-price-{{ s.id }}">Цена</label>
                             </div>
                             <div class="input-field col s12 m2">
                                 <div class="switch">
                                     <label>
                                         Выкл
-                                        {% if s.state == 1 %}
-                                            <input id="service-state-{{ s.id }}" class="service-state" type="checkbox" checked>
-                                        {% else %}
-                                            <input id="service-state-{{ s.id }}" class="service-state" type="checkbox">
-                                        {% endif %}
+                                        <input id="service-state-{{ s.id }}" class="service-state"
+                                               type="checkbox" {{ 'checked' if s.state == 1 else '' }}>
                                         <span class="lever"></span>
                                         Вкл
                                     </label>
+                                    <label><input id="service-action-{{ s.id }}" class="service-action" type="hidden" value="upd"></label>
                                 </div>
                             </div>
-                            <div class="input-field col s12 m6">
-                                <input id="service-title-{{ s.id }}" class="service-title validate" data-type-id="2" type="text" value="{{ s.title }}" required>
-                                <label for="service-title-{{ s.id }}" class="black-text">Наименование</label>
-                            </div>
-                            <div class="input-field col s12 m2">
-                                <input id="service-price-{{ s.id }}" class="service-price validate" data-type-id="2" type="number" step="0.01" value="{{ s.price }}" style="width: 90%;" required>
-                                <span>₽</span>
-                                <label for="service-price-{{ s.id }}" class="black-text">Цена</label>
-                            </div>
+                            {% if s.s_type == 'manual' %}
+                                <div class="input-field col s12 m2">
+                                    <a class="btn btn-rm waves-effect waves-light red">Удалить</a>
+                                </div>
+                            {% endif %}
                             <div class="input-field col s12">
-                                <textarea id="service-desc-{{ s.id }}" class="service-desc materialize-textarea" data-length="1000">{{ s.desc }}</textarea>
+                                <textarea id="service-desc-{{ s.id }}" class="service-desc materialize-textarea"
+                                          data-length="1000">{{ s.desc }}</textarea>
                                 <label for="service-desc-{{ s.id }}">Описание</label>
                             </div>
                         </div>
-                        <br>
                     {% endfor %}
                 </div>
                 <div class="card-action">
                     <div class="row">
                         <div class="col s12 right-align">
-                            <button class="btn-large waves-effect waves-light green btn-action"
-                                    type="submit" name="submit">Сохранить<i class="material-icons right">save</i>
+                            <button class="btn btn-add waves-effect waves-light blue">Создать<i
+                                    class="fas fa-plus right"></i>
+                            </button>
+                            <button class="btn waves-effect waves-light green btn-action"
+                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>
                             </button>
                         </div>
                     </div>
@@ -142,30 +150,24 @@
                     }
                 });
             });
-
             $('#settings-services').submit(function (event) {
                 event.preventDefault();
-
                 var sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = [];
                 sending.addClass('active').show();
                 btn.fadeOut('fast');
-
                 {#for (var i = 0; i < f_data['length']; i++) params[$(f_data[i]).attr(f_target)] = $(f_data[i]).val();#}
-
                 {#data-service-id#}
-                $('.service').each(function(i,elem) {
+                $('.service').each(function (i, elem) {
                     params.push({
                         "id": $(this).attr('data-service-id'),
                         "title": $(this).find('.service-title').val(),
                         "desc": $(this).find('.service-desc').val(),
                         "price": $(this).find('.service-price').val(),
-                        "state": $(this).find('.service-state').is(':checkbox:checked') ? '1' : '0'
+                        "state": $(this).find('.service-state').is(':checkbox:checked') ? '1' : '0',
+                        "action": $(this).find('.service-action').val()
                     });
                 });
-
-                console.log(params);
                 console.log(JSON.stringify(params));
-
                 $.ajax({
                     url: '/ajax/save/' + $(this).attr('id'),
                     type: "POST",
@@ -178,7 +180,22 @@
                         sending.hide().removeClass('active');
                     }
                 });
-
+            });
+            $('.btn-rm').click(function() {
+                event.preventDefault();
+                var service = $(this).closest('.service');
+                console.log(service.attr('data-service-id'));
+                service.fadeOut();
+                service.find('.service-action').val('rm');
+            });
+            $('.btn-add').click(function() {
+                event.preventDefault();
+                var service = $(".service:last-child").clone().appendTo("#settings-services .card .card-content");
+                service.show();
+                service.find('.service-action').val('add');
+                service.find('.service-name').text('Новая услуга');
+                service.find('.service-title, .service-name, .service-desc, .service-price').val('');
+                service.find('.service-state').attr('checked', '1');
             });
         });
     </script>

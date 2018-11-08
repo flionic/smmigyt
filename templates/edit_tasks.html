@@ -2,7 +2,7 @@
 {% block main %}
     {% call section() %}
 
-        <form id="tasks" class="col s12 m10 offset-m1">
+        <form id="tasks" class="col s12">
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Модерируемые заказы</span>
@@ -12,25 +12,24 @@
                                 <table>
                                     <thead>
                                     <tr>
-                                        <th>Пользователь</th>
                                         <th>ID</th>
-                                        <th>Вид накрутки</th>
-                                        <th>Цена</th>
-                                        <th>Заказ</th>
+                                        <th>Заказчик</th>
+                                        <th>Тип</th>
+                                        <th>Количество</th>
+                                        <th>Сумма заказа</th>
                                         <th>Ссылка</th>
                                         <th>Время</th>
                                         <th>Статус</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% set states = {0: "В обработке", 1: "Запущен", 2: "Завершен", 3: "Отменен"} %}
                                     {% for t in tasks %}
                                         <tr>
-                                            <td>{{ users[t.uid - 1].email }}</td>
                                             <td>{{ t.id }}</td>
+                                            <td>{{ users[t.uid - 1].email }}</td>
                                             <td>{{ services[t.tid - 1].title }}</td>
-                                            <td>{{ t.amount }}</td>
                                             <td>{{ t.quantity }}</td>
+                                            <td>{{ t.amount }} р.</td>
                                             <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
                                             <td>{{ t.date }}</td>
                                             <td>
@@ -55,8 +54,8 @@
                 <div class="card-action">
                     <div class="row">
                         <div class="col s12 right-align">
-                            <button class="btn-large waves-effect waves-light green btn-action"
-                                    type="submit" name="submit">Сохранить<i class="material-icons right">save</i>
+                            <button class="btn waves-effect waves-light green btn-action"
+                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>
                             </button>
                         </div>
                     </div>

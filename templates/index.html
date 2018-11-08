@@ -1,34 +1,76 @@
 {% extends 'layout/main.html' %}
 {% block main %}
 
-    {% call section('row center', 'index-banner') %}
-        <h5 class="white-text">Безопасное продвижение в Instagram and YouTube</h5>
-        <div class="col l6 s12 center">
-            <div class="icon-block white-text">
-                <h2><i class="material-icons">flash_on</i></h2>
-                <h5>Instagram</h5>
-                <p class="light">Накрутка лайков и подписчиков<br>
-                    это простые инструменты для рекламы<br>
-                    в социальных сетях и гибкие возможности<br>
-                    по настройке рекламных заданий</p>
+    <div class="section" id="index-banner">
+        <div class="row center">
+            <h5 class="white-text">Безопасное продвижение в соц. сетях</h5>
+            <div class="col s12 m6 l4 xl2 center">
+                <div class="icon-block white-text">
+                    <h2><i class="fab fa-odnoklassniki"></i></h2>
+                    <h5>Одноклассники</h5>
+                    <p class="light">Накрутка лайков и подписчиков<br>
+                        это простые инструменты для рекламы<br>
+                        в социальных сетях и гибкие возможности<br>
+                        по настройке рекламных заданий</p>
+                </div>
+            </div>
+            <div class="col s12 m6 l4 xl2 center">
+                <div class="icon-block white-text">
+                    <h2><i class="fab fa-instagram"></i></h2>
+                    <h5>Instagram</h5>
+                    <p class="light">Накрутка лайков и подписчиков<br>
+                        это простые инструменты для рекламы<br>
+                        в социальных сетях и гибкие возможности<br>
+                        по настройке рекламных заданий</p>
+                </div>
+            </div>
+            <div class="col s12 m6 l4 xl2 center">
+                <div class="icon-block white-text">
+                    <h2><i class="fab fa-facebook-square"></i></h2>
+                    <h5>Facebook</h5>
+                    <p class="light">Накрутка лайков и подписчиков<br>
+                        это простые инструменты для рекламы<br>
+                        в социальных сетях и гибкие возможности<br>
+                        по настройке рекламных заданий</p>
+                </div>
+            </div>
+            <div class="col s12 m6 l4 xl2 center">
+                <div class="icon-block white-text">
+                    <h2><i class="fab fa-telegram"></i></h2>
+                    <h5>Telegram</h5>
+                    <p class="light">Накрутка лайков и подписчиков<br>
+                        это простые инструменты для рекламы<br>
+                        в социальных сетях и гибкие возможности<br>
+                        по настройке рекламных заданий</p>
+                </div>
+            </div>
+            <div class="col s12 m6 l4 xl2 center">
+                <div class="icon-block white-text">
+                    <h2><i class="fab fa-youtube"></i></h2>
+                    <h5>YouTube</h5>
+                    <p class="light">Накрутка лайков и подписчиков<br>
+                        это простые инструменты для рекламы<br>
+                        в социальных сетях и гибкие возможности<br>
+                        по настройке рекламных заданий</p>
+                </div>
+            </div>
+            <div class="col s12 m6 l4 xl2 center">
+                <div class="icon-block white-text">
+                    <h2><i class="fab fa-twitter"></i></h2>
+                    <h5>Twitter</h5>
+                    <p class="light">Накрутка лайков и подписчиков<br>
+                        это простые инструменты для рекламы<br>
+                        в социальных сетях и гибкие возможности<br>
+                        по настройке рекламных заданий</p>
+                </div>
             </div>
         </div>
-        <div class="col l6 s12 center">
-            <div class="icon-block white-text">
-                <h2><i class="material-icons">flash_on</i></h2>
-                <h5>YouTube</h5>
-                <p class="light">Накрутка лайков и подписчиков<br>
-                    это простые инструменты для рекламы<br>
-                    в социальных сетях и гибкие возможности<br>
-                    по настройке рекламных заданий</p>
-            </div>
-        </div>
-    {% endcall %}
+    </div>
 
     {% call section(id='auth') %}
         {% if current_user and current_user.is_authenticated %}
             {% block protected %}
-                <form id="new-task" class="col s12 m8 offset-m2">
+                <form id="new-task" class="col s12 l10 offset-l1 xl8 offset-xl2">
                     <div class="card">
                         <div class="card-content">
                             <div class="row no-mar-bot">
@@ -53,16 +95,17 @@
                                 <div class="input-field col m6 s12">
                                     <input id="link" data-task-param="link" type="text" required>
                                     <label for="link">Ссылка</label>
-                                    <span class="helper-text sum-help"></span>
+                                    <span class="helper-text sum-help help-data"></span>
                                 </div>
                                 <div class="input-field col m4 s12">
                                     <input id="quantity" class="validate" data-task-param="quantity" type="number"
                                            required>
                                     <label for="quantity">Количество</label>
-                                    <span class="helper-text quantity-help"></span>
+                                    <span class="helper-text quantity-help help-data"></span>
                                 </div>
                                 <div class="input-field col m2 s12 center">
-                                    <button class="btn btn-action waves-effect waves-light green task-action" type="submit"
+                                    <button class="btn btn-action waves-effect waves-light green task-action"
+                                            type="submit"
                                             name="submit">
                                         Заказать
                                     </button>
@@ -70,15 +113,17 @@
                                         <div class="spinner-layer spinner-blue-only">
                                             <div class="circle-clipper left">
                                                 <div class="circle"></div>
-                                            </div><div class="gap-patch">
-                                            <div class="circle"></div>
-                                        </div><div class="circle-clipper right">
-                                            <div class="circle"></div>
-                                        </div>
+                                            </div>
+                                            <div class="gap-patch">
+                                                <div class="circle"></div>
+                                            </div>
+                                            <div class="circle-clipper right">
+                                                <div class="circle"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="input-field col s12">
+                                <div class="input-field col s12 help-data">
                                     <span class="service-desc"></span>
                                 </div>
                             </div>
@@ -89,12 +134,12 @@
         {% else %}
             <div class="row center grey-text">
                 <h6>Требуется авторизация</h6>
-                <a class="btn-large waves-effect waves-light blue btn-login">Вход/Регистрация</a>
+                <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i> Вход/Регистрация</a>
             </div>
         {% endif %}
     {% endcall %}
 
-    {% call section() %}
+    {% call section(id='task-list') %}
         {% if current_user and current_user.is_authenticated %}
             <div class="col s12">
                 <div class="card">
@@ -107,27 +152,26 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Вид накрутки</th>
-                                            <th>Цена</th>
-                                            <th>Заказ</th>
+                                            <th>Количество</th>
+                                            <th>Сумма заказа</th>
                                             <th>Ссылка</th>
                                             <th>Время</th>
-{#                                            <th>Количество</th>#}
+                                            {#<th>Количество</th>#}
                                             <th>Статус</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% set states = {0: "В обработке", 1: "Запущен", 2: "Завершен", 3: "Отменен"} %}
                                         {% for t in tasks %}
-                                        <tr>
-                                            <td>{{ t.id }}</td>
-                                            <td>{{ services[t.tid - 1].title }}</td>
-                                            <td>{{ t.amount }} р.</td>
-                                            <td>{{ t.quantity }}</td>
-                                            <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
-                                            <td>{{ t.date }}</td>
-{#                                            <td></td>#}
-                                            <td>{{ states[t.status] }}</td>
-                                        </tr>
+                                            <tr>
+                                                <td>{{ t.id }}</td>
+                                                <td>{{ services[t.tid - 1].title }}</td>
+                                                <td>{{ t.quantity }}</td>
+                                                <td>{{ t.amount }} р.</td>
+                                                <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
+                                                <td>{{ t.date }}</td>
+                                                {#<td></td>#}
+                                                <td>{{ states[t.status] }}</td>
+                                            </tr>
                                         {% endfor %}
                                         </tbody>
                                     </table>
@@ -145,8 +189,19 @@
     {% block scripts %}
         <script type="text/javascript">
             $(document).ready(function () {
-                var pl = $('.preloader-wrapper');
+                var pl = $('.preloader-wrapper'), hd = $('.help-data');
                 pl.hide();
+                hd.hide();
+                $('#services, #quantity').on('change keyup keypress paste keydown', function () {
+                    var serv = $('#services option:selected'), quantity = $('#quantity');
+                    hd.show();
+                    $('.service-desc').text(serv.attr('data-task-desc'));
+                    $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
+                    $('.sum-help').text('Итоговая сумма: ' + 1 * (serv.attr('data-task-price') / 1000 * quantity.val()).toFixed(2) + ' руб.');
+                    quantity.attr('min', serv.attr('data-task-min'));
+                    quantity.attr('max', serv.attr('data-task-max'));
+                });
+                {#  $('#services option:selected').attr('data-task-min');    #}
                 $('#new-task').submit(function (event) {
                     event.preventDefault();
                     var btn = $(this).find('.btn-action');
@@ -174,19 +229,8 @@
                         }
                     });
                 });
-
-                $('#services, #quantity').on('change keyup keypress paste keydown', function () {
-                    var serv = $('#services option:selected'), quantity = $('#quantity');
-                    $('.service-desc').text(serv.attr('data-task-desc'));
-                    $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
-                    $('.sum-help').text('Итоговая сумма: ' + 1 * (serv.attr('data-task-price') / 1000 * quantity.val()).toFixed(2) + ' руб.');
-                    quantity.attr('min', serv.attr('data-task-min'));
-                    quantity.attr('max', serv.attr('data-task-max'));
-                });
-                {#  $('#services option:selected').attr('data-task-min');    #}
             });
         </script>
-
     {% endblock %}
 
 {% endblock %}

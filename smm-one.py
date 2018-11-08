@@ -23,7 +23,6 @@ from flask_session import Session
 from flask_mail import Message
 from flask_mail_sendgrid import MailSendGrid
 
-
 basedir = os.path.abspath(os.path.dirname(__file__))
 # TODO: move to configparser (https://hackernoon.com/4-ways-to-manage-the-configuration-in-python-4623049e841b)
 load_dotenv(os.path.join(basedir, 'settings.cfg'))
@@ -141,9 +140,8 @@ class Invoices(db.Model):
 
 class Services(db.Model):
     __tablename__ = 'services'
-    # id type name title desc price state
     id = db.Column('id', db.Integer, unique=True, nullable=False, primary_key=True, index=True)
-    s_type = db.Column('s_type', db.String(12), nullable=False)
+    s_type = db.Column('s_type', db.String(12), default='manual')
     s_id = db.Column('s_id', db.Integer, default=0)
     name = db.Column('name', db.String(48), nullable=False)
     title = db.Column('title', db.String(48), default=name)
@@ -153,9 +151,7 @@ class Services(db.Model):
     max = db.Column('max', db.String(12), default='∞')
     state = db.Column('state', db.Integer, default=1)
 
-    def __init__(self, s_type, s_id, name):
-        self.s_type = s_type
-        self.s_id = s_id
+    def __init__(self, name):
         self.name = name
 
     def __repr__(self):
@@ -165,7 +161,6 @@ class Services(db.Model):
 
 class Tasks(db.Model):
     __tablename__ = 'tasks'
-    # id type name title desc price state
     id = db.Column('id', db.Integer, unique=True, nullable=False, primary_key=True, index=True)
     uid = db.Column('uid', db.Integer, nullable=False)
     sid = db.Column('sid', db.String(20))
@@ -194,49 +189,40 @@ class Tasks(db.Model):
 
 @app.route('/')
 def index():
-    # todo генерировать pm_id фронтом
-    return render_template('index.html', ik={
-        'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
-        'co_id': app.config['IK_ID_CHECKOUT']
-    }, services=Services.query.all(), tasks=(Tasks.query.filter_by(uid=current_user.id).all() if current_user.is_anonymous is not True else None))
+    tasks = Tasks.query.filter_by(uid=current_user.id).all() if current_user.is_anonymous is not True else None
+    return render_template('index.html', tasks=tasks)
 
 
 @app.route('/help')
 def help_page():
-    # todo генерировать pm_id фронтом
-    return render_template('help.html', ik={
-        'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
-        'co_id': app.config['IK_ID_CHECKOUT']
-    })
+    return render_template('help.html')
 
 
 @app.route('/policy')
 def policy_page():
-    # todo генерировать pm_id фронтом
-    return render_template('policy.html', ik={
-        'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
-        'co_id': app.config['IK_ID_CHECKOUT']
-    })
+    return render_template('policy.html')
+
+
+@app.route('/admin/<section>')
+@login_required
+def admin_pages(section):
+    if current_user.status == 7:
+        return render_template(section + '.html',
+                               tasks=Tasks.query.filter_by(s_type='manual'), users=Users.query.all())
 
 
 @app.route('/settings')
 @login_required
-def tasks():
+def settings_page():
     if current_user.status == 7:
-        return render_template('settings.html', services=Services.query.all(), ik={
-            'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
-            'co_id': app.config['IK_ID_CHECKOUT']
-        })
+        return render_template('settings.html')
 
 
-@app.route('/tasks')
+@app.route('/edit')
 @login_required
-def settings():
+def moderation_page():
     if current_user.status == 7:
-        return render_template('tasks.html', ik={
-            'pm_id': 'PM_' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(16)),
-            'co_id': app.config['IK_ID_CHECKOUT']
-        }, tasks=Tasks.query.filter_by(s_type='manual'), services=Services.query.all(), users=Users.query.all())
+        return render_template('edit_tasks.html', tasks=Tasks.query.filter_by(s_type='manual'), users=Users.query.all())
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -341,10 +327,13 @@ def save_settings(section):
                 Settings.query.filter_by(key=i[0]).first().value = i[1]
         elif section == 'settings-services':
             for i in request.json:
-                Services.query.filter_by(id=i['id']).first().title = i['title']
-                Services.query.filter_by(id=i['id']).first().desc = i['desc']
-                Services.query.filter_by(id=i['id']).first().price = i['price']
-                Services.query.filter_by(id=i['id']).first().state = i['state']
+                service = Services.query.filter_by(id=i['id'])
+                service = Services(str(i['title'])) if i['action'] == 'add' else service.first() if i['action'] == 'upd' else service
+                service.title = i['title']
+                service.desc = i['desc']
+                service.price = i['price']
+                service.state = i['state']
+                service.delete() if i['action'] == 'rm' else db.session.add(service)
         elif section == 'tasks':
             for i in request.json:
                 Tasks.query.filter_by(id=i['id']).first().status = i['status']
@@ -362,14 +351,16 @@ def add_task():
     print(amount)
     print(current_user.balance)
     print(amount > current_user.balance)
-    task = Tasks(current_user.id, service.s_type, request.json['tid'], request.json['link'], request.json['quantity'], amount)
+    task = Tasks(current_user.id, service.s_type, request.json['tid'], request.json['link'], request.json['quantity'],
+                 amount)
     if amount > current_user.balance:
         return jsonify({'response': 0, 'msg': 'Недостаточно средств на Вашем счету'})
     elif service.s_type == 'nakrutka':
         print('1')
         # https://smm.nakrutka.by/api/?key=6d123fc8e9cb840f64164e82dad3c27d&action=create&service=3&quantity=200&link=https://www.instagram.com/jaholper/
         url = 'https://smm.nakrutka.by/api/?key=' + Settings.query.filter_by(key='nakrutka_apikey').first().value
-        url += '&action=create' + '&service=' + str(service.s_id) + '&quantity=' + str(request.json['quantity']) + '&link=' + str(request.json['link'])
+        url += '&action=create' + '&service=' + str(service.s_id) + '&quantity=' + str(
+            request.json['quantity']) + '&link=' + str(request.json['link'])
         r = requests.get(url).json()
         if 'Error' in r:
             return jsonify({'response': 0, 'msg': r['Error']})
@@ -380,8 +371,10 @@ def add_task():
         print('2')
         # http://bigsmm.ru/api/?method=add_order&api_key=586503944eff44fdb212486c28761793&service_id=11&variation_id=54&order_link=instagram.com/test/
         # {"errorcode":"0","msg":"Успешно","order_id":"7307"}
-        url = 'http://bigsmm.ru/api/?method=add_order&api_key=' + Settings.query.filter_by(key='bigsmm_apikey').first().value
-        url += '&service_id=' + str(service.s_id) + '&quantity=' + str(request.json['quantity']) + '&order_link=' + str(request.json['link'])
+        url = 'http://bigsmm.ru/api/?method=add_order&api_key=' + Settings.query.filter_by(
+            key='bigsmm_apikey').first().value
+        url += '&service_id=' + str(service.s_id) + '&quantity=' + str(request.json['quantity']) + '&order_link=' + str(
+            request.json['link'])
         r = requests.get(url).json()
         if 'order_id' in r:
             task.sid = r['order_id']
@@ -410,13 +403,13 @@ def init_settings():
     app.config['IK_KEY'] = Settings.query.filter_by(key='ik_key').first().value
     app.config['NAKRUTKA_APIKEY'] = Settings.query.filter_by(key='nakrutka_apikey').first().value
     app.config['BIGSMM_APIKEY'] = Settings.query.filter_by(key='bigsmm_apikey').first().value
+    app.config['SERVICES'] = Services.query.all()
     # app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
     # mail.init_app(app)
 
 
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or 1 == 1:
     init_settings()
-
 
 if __name__ == '__main__':
     app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23023)),
