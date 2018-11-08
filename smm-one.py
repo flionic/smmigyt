@@ -150,13 +150,14 @@ class Services(db.Model):
     min = db.Column('min', db.String(12), default='0')
     max = db.Column('max', db.String(12), default='∞')
     state = db.Column('state', db.Integer, default=1)
+    categ = db.Column('categ', db.Integer, default=0)
 
     def __init__(self, name):
         self.name = name
 
     def __repr__(self):
-        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s', id='%s')>" % (
-            self.title, self.desc, self.price, self.state, self.s_type, self.s_id, self.id)
+        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s', id='%s', categ='%s')>" % (
+            self.title, self.desc, self.price, self.state, self.s_type, self.s_id, self.id, self.categ)
 
 
 class Tasks(db.Model):
@@ -207,8 +208,7 @@ def policy_page():
 @login_required
 def admin_pages(section):
     if current_user.status == 7:
-        return render_template(section + '.html',
-                               tasks=Tasks.query.filter_by(s_type='manual'), users=Users.query.all())
+        return render_template(section + '.html', tasks=Tasks.query.filter_by(s_type='manual'), users=Users.query.all())
 
 
 @app.route('/settings')
@@ -333,6 +333,7 @@ def save_settings(section):
                 service.desc = i['desc']
                 service.price = i['price']
                 service.state = i['state']
+                service.categ = i['categ']
                 service.delete() if i['action'] == 'rm' else db.session.add(service)
         elif section == 'tasks':
             for i in request.json:

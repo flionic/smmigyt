@@ -3,6 +3,7 @@
 {% set app_name = config['APP_NAME'] %}
 {% set services = config['SERVICES'] %}
 {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
+{% set categories = {0: "API", 1: "Одноклассники", 2: "Instagram", 3: "Facebook", 4: "Telegram", 5: "YouTube", 6: "Twitter"} %}
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
@@ -41,11 +42,7 @@
 </head>
 {%- macro section(classes='row', id='') -%}
     <div class="section" id="{{ id }}">
-        <div class="container">
-            <div class="{{ classes }}">
-                {{ caller() }}
-            </div>
-        </div>
+        <div class="container"><div class="{{ classes }}">{{ caller() }}</div></div>
     </div>
 {%- endmacro -%}
 {%- macro navmenu() -%}
@@ -68,8 +65,7 @@
 <header>
     <nav class="purple darken-4" role="navigation">
         <div class="nav-wrapper container">
-            <a id="logo-container" href="/" class="brand-logo">
-                <i class="fab fa-audible hide-on-small-only"></i>
+            <a id="logo-container" href="/" class="brand-logo"><i class="fab fa-audible hide-on-small-only"></i>
                 {{- app_name -}}
             </a>
             <ul class="right hide-on-med-and-down">
@@ -118,7 +114,14 @@
         </div>
         <div class="modal modal-confirm modal-deposit">
             <div class="modal-content center">
-                <h5>Пополнение баланса</h5>
+                <h5 style="margin: 10px 0 5px 0;">Пополнение баланса</h5>
+                <a href="https://www.interkassa.com" target="_blank">
+                    <img src="/static/img/b-logo-gray.png" alt="www.interkassa.com" border="0">
+                </a>
+                <br>
+                <a href="https://webmoney.ru/" target="_blank">
+                    <img src="/static/img/88x31_wm_black.png" alt="webmoney.ru" border="0">
+                </a>
             </div>
             <div class="modal-footer">
                 <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">
@@ -128,21 +131,16 @@
                     <input type="hidden" name="ik_cli" value="{{ current_user.email }}"/>
                     <input type="hidden" name="ik_cur" value="RUB"/>
                     <input type="hidden" name="ik_desc" value="Пополнение баланса {{ current_user.email }}"/>
-                    <div class="row">
-                        <div class="col s12 center">
-                            <div class="input-field inline">
-                                <input name="ik_am" id="ik_am" class="validate" type="number" min="1" max="30000"
-                                       required>
-                                <label for="ik_am">Сумма</label>
-                            </div>
-                            <div class="input-field inline">
-                                <span>Руб.</span>
-                            </div>
-                            <div class="input-field inline">
-                                <button class="btn waves-effect waves-light green" type="submit" name="submit">К
-                                    оплате<i class="far fa-credit-card right"></i></button>
-                                <a href="#!" class="btn modal-close waves-effect waves-light red">Отмена</a>
-                            </div>
+                    <div class="col s12 center">
+                        <div class="input-field inline">
+                            <input name="ik_am" id="ik_am" class="validate" type="number" min="1" max="30000" required>
+                            <label for="ik_am">Сумма</label>
+                        </div>
+                        <div class="input-field inline"><span>руб.</span></div>
+                        <div class="input-field inline">
+                            <a href="#!" class="btn modal-close waves-effect waves-light red">Отмена</a>
+                            <button class="btn waves-effect waves-light green" type="submit" name="submit">
+                                К оплате<i class="far fa-credit-card right"></i></button>
                         </div>
                     </div>
                 </form>
@@ -172,6 +170,14 @@
                 <h5 class="white-text"><i class="far fa-credit-card"></i>Оплата</h5>
                 <ul>
                     <li><a class="white-text btn-deposit">Пополнить баланс</a></li>
+                    <!-- begin WebMoney Transfer : attestation label -->
+                    <li style="padding-top: 5px;">
+                        <a class="white-text" href="https://passport.webmoney.ru/asp/certview.asp?wmid=136250161007" target="_blank">
+                            <img src="/static/img/v_blue_on_white_ru.png" alt="Здесь находится аттестат нашего WM идентификатора 136250161007" border="0"/>
+                            <br/><span style="font-size: 0.7em;">Проверить аттестат</span>
+                        </a>
+                    </li>
+                    <!-- end WebMoney Transfer : attestation label -->
                 </ul>
             </div>
         </div>

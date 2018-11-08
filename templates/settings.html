@@ -93,10 +93,17 @@
                                     <a class="btn btn-rm waves-effect waves-light red">Удалить</a>
                                 </div>
                             {% endif %}
-                            <div class="input-field col s12">
-                                <textarea class="service-desc materialize-textarea"
-                                          data-length="1000">{{ s.desc }}</textarea>
+                            <div class="input-field col s9">
+                                <textarea class="service-desc materialize-textarea" data-length="1000">{{ s.desc }}</textarea>
                                 <label>Описание</label>
+                            </div>
+                            <div class="input-field col s3">
+                                <select class="category">
+                                    {%- for i in categories -%}
+                                        <option class="service-categ" value="{{ i }}" {{ 'selected' if i == s.categ else '' }}>{{ categories[i] }}</option>
+                                    {%- endfor -%}
+                                </select>
+                                <label>Категория</label>
                             </div>
                         </div>
                     {%- endfor -%}
@@ -140,7 +147,8 @@
                             "desc": $(this).find('.service-desc').val(),
                             "price": $(this).find('.service-price').val(),
                             "state": $(this).find('.service-state').is(':checkbox:checked') ? '1' : '0',
-                            "action": $(this).find('.service-action').val()
+                            "action": $(this).find('.service-action').val(),
+                            "categ": $(this).find('.service-categ:checked').val()
                         });
                     });
                 }

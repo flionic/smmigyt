@@ -342,14 +342,14 @@ h5 {
 
 @media only screen and (min-width: 992px) {
     .modal-confirm {
-        max-height: 25%;
+        max-height: 40%;
         width: 20%;
     }
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1600px) {
     .modal-confirm {
-        max-height: 25%;
+        max-height: 35%;
         width: 35%;
     }
 }
