@@ -1,7 +1,6 @@
 {% extends 'layout/main.html' %}
 {% block main %}
     {% call section() %}
-
         <form id="tasks" class="col s12">
             <div class="card">
                 <div class="card-content">
@@ -23,11 +22,15 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for t in tasks %}
+                                    {%- for t in tasks -%}
                                         <tr>
                                             <td>{{ t.id }}</td>
                                             <td>{{ users[t.uid - 1].email }}</td>
-                                            <td>{{ services[t.tid - 1].title }}</td>
+                                            <td>
+                                                {%- for s in services -%}
+                                                    {%- if s.id == t.tid -%}{{ s.title }}{%- endif -%}
+                                                {%- endfor -%}
+                                            </td>
                                             <td>{{ t.quantity }}</td>
                                             <td>{{ t.amount }} р.</td>
                                             <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
@@ -35,14 +38,14 @@
                                             <td>
                                                 <label>
                                                     <select class="status" data-tid="{{ t.id }}">
-                                                        {% for s in states %}
+                                                        {%- for s in states -%}
                                                             <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>
-                                                        {% endfor %}
+                                                        {%- endfor -%}
                                                     </select>
                                                 </label>
                                             </td>
                                         </tr>
-                                    {% endfor %}
+                                    {%- endfor -%}
                                     </tbody>
                                 </table>
                             </form>
@@ -62,7 +65,6 @@
                 </div>
             </div>
         </form>
-
     {% endcall %}
 {% endblock %}
 {% block scripts %}

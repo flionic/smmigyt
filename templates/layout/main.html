@@ -37,7 +37,7 @@
         gtag('js', new Date());
         gtag('config', 'UA-42401203-20');
     </script>
-    {% block head %}{% endblock %}
+    {%- block head -%}{%- endblock -%}
 </head>
 {%- macro section(classes='row', id='') -%}
     <div class="section" id="{{ id }}">
@@ -47,26 +47,23 @@
             </div>
         </div>
     </div>
-{% endmacro %}
+{%- endmacro -%}
 {%- macro navmenu() -%}
-    {%- if current_user and current_user.is_authenticated %}
-        {% if current_user.status == 7 %}
+    {%- if current_user and current_user.is_authenticated -%}
+        {%- if current_user.status == 7 -%}
             <li><a href="/edit"><i class="fas fa-pen"></i>Модерация</a></li>
             <li><a href="/settings"><i class="fas fa-wrench"></i>Настройки</a></li>
-        {% endif %}
+        {%- endif -%}
         <li>
             <a class="btn-deposit" href="#!">
                 <i class="fas fa-wallet"></i>Баланс: {{ current_user.balance|round(2) }} ₽
             </a>
         </li>
         {{ caller() }}
-    {% else -%}
+    {%- else -%}
         <li><a class="btn-login"><i class="fas fa-sign-in-alt"></i>Вход</a></li>
-    {% endif %}
-{% endmacro %}
-{% macro js() %}
-    <script type="text/javascript">{{ caller() }}</script>
-{% endmacro %}
+    {%- endif -%}
+{%- endmacro -%}
 <body class="purple darken-3">
 <header>
     <nav class="purple darken-4" role="navigation">
@@ -76,7 +73,7 @@
                 {{- app_name -}}
             </a>
             <ul class="right hide-on-med-and-down">
-                {% call navmenu() %}
+                {%- call navmenu() -%}
                     <li>
                         <a class="dropdown-trigger" href="#!" data-target="actions_dd">
                             <i class="fas fa-user"></i>{{ current_user.email }}<i class="fas fa-ellipsis-v right"></i>
@@ -86,75 +83,20 @@
                         <li class="divider"></li>
                         <li><a class="red-text right-align" href="/logout">Выйти</a></li>
                     </ul>
-                {% endcall %}
+                {%- endcall -%}
             </ul>
             <ul id="nav-mobile" class="sidenav">
-                {% call navmenu() %}
+                {%- call navmenu() -%}
                     <li><a href="/logout"><i class="fas fa-sign-in-alt"></i>Выйти: {{ current_user.email }}</a></li>
-                {% endcall %}
+                {%- endcall -%}
             </ul>
             <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="fas fa-bars"></i></a>
         </div>
     </nav>
 </header>
 <main>
-    {% block main %}
-    {% endblock %}
-    {% call section() %}
-
-        <div class="modal modal-confirm modal-login">
-            <div class="modal-footer">
-                <form id="auth">
-                    <div class="input-field col m6 s12">
-                        <input id="email" type="text" required>
-                        <label for="email" class="active">Email</label>
-                    </div>
-                    <div class="input-field col m6 s12">
-                        <input id="pass" type="password" required>
-                        <label for="pass" class="active">Пароль</label>
-                    </div>
-                </form>
-                <div class="input-field col s12">
-                    <a class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться</a>
-                    <a class="btn waves-effect waves-light green white-text login">Войти</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal modal-confirm modal-deposit">
-            <div class="modal-content center">
-                <h5>Пополнение баланса</h5>
-            </div>
-            <div class="modal-footer">
-                <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">
-                    <input type="hidden" name="ik_x_userid" value="{{ current_user.id }}"/>
-                    <input type="hidden" name="ik_co_id" value="{{ config['IK_ID_CHECKOUT'] }}"/>
-                    <input type="hidden" name="ik_pm_no" value=""/>
-                    <input type="hidden" name="ik_cli" value="{{ current_user.email }}"/>
-                    <input type="hidden" name="ik_cur" value="RUB"/>
-                    <input type="hidden" name="ik_desc" value="Пополнение баланса {{ current_user.email }}"/>
-                    <div class="row">
-                        <div class="col s12 center">
-                            <div class="input-field inline">
-                                <input name="ik_am" id="ik_am" class="validate" type="number" min="1" max="30000"
-                                       required>
-                                <label for="ik_am">Сумма</label>
-                            </div>
-                            <div class="input-field inline">
-                                <span>Руб.</span>
-                            </div>
-                            <div class="input-field inline">
-                                <button class="btn waves-effect waves-light green" type="submit" name="submit">К
-                                    оплате<i class="far fa-credit-card right"></i></button>
-                                <a href="#!" class="btn modal-close waves-effect waves-light red">Отмена</a>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-    {% endcall %}
+    {%- block main -%}
+    {%- endblock -%}
 </main>
 <footer class="page-footer purple darken-2">
     <div class="container">
@@ -189,8 +131,10 @@
                     <span>Copyright © </span><a class="pink-text text-lighten-3" href="/">{{ app_name }}, 2018</a>
                 </div>
                 <div class="col m6 right-align">
-                    <a href="https://flionic.me/"><span class="pink-text text-lighten-3"><i class="fas fa-hammer"></i>Developed by </span><span
-                            class="white-text">flionic.me</span></a>
+                    <a href="https://flionic.me/">
+                        <span class="pink-text text-lighten-3"><i class="fas fa-hammer"></i>Developed by </span>
+                        <span class="white-text">flionic.me</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -201,19 +145,28 @@
 <script defer src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
 <script type="text/javascript">
     /*
-        (function () {
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function () {
-                    navigator.serviceWorker.register('/app.js').then(function (registration) {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, function (err) {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
+    (function () {
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/app.js').then(function (registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function (err) {
+                    console.log('ServiceWorker registration failed: ', err);
                 });
-            }
-        })();
-    */
+            });
+        }
+    })();
+*/
+    function makeid() {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < 12; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        return text;
+    }
+
     $(document).ready(function () {
+        var modals = M.Modal.init($('.modal'), {'endingTop': '30%'});
         $('.sidenav').sidenav();
         $('.tabs').tabs();
         $('.collapsible').collapsible();
@@ -234,19 +187,7 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-    });
-</script>
-<script type="text/javascript">
-    function makeid() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (var i = 0; i < 12; i++)
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        return text;
-    }
 
-    $(document).ready(function () {
-        var modals = M.Modal.init($('.modal'), {'endingTop': '30%'});
         $('.btn-login').click(function () {
             modals[0].open();
         });
@@ -269,5 +210,57 @@
     });
 </script>
 {% block scripts %}{% endblock %}
+{% call section(id='modals') %}
+    <div class="modal modal-confirm modal-login">
+        <div class="modal-footer">
+            <form id="auth">
+                <div class="input-field col m6 s12">
+                    <input id="email" type="text" required>
+                    <label for="email" class="active">Email</label>
+                </div>
+                <div class="input-field col m6 s12">
+                    <input id="pass" type="password" required>
+                    <label for="pass" class="active">Пароль</label>
+                </div>
+            </form>
+            <div class="input-field col s12">
+                <a class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться</a>
+                <a class="btn waves-effect waves-light green white-text login">Войти</a>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-confirm modal-deposit">
+        <div class="modal-content center">
+            <h5>Пополнение баланса</h5>
+        </div>
+        <div class="modal-footer">
+            <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">
+                <input type="hidden" name="ik_x_userid" value="{{ current_user.id }}"/>
+                <input type="hidden" name="ik_co_id" value="{{ config['IK_ID_CHECKOUT'] }}"/>
+                <input type="hidden" name="ik_pm_no" value=""/>
+                <input type="hidden" name="ik_cli" value="{{ current_user.email }}"/>
+                <input type="hidden" name="ik_cur" value="RUB"/>
+                <input type="hidden" name="ik_desc" value="Пополнение баланса {{ current_user.email }}"/>
+                <div class="row">
+                    <div class="col s12 center">
+                        <div class="input-field inline">
+                            <input name="ik_am" id="ik_am" class="validate" type="number" min="1" max="30000"
+                                   required>
+                            <label for="ik_am">Сумма</label>
+                        </div>
+                        <div class="input-field inline">
+                            <span>Руб.</span>
+                        </div>
+                        <div class="input-field inline">
+                            <button class="btn waves-effect waves-light green" type="submit" name="submit">К
+                                оплате<i class="far fa-credit-card right"></i></button>
+                            <a href="#!" class="btn modal-close waves-effect waves-light red">Отмена</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endcall %}
 </body>
 </html>

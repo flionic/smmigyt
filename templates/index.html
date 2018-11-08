@@ -1,6 +1,5 @@
 {% extends 'layout/main.html' %}
 {% block main %}
-
     <div class="section" id="index-banner">
         <div class="row center">
             <h5 class="white-text">Безопасное продвижение в соц. сетях</h5>
@@ -105,9 +104,7 @@
                                 </div>
                                 <div class="input-field col m2 s12 center">
                                     <button class="btn btn-action waves-effect waves-light green task-action"
-                                            type="submit"
-                                            name="submit">
-                                        Заказать
+                                            type="submit" name="submit"> Заказать
                                     </button>
                                     <div class="preloader-wrapper">
                                         <div class="spinner-layer spinner-blue-only">
@@ -134,7 +131,8 @@
         {% else %}
             <div class="row center grey-text">
                 <h6>Требуется авторизация</h6>
-                <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i> Вход/Регистрация</a>
+                <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i>
+                    Вход/Регистрация</a>
             </div>
         {% endif %}
     {% endcall %}
@@ -146,7 +144,7 @@
                     <div class="card-content">
                         <div class="row no-mar-bot">
                             <div class="input-field col m10- s12 center">
-                                {% if tasks %}
+                                {%- if tasks -%}
                                     <table>
                                         <thead>
                                         <tr>
@@ -160,22 +158,26 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for t in tasks %}
+                                        {%- for t in tasks -%}
                                             <tr>
                                                 <td>{{ t.id }}</td>
-                                                <td>{{ services[t.tid - 1].title }}</td>
+                                                <td>
+                                                    {%- for s in services -%}
+                                                        {%- if s.id == t.tid -%}{{ s.title }}{%- endif -%}
+                                                    {%- endfor -%}
+                                                </td>
                                                 <td>{{ t.quantity }}</td>
                                                 <td>{{ t.amount }} р.</td>
                                                 <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
                                                 <td>{{ t.date }}</td>
                                                 <td>{{ states[t.status] }}</td>
                                             </tr>
-                                        {% endfor %}
+                                        {%- endfor -%}
                                         </tbody>
                                     </table>
-                                {% else %}
+                                {%- else -%}
                                     <i>История заказов пуста</i>
-                                {% endif %}
+                                {%- endif -%}
                             </div>
                         </div>
                     </div>
@@ -183,51 +185,49 @@
             </div>
         {% endif %}
     {% endcall %}
-
-    {% block scripts %}
-        <script type="text/javascript">
-            $(document).ready(function () {
-                var pl = $('.preloader-wrapper'), hd = $('.help-data');
-                pl.hide();
-                hd.hide();
-                $('#services, #quantity').on('change keyup keypress paste keydown', function () {
-                    var serv = $('#services option:selected'), quantity = $('#quantity');
-                    hd.show();
-                    $('.service-desc').text(serv.attr('data-task-desc'));
-                    $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
-                    $('.sum-help').text('Итоговая сумма: ' + 1 * (serv.attr('data-task-price') / 1000 * quantity.val()).toFixed(2) + ' руб.');
-                    quantity.attr('min', serv.attr('data-task-min'));
-                    quantity.attr('max', serv.attr('data-task-max'));
-                });
-                $('#new-task').submit(function (event) {
-                    event.preventDefault();
-                    var btn = $(this).find('.btn-action');
-                    pl.addClass('active').show();
-                    btn.hide();
-                    params = {
-                        'tid': $('#services').val(),
-                        'link': $('#link').val(),
-                        'quantity': $('#quantity').val()
-                    };
-                    $.ajax({
-                        url: '/ajax/' + $(this).attr('id'),
-                        type: "POST",
-                        data: JSON.stringify(params),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            M.toast({
-                                html: ({0: data['msg'], 1: 'Добавлено'})[data['response']],
-                                displayLength: 5 * 1000
-                            });
-                            btn.fadeIn('fast');
-                            pl.hide().removeClass('active');
-                            if (data['response'] === 1) location.reload();
-                        }
-                    });
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var pl = $('.preloader-wrapper'), hd = $('.help-data');
+            pl.hide();
+            hd.hide();
+            $('#services, #quantity').on('change keyup keypress paste keydown', function () {
+                var serv = $('#services option:selected'), quantity = $('#quantity');
+                hd.show();
+                $('.service-desc').text(serv.attr('data-task-desc'));
+                $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
+                $('.sum-help').text('Итоговая сумма: ' + 1 * (serv.attr('data-task-price') / 1000 * quantity.val()).toFixed(2) + ' руб.');
+                quantity.attr('min', serv.attr('data-task-min'));
+                quantity.attr('max', serv.attr('data-task-max'));
+            });
+            $('#new-task').submit(function (event) {
+                event.preventDefault();
+                var btn = $(this).find('.btn-action');
+                pl.addClass('active').show();
+                btn.hide();
+                params = {
+                    'tid': $('#services').val(),
+                    'link': $('#link').val(),
+                    'quantity': $('#quantity').val()
+                };
+                $.ajax({
+                    url: '/ajax/' + $(this).attr('id'),
+                    type: "POST",
+                    data: JSON.stringify(params),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({
+                            html: ({0: data['msg'], 1: 'Добавлено'})[data['response']],
+                            displayLength: 5 * 1000
+                        });
+                        btn.fadeIn('fast');
+                        pl.hide().removeClass('active');
+                        if (data['response'] === 1) location.reload();
+                    }
                 });
             });
-        </script>
-    {% endblock %}
-
+        });
+    </script>
 {% endblock %}

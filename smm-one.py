@@ -155,8 +155,8 @@ class Services(db.Model):
         self.name = name
 
     def __repr__(self):
-        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s')>" % (
-            self.title, self.desc, self.price, self.state, self.s_type, self.s_id)
+        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s', id='%s')>" % (
+            self.title, self.desc, self.price, self.state, self.s_type, self.s_id, self.id)
 
 
 class Tasks(db.Model):

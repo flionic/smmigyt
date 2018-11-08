@@ -1,7 +1,6 @@
 {% extends 'layout/main.html' %}
 {% block main %}
     {% call section() %}
-
         <form id="settings-main" data-target="data-cfg-param" class="col s12 m10 offset-m1">
             <div class="card">
                 <div class="card-content">
@@ -67,7 +66,7 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Услуги</span>
-                    {% for s in services %}
+                    {%- for s in services -%}
                         <div class="row no-mar-bot service" data-service-id="{{ s.id }}">
                             <div class="input-field col s12" style="margin: 0">
                                 <span class="service-name">{{ s.s_type }} - {{ s.name }}</span>
@@ -107,7 +106,7 @@
                                 <label for="service-desc-{{ s.id }}">Описание</label>
                             </div>
                         </div>
-                    {% endfor %}
+                    {%- endfor -%}
                 </div>
                 <div class="card-action">
                     <div class="row">
@@ -123,7 +122,6 @@
                 </div>
             </div>
         </form>
-
     {% endcall %}
 {% endblock %}
 {% block scripts %}

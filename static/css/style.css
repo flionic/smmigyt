@@ -422,6 +422,7 @@ tbody tr:nth-child(odd), .card .card-content .service:nth-child(2n) {
     .container {
         width: 95%;
     }
+
     tr {
         line-height: 1;
         font-size: 14px;
@@ -434,6 +435,7 @@ tbody tr:nth-child(odd), .card .card-content .service:nth-child(2n) {
     #tasks td {
         padding: 5px;
     }
+
     footer i, nav i {
         font-size: 80%;
         margin-right: 10px;
@@ -445,6 +447,7 @@ tbody tr:nth-child(odd), .card .card-content .service:nth-child(2n) {
         font-size: 13.5px;
         line-height: 1.2;
     }
+
     .container {
         width: 90%;
     }
