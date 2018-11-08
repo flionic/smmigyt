@@ -423,7 +423,8 @@ tbody tr:nth-child(odd), .card .card-content .service:nth-child(2n) {
         width: 95%;
     }
     tr {
-        line-height: 0.5;
+        line-height: 1;
+        font-size: 14px;
     }
 
     td {

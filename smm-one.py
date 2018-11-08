@@ -170,7 +170,7 @@ class Tasks(db.Model):
     quantity = db.Column('quantity', db.String(48))
     amount = db.Column('amount', db.Float)
     status = db.Column('status', db.Integer, default=0)
-    # 0 - в обработке / 1 - запущен / 2 - завершен / 3 - отменен
+    # 0 - Обработка / 1 - В работе / 2 - Выполнен / 3 - Отменен
     date = db.Column('date', db.DateTime)
 
     def __init__(self, uid, s_type, tid, link='', quantity='', amount=''):

@@ -33,13 +33,13 @@
                                             <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
                                             <td>{{ t.date }}</td>
                                             <td>
-                                                <select class="status" data-tid="{{ t.id }}">
-                                                    <option value="{{ t.status }}" selected>{{ states[t.status] }}</option>
-                                                    <option value="0">В обработке</option>
-                                                    <option value="1">Запущен</option>
-                                                    <option value="2">Завершен</option>
-                                                    <option value="3">Отменен</option>
-                                                </select>
+                                                <label>
+                                                    <select class="status" data-tid="{{ t.id }}">
+                                                        {% for s in states %}
+                                                            <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </label>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -75,7 +75,7 @@
                 var sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = [];
                 sending.addClass('active').show();
                 btn.fadeOut('fast');
-                $('.status').each(function(i,elem) {
+                $('.status').each(function (i, elem) {
                     params.push({
                         "id": $(this).attr('data-tid'),
                         "status": $(this).val()
