@@ -170,6 +170,7 @@
                 var service = $(".service:last-child").clone().appendTo("#settings-services .card .card-content");
                 service.show();
                 service.find('.service-action').val('add');
+                service.find('.btn-rm').remove();
                 service.find('.service-name').text('Новая услуга');
                 service.find('.service-title, .service-name, .service-desc, .service-price').val('');
                 service.find('.service-state').attr('checked', '1');

@@ -97,6 +97,58 @@
 <main>
     {%- block main -%}
     {%- endblock -%}
+    {% call section(id='modals') %}
+        <div class="modal modal-confirm modal-login">
+            <div class="modal-footer">
+                <form id="auth">
+                    <div class="input-field col m6 s12">
+                        <input id="email" type="text" required>
+                        <label for="email" class="active">Email</label>
+                    </div>
+                    <div class="input-field col m6 s12">
+                        <input id="pass" type="password" required>
+                        <label for="pass" class="active">Пароль</label>
+                    </div>
+                </form>
+                <div class="input-field col s12">
+                    <a class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться</a>
+                    <a class="btn waves-effect waves-light green white-text login">Войти</a>
+                </div>
+            </div>
+        </div>
+        <div class="modal modal-confirm modal-deposit">
+            <div class="modal-content center">
+                <h5>Пополнение баланса</h5>
+            </div>
+            <div class="modal-footer">
+                <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">
+                    <input type="hidden" name="ik_x_userid" value="{{ current_user.id }}"/>
+                    <input type="hidden" name="ik_co_id" value="{{ config['IK_ID_CHECKOUT'] }}"/>
+                    <input type="hidden" name="ik_pm_no" value=""/>
+                    <input type="hidden" name="ik_cli" value="{{ current_user.email }}"/>
+                    <input type="hidden" name="ik_cur" value="RUB"/>
+                    <input type="hidden" name="ik_desc" value="Пополнение баланса {{ current_user.email }}"/>
+                    <div class="row">
+                        <div class="col s12 center">
+                            <div class="input-field inline">
+                                <input name="ik_am" id="ik_am" class="validate" type="number" min="1" max="30000"
+                                       required>
+                                <label for="ik_am">Сумма</label>
+                            </div>
+                            <div class="input-field inline">
+                                <span>Руб.</span>
+                            </div>
+                            <div class="input-field inline">
+                                <button class="btn waves-effect waves-light green" type="submit" name="submit">К
+                                    оплате<i class="far fa-credit-card right"></i></button>
+                                <a href="#!" class="btn modal-close waves-effect waves-light red">Отмена</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endcall %}
 </main>
 <footer class="page-footer purple darken-2">
     <div class="container">
@@ -164,7 +216,20 @@
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         return text;
     }
-
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'error' %}
+                    M.toast({
+                        html: '<span class="red-text">Ошибка:&nbsp;</span><span>{{ message }}</span>',
+                        displayLength: 10 * 1000
+                    });
+                {% else %}
+                    M.toast({html: '{{ message }}'});
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     $(document).ready(function () {
         var modals = M.Modal.init($('.modal'), {'endingTop': '30%'});
         $('.sidenav').sidenav();
@@ -172,21 +237,6 @@
         $('.collapsible').collapsible();
         $(".dropdown-trigger").dropdown();
         $('select').formSelect();
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    {% if category == 'error' %}
-                        M.toast({
-                            html: '<span class="red-text">Ошибка:&nbsp;</span><span>{{ message }}</span>',
-                            displayLength: 10 * 1000
-                        });
-                    {% else %}
-                        M.toast({html: '{{ message }}'});
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
 
         $('.btn-login').click(function () {
             modals[0].open();
@@ -210,57 +260,5 @@
     });
 </script>
 {% block scripts %}{% endblock %}
-{% call section(id='modals') %}
-    <div class="modal modal-confirm modal-login">
-        <div class="modal-footer">
-            <form id="auth">
-                <div class="input-field col m6 s12">
-                    <input id="email" type="text" required>
-                    <label for="email" class="active">Email</label>
-                </div>
-                <div class="input-field col m6 s12">
-                    <input id="pass" type="password" required>
-                    <label for="pass" class="active">Пароль</label>
-                </div>
-            </form>
-            <div class="input-field col s12">
-                <a class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться</a>
-                <a class="btn waves-effect waves-light green white-text login">Войти</a>
-            </div>
-        </div>
-    </div>
-    <div class="modal modal-confirm modal-deposit">
-        <div class="modal-content center">
-            <h5>Пополнение баланса</h5>
-        </div>
-        <div class="modal-footer">
-            <form id="payment" name="payment" method="post" action="https://sci.interkassa.com/" enctype="utf-8">
-                <input type="hidden" name="ik_x_userid" value="{{ current_user.id }}"/>
-                <input type="hidden" name="ik_co_id" value="{{ config['IK_ID_CHECKOUT'] }}"/>
-                <input type="hidden" name="ik_pm_no" value=""/>
-                <input type="hidden" name="ik_cli" value="{{ current_user.email }}"/>
-                <input type="hidden" name="ik_cur" value="RUB"/>
-                <input type="hidden" name="ik_desc" value="Пополнение баланса {{ current_user.email }}"/>
-                <div class="row">
-                    <div class="col s12 center">
-                        <div class="input-field inline">
-                            <input name="ik_am" id="ik_am" class="validate" type="number" min="1" max="30000"
-                                   required>
-                            <label for="ik_am">Сумма</label>
-                        </div>
-                        <div class="input-field inline">
-                            <span>Руб.</span>
-                        </div>
-                        <div class="input-field inline">
-                            <button class="btn waves-effect waves-light green" type="submit" name="submit">К
-                                оплате<i class="far fa-credit-card right"></i></button>
-                            <a href="#!" class="btn modal-close waves-effect waves-light red">Отмена</a>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-{% endcall %}
 </body>
 </html>
