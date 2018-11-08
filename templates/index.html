@@ -74,19 +74,32 @@
                         <div class="card-content">
                             <div class="row no-mar-bot">
                                 <div class="input-field col m10- s12">
-                                    <select id="services" data-task-param="service">
-                                        <option value="" disabled selected>Мне нужно...</option>
-                                        {% for s in services %}
-                                            {% if s.state == 1 %}
-                                                <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
-                                                        data-task-price="{{ s.price }}"
-                                                        data-task-desc="{{ s.desc }}"
-                                                        value="{{ s.id }}">{{ s.title }} - {{ s.price }} р.
-                                                </option>
-                                            {% endif %}
+                                    <select class="categ" data-task-param="categ">
+                                        <option value="" disabled selected>Выбрать..</option>
+                                        {% for i in categories %}
+                                            <option value="{{ i }}">{{ categories[i] }}</option>
                                         {% endfor %}
                                     </select>
-                                    <label for="services">Задание</label>
+                                    <label>Социальная сеть</label>
+                                </div>
+                            </div>
+                            <div class="row no-mar-bot">
+                                <div class="input-field srv-sel col m10- s12">
+                                    {% for i in categories %}
+                                        <select class="services" data-categ="{{ i }}" data-task-param="service">
+                                            <option value="" disabled selected>Мне нужно...</option>
+                                            {% for s in services %}
+                                                {% if s.state == 1 and s.categ == i %}
+                                                    <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
+                                                            data-task-price="{{ s.price }}"
+                                                            data-task-desc="{{ s.desc }}"
+                                                            value="{{ s.id }}">{{ s.title }} - {{ s.price }} р.
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    {% endfor %}
+                                    <label>Задание</label>
                                     <span class="helper-text">Указана цена за 1000</span>
                                 </div>
                             </div>
@@ -189,12 +202,15 @@
 {% block scripts %}
     <script type="text/javascript">
         $(document).ready(function () {
-            var pl = $('.preloader-wrapper'), hd = $('.help-data');
+            var pl = $('.preloader-wrapper'), hd = $('.help-data'), ss = $('.srv-sel .select-wrapper');
             pl.hide();
             hd.hide();
-            $('#services, #quantity').on('change keyup keypress paste keydown', function () {
-                var serv = $('#services option:selected'), quantity = $('#quantity');
+            ss.hide();
+            $('.categ, .services, #quantity').on('change keyup keypress paste keydown', function () {
+                var serv = $('.services:eq(' + $('.categ').val() + ') option:selected'), quantity = $('#quantity');
                 hd.show();
+                ss.hide();
+                $('.srv-sel .select-wrapper:eq(' + $('.categ').val() + ')').show();
                 $('.service-desc').text(serv.attr('data-task-desc'));
                 $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
                 $('.sum-help').text('Итоговая сумма: ' + 1 * (serv.attr('data-task-price') / 1000 * quantity.val()).toFixed(2) + ' руб.');
@@ -207,7 +223,7 @@
                 pl.addClass('active').show();
                 btn.hide();
                 params = {
-                    'tid': $('#services').val(),
+                    'tid': $('.services').val(),
                     'link': $('#link').val(),
                     'quantity': $('#quantity').val()
                 };
@@ -218,10 +234,7 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {
-                        M.toast({
-                            html: ({0: data['msg'], 1: 'Добавлено'})[data['response']],
-                            displayLength: 5 * 1000
-                        });
+                        M.toast({ html: ({0: data['msg'], 1: 'Добавлено'})[data['response']], displayLength: 5 * 1000 });
                         btn.fadeIn('fast');
                         pl.hide().removeClass('active');
                         if (data['response'] === 1) location.reload();

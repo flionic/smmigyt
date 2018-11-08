@@ -3,7 +3,7 @@
 {% set app_name = config['APP_NAME'] %}
 {% set services = config['SERVICES'] %}
 {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
-{% set categories = {0: "API", 1: "Одноклассники", 2: "Instagram", 3: "Facebook", 4: "Telegram", 5: "YouTube", 6: "Twitter"} %}
+{% set categories = {0: "Общее", 1: "Одноклассники", 2: "Instagram", 3: "Facebook", 4: "Telegram", 5: "YouTube", 6: "Twitter"} %}
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
@@ -49,6 +49,7 @@
     {%- if current_user and current_user.is_authenticated -%}
         {%- if current_user.status == 7 -%}
             <li><a href="/edit"><i class="fas fa-pen"></i>Модерация</a></li>
+            <li><a href="/users"><i class="fas fa-user-edit"></i>Пользователи</a></li>
             <li><a href="/settings"><i class="fas fa-wrench"></i>Настройки</a></li>
         {%- endif -%}
         <li>

@@ -225,6 +225,13 @@ def moderation_page():
         return render_template('edit_tasks.html', tasks=Tasks.query.filter_by(s_type='manual'), users=Users.query.all())
 
 
+@app.route('/users')
+@login_required
+def users_page():
+    if current_user.status == 7:
+        return render_template('users.html', users=Users.query.all())
+
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET' or current_user.is_authenticated:
@@ -338,6 +345,11 @@ def save_settings(section):
         elif section == 'tasks':
             for i in request.json:
                 Tasks.query.filter_by(id=i['id']).first().status = i['status']
+        elif section == 'settings-users':
+            for i in request.json:
+                user = Users.query.filter_by(id=i['id']).first()
+                user.email = i['email']
+                user.balance = i['balance']
         db.session.commit()
         init_settings()
         return jsonify({'response': 1})

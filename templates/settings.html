@@ -98,12 +98,12 @@
                                 <label>Описание</label>
                             </div>
                             <div class="input-field col s3">
-                                <select class="category">
+                                Категория
+                                <select class="category browser-default">
                                     {%- for i in categories -%}
                                         <option class="service-categ" value="{{ i }}" {{ 'selected' if i == s.categ else '' }}>{{ categories[i] }}</option>
                                     {%- endfor -%}
                                 </select>
-                                <label>Категория</label>
                             </div>
                         </div>
                     {%- endfor -%}
@@ -111,8 +111,8 @@
                 <div class="card-action">
                     <div class="row">
                         <div class="col s12 right-align">
-                            <button class="btn btn-add waves-effect waves-light blue">Создать<i
-                                    class="fas fa-plus right"></i>
+                            <button class="btn btn-add waves-effect waves-light blue">
+                                Создать<i class="fas fa-plus right"></i>
                             </button>
                             <button class="btn waves-effect waves-light green btn-action"
                                     type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>
