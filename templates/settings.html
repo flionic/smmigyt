@@ -7,29 +7,24 @@
                     <span class="card-title">Системные настройки</span>
                     <div class="section row no-mar-bot">
                         <div class="input-field col s6">
-                            <input id="nakrutka_apikey" name="nakrutka_apikey" type="text"
-                                   data-cfg-param="nakrutka_apikey" value="{{ config['NAKRUTKA_APIKEY'] }}">
-                            <label for="nakrutka_apikey">nakrutka.by API Ключ</label>
+                            <input type="text" data-cfg-param="nakrutka_apikey" value="{{ config['NAKRUTKA_APIKEY'] }}">
+                            <label>nakrutka.by API Ключ</label>
                         </div>
                         <div class="input-field col s6">
-                            <input id="bigsmm_apikey" name="bigsmm_apikey" type="text" data-cfg-param="bigsmm_apikey"
-                                   value="{{ config['BIGSMM_APIKEY'] }}">
-                            <label for="bigsmm_apikey">bigsmm.ru API Ключ</label>
+                            <input type="text" data-cfg-param="bigsmm_apikey" value="{{ config['BIGSMM_APIKEY'] }}">
+                            <label>bigsmm.ru API Ключ</label>
                         </div>
                         <div class="input-field col s12">
-                            <input id="ik_id_checkout" name="ik_id_checkout" data-cfg-param="ik_id_checkout" type="text"
-                                   value="{{ config['IK_ID_CHECKOUT'] }}">
-                            <label for="ik_id_checkout">Интеркасса ID Кассы</label>
+                            <input data-cfg-param="ik_id_checkout" type="text" value="{{ config['IK_ID_CHECKOUT'] }}">
+                            <label>Интеркасса ID Кассы</label>
                         </div>
                         <div class="input-field col s12 m6">
-                            <input id="ik_id" name="ik_id" data-cfg-param="ik_id" type="text"
-                                   value="{{ config['IK_ID'] }}">
-                            <label for="ik_id">Интеркасса API Id пользователя</label>
+                            <input data-cfg-param="ik_id" type="text" value="{{ config['IK_ID'] }}">
+                            <label>Интеркасса API Id пользователя</label>
                         </div>
                         <div class="input-field col s12 m6">
-                            <input id="ik_key" name="ik_key" data-cfg-param="ik_key" type="text"
-                                   value="{{ config['IK_KEY'] }}">
-                            <label for="ik_key">Интеркасса API Ключ</label>
+                            <input data-cfg-param="ik_key" type="text" value="{{ config['IK_KEY'] }}">
+                            <label>Интеркасса API Ключ</label>
                         </div>
                     </div>
                     <div class="row" style="display: none">
@@ -72,27 +67,25 @@
                                 <span class="service-name">{{ s.s_type }} - {{ s.name }}</span>
                             </div>
                             <div class="input-field col s12 m6">
-                                <input id="service-title-{{ s.id }}" class="service-title validate" data-type-id="2"
-                                       type="text" value="{{ s.title }}" required>
-                                <label for="service-title-{{ s.id }}">Заголовок</label>
+                                <input class="service-title validate" type="text" value="{{ s.title }}" required>
+                                <label>Заголовок</label>
                             </div>
                             <div class="input-field col s12 m2">
-                                <input id="service-price-{{ s.id }}" class="service-price validate" data-type-id="2"
-                                       type="number" step="0.01" value="{{ s.price }}" style="width: 90%;" required>
+                                <input class="service-price validate" type="number" step="0.01" value="{{ s.price }}"
+                                       style="width: 90%;" required>
                                 <span>₽</span>
-                                <label for="service-price-{{ s.id }}">Цена</label>
+                                <label>Цена</label>
                             </div>
                             <div class="input-field col s12 m2">
                                 <div class="switch">
                                     <label>
                                         Выкл
-                                        <input id="service-state-{{ s.id }}" class="service-state"
+                                        <input class="service-state"
                                                type="checkbox" {{ 'checked' if s.state == 1 else '' }}>
                                         <span class="lever"></span>
                                         Вкл
                                     </label>
-                                    <label><input id="service-action-{{ s.id }}" class="service-action" type="hidden"
-                                                  value="upd"></label>
+                                    <label><input class="service-action" type="hidden" value="upd"></label>
                                 </div>
                             </div>
                             {% if s.s_type == 'manual' %}
@@ -101,9 +94,9 @@
                                 </div>
                             {% endif %}
                             <div class="input-field col s12">
-                                <textarea id="service-desc-{{ s.id }}" class="service-desc materialize-textarea"
+                                <textarea class="service-desc materialize-textarea"
                                           data-length="1000">{{ s.desc }}</textarea>
-                                <label for="service-desc-{{ s.id }}">Описание</label>
+                                <label>Описание</label>
                             </div>
                         </div>
                     {%- endfor -%}
