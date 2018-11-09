@@ -18,7 +18,7 @@
                                         <th>Сумма заказа</th>
                                         <th>Ссылка</th>
                                         <th>Время</th>
-                                        <th>Статус</th>
+                                        <th style="min-width: 130px;">Статус</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -32,7 +32,7 @@
                                                 {%- endfor -%}
                                             </td>
                                             <td>{{ t.quantity }}</td>
-                                            <td>{{ t.amount }} р.</td>
+                                            <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
                                             <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
                                             <td>{{ t.date }}</td>
                                             <td>

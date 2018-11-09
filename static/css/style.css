@@ -242,6 +242,7 @@ input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):
 }
 
 #task-list .card .card-content, #tasks .card .card-content {
+    -webkit-overflow-scrolling: touch;
     overflow: scroll;
 }
 
@@ -334,7 +335,9 @@ h5 {
     nav .brand-logo {
         left: 40%;
     }
-
+    .row .col.s12 {
+        padding: 10px 0;
+    }
     .sum {
         font-size: 1.2rem;
     }
