@@ -7,60 +7,56 @@
                 <div class="icon-block white-text">
                     <h2><i class="fab fa-odnoklassniki"></i></h2>
                     <h5>Одноклассники</h5>
-                    <p class="light">Накрутка лайков и подписчиков<br>
-                        это простые инструменты для рекламы<br>
-                        в социальных сетях и гибкие возможности<br>
-                        по настройке рекламных заданий</p>
+                    <p class="light">
+                        Участники в группу.<br>
+                        Добавление друзей.<br>
+                        Накрутка классов и опросов.</p>
                 </div>
             </div>
             <div class="col s12 m6 l4 xl2 center">
                 <div class="icon-block white-text">
                     <h2><i class="fab fa-instagram"></i></h2>
                     <h5>Instagram</h5>
-                    <p class="light">Накрутка лайков и подписчиков<br>
-                        это простые инструменты для рекламы<br>
-                        в социальных сетях и гибкие возможности<br>
-                        по настройке рекламных заданий</p>
+                    <p class="light">
+                        Подписчики.<br>
+                        Лайки.<br>
+                        Просмотры видео.</p>
                 </div>
             </div>
             <div class="col s12 m6 l4 xl2 center">
                 <div class="icon-block white-text">
                     <h2><i class="fab fa-facebook-square"></i></h2>
                     <h5>Facebook</h5>
-                    <p class="light">Накрутка лайков и подписчиков<br>
-                        это простые инструменты для рекламы<br>
-                        в социальных сетях и гибкие возможности<br>
-                        по настройке рекламных заданий</p>
+                    <p class="light">
+                        Участники.<br>
+                        Лайки.<br>
+                        Добавление друзей.</p>
                 </div>
             </div>
             <div class="col s12 m6 l4 xl2 center">
                 <div class="icon-block white-text">
                     <h2><i class="fab fa-telegram"></i></h2>
                     <h5>Telegram</h5>
-                    <p class="light">Накрутка лайков и подписчиков<br>
-                        это простые инструменты для рекламы<br>
-                        в социальных сетях и гибкие возможности<br>
-                        по настройке рекламных заданий</p>
+                    <p class="light">
+                        Участники на канал.</p>
                 </div>
             </div>
             <div class="col s12 m6 l4 xl2 center">
                 <div class="icon-block white-text">
                     <h2><i class="fab fa-youtube"></i></h2>
                     <h5>YouTube</h5>
-                    <p class="light">Накрутка лайков и подписчиков<br>
-                        это простые инструменты для рекламы<br>
-                        в социальных сетях и гибкие возможности<br>
-                        по настройке рекламных заданий</p>
+                    <p class="light">
+                        Просмотры.<br>
+                        Лайки и дизлайки./p>
                 </div>
             </div>
             <div class="col s12 m6 l4 xl2 center">
                 <div class="icon-block white-text">
                     <h2><i class="fab fa-twitter"></i></h2>
                     <h5>Twitter</h5>
-                    <p class="light">Накрутка лайков и подписчиков<br>
-                        это простые инструменты для рекламы<br>
-                        в социальных сетях и гибкие возможности<br>
-                        по настройке рекламных заданий</p>
+                    <p class="light">
+                        Подписчики.<br>
+                        Ретвиты.</p>
                 </div>
             </div>
         </div>
@@ -93,7 +89,7 @@
                                                     <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
                                                             data-task-price="{{ s.price }}"
                                                             data-task-desc="{{ s.desc }}"
-                                                            value="{{ s.id }}">{{ s.title }} - {{ s.price }} р.
+                                                            value="{{ s.id }}">{{ s.title }} - {{ s.price|round|int }} р.
                                                     </option>
                                                 {% endif %}
                                             {% endfor %}
@@ -223,10 +219,11 @@
                 pl.addClass('active').show();
                 btn.hide();
                 params = {
-                    'tid': $('.services').val(),
+                    'tid': $('.services:eq(' + $('.categ').val() + ')').val(),
                     'link': $('#link').val(),
                     'quantity': $('#quantity').val()
                 };
+                console.log(params);
                 $.ajax({
                     url: '/ajax/' + $(this).attr('id'),
                     type: "POST",

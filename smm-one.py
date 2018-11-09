@@ -148,7 +148,7 @@ class Services(db.Model):
     desc = db.Column('desc', db.String(1000), default='Описание отсутствует')
     price = db.Column('price', db.Float, default=0)
     min = db.Column('min', db.String(12), default='0')
-    max = db.Column('max', db.String(12), default='∞')
+    max = db.Column('max', db.String(12), default='999999999')
     state = db.Column('state', db.Integer, default=1)
     categ = db.Column('categ', db.Integer, default=0)
 
@@ -341,6 +341,8 @@ def save_settings(section):
                 service.price = i['price']
                 service.state = i['state']
                 service.categ = i['categ']
+                service.min = i['min']
+                service.max = i['max']
                 service.delete() if i['action'] == 'rm' else db.session.add(service)
         elif section == 'tasks':
             for i in request.json:
