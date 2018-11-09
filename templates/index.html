@@ -47,7 +47,7 @@
                     <h5>YouTube</h5>
                     <p class="light">
                         Просмотры.<br>
-                        Лайки и дизлайки./p>
+                        Лайки и дизлайки.</p>
                 </div>
             </div>
             <div class="col s12 m6 l4 xl2 center">
@@ -89,7 +89,7 @@
                                                     <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
                                                             data-task-price="{{ s.price }}"
                                                             data-task-desc="{{ s.desc }}"
-                                                            value="{{ s.id }}">{{ s.title }} - {{ s.price|round|int }} р.
+                                                            value="{{ s.id }}">{{ s.title }} - {{ (s.price|round(2)|string).rstrip('0').rstrip('.') }} р.
                                                     </option>
                                                 {% endif %}
                                             {% endfor %}
@@ -176,7 +176,7 @@
                                                     {%- endfor -%}
                                                 </td>
                                                 <td>{{ t.quantity }}</td>
-                                                <td>{{ t.amount }} р.</td>
+                                                <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
                                                 <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
                                                 <td>{{ t.date }}</td>
                                                 <td>{{ states[t.status] }}</td>

@@ -54,7 +54,7 @@
         {%- endif -%}
         <li>
             <a class="btn-deposit" href="#!">
-                <i class="fas fa-wallet"></i>Баланс: {{ current_user.balance|round(2) }} ₽
+                <i class="fas fa-wallet"></i>Баланс: {{ (current_user.balance|round(2)|string).rstrip('0').rstrip('.') }} ₽
             </a>
         </li>
         {{ caller() }}
