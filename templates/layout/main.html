@@ -48,9 +48,9 @@
 {%- macro navmenu() -%}
     {%- if current_user and current_user.is_authenticated -%}
         {%- if current_user.status == 7 -%}
-            <li><a href="/edit"><i class="fas fa-pen"></i>Модерация</a></li>
-            <li><a href="/users"><i class="fas fa-user-edit"></i>Пользователи</a></li>
-            <li><a href="/settings"><i class="fas fa-wrench"></i>Настройки</a></li>
+            <li><a href="/admin/tasks"><i class="fas fa-pen"></i>Модерация</a></li>
+            <li><a href="/admin/users"><i class="fas fa-user-edit"></i>Пользователи</a></li>
+            <li><a href="/admin/settings"><i class="fas fa-wrench"></i>Настройки</a></li>
         {%- endif -%}
         <li>
             <a class="btn-deposit" href="#!">
@@ -155,15 +155,15 @@
             <div class="col l3 m6 s12 offset-l1">
                 <h5 class="white-text"><i class="far fa-question-circle"></i>Чаво</h5>
                 <ul>
-                    <li><a class="white-text" href="/help">Помощь</a></li>
-                    <li><a class="white-text" href="/policy">Пользовательское соглашение</a></li>
+                    <li><a class="white-text" href="/page/help">Помощь</a></li>
+                    <li><a class="white-text" href="/page/policy">Пользовательское соглашение</a></li>
                     <li style="font-size: 29px;">
-                        <a href="/help/ok" class="white-text"><i class="fab fa-odnoklassniki"></i></a>
-                        <a href="/help/instagram" class="white-text"><i class="fab fa-instagram"></i></a>
-                        <a href="/help/facebook" class="white-text"><i class="fab fa-facebook-square"></i></a>
-                        <a href="/help/telegram" class="white-text"><i class="fab fa-telegram"></i></a>
-                        <a href="/help/youtube" class="white-text"><i class="fab fa-youtube"></i></a>
-                        <a href="/help/twitter" class="white-text"><i class="fab fa-twitter"></i></li></a>
+                        <a href="/page/ok" tar class="white-text"><i class="fab fa-odnoklassniki"></i></a>
+                        <a href="/page/instagram" tar class="white-text"><i class="fab fa-instagram"></i></a>
+                        <a href="/page/facebook" tar class="white-text"><i class="fab fa-facebook-square"></i></a>
+                        <a href="/page/telegram" tar class="white-text"><i class="fab fa-telegram"></i></a>
+                        <a href="/page/youtube" tar class="white-text"><i class="fab fa-youtube"></i></a>
+                        <a href="/page/twitter" tar class="white-text"><i class="fab fa-twitter"></i></a>
                     <li>
                         <!-- Yandex.Metrika informer -->
                         <a href="https://metrika.yandex.ru/stat/?id=51062585&amp;from=informer" target="_blank" rel="nofollow">

@@ -46,7 +46,6 @@ sess = Session(app)
 db = SQLAlchemy(app)
 mail = MailSendGrid()
 
-
 @login_manager.user_loader
 def load_user(uid):
     return Users.query.get(int(uid))
@@ -194,42 +193,18 @@ def index():
     return render_template('index.html', tasks=tasks)
 
 
-@app.route('/help')
-def help_page():
-    return render_template('help.html')
-
-
-@app.route('/policy')
-def policy_page():
-    return render_template('policy.html')
+@app.route('/page/<section>')
+def info_pages(section):
+    return render_template('page/' + section + '.html')
 
 
 @app.route('/admin/<section>')
 @login_required
 def admin_pages(section):
     if current_user.status == 7:
-        return render_template(section + '.html', tasks=Tasks.query.filter_by(s_type='manual'), users=Users.query.all())
-
-
-@app.route('/settings')
-@login_required
-def settings_page():
-    if current_user.status == 7:
-        return render_template('settings.html')
-
-
-@app.route('/edit')
-@login_required
-def moderation_page():
-    if current_user.status == 7:
-        return render_template('edit_tasks.html', tasks=Tasks.query.filter_by(s_type='manual'), users=Users.query.all())
-
-
-@app.route('/users')
-@login_required
-def users_page():
-    if current_user.status == 7:
-        return render_template('users.html', users=Users.query.all())
+        tasks = Tasks.query.filter_by(s_type='manual') if section == 'tasks' else ''
+        users = Users.query.all() if section == 'tasks' or 'users' else ''
+        return render_template('admin/' + section + '.html', tasks=tasks, users=users)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -348,8 +323,9 @@ def save_settings(section):
             for i in request.json:
                 task = Tasks.query.filter_by(id=i['id']).first()
                 task.status = i['status']
-                current_user.balance += task.amount
-                task.amount = 0
+                if i['status'] == '3' == '3':
+                    current_user.balance += task.amount
+                    task.amount = 0
         elif section == 'settings-users':
             for i in request.json:
                 user = Users.query.filter_by(id=i['id']).first()
@@ -366,15 +342,11 @@ def save_settings(section):
 def add_task():
     service = Services.query.filter_by(id=request.json['tid']).first()
     amount = service.price / 1000 * float(request.json['quantity'])
-    print(amount)
-    print(current_user.balance)
-    print(amount > current_user.balance)
     task = Tasks(current_user.id, service.s_type, request.json['tid'], request.json['link'], request.json['quantity'],
                  amount)
     if amount > current_user.balance:
         return jsonify({'response': 0, 'msg': 'Недостаточно средств на Вашем счету'})
     elif service.s_type == 'nakrutka':
-        print('1')
         # https://smm.nakrutka.by/api/?key=6d123fc8e9cb840f64164e82dad3c27d&action=create&service=3&quantity=200&link=https://www.instagram.com/jaholper/
         url = 'https://smm.nakrutka.by/api/?key=' + Settings.query.filter_by(key='nakrutka_apikey').first().value
         url += '&action=create' + '&service=' + str(service.s_id) + '&quantity=' + str(
@@ -386,7 +358,6 @@ def add_task():
             task.sid = r['order']
             task.status = 1
     elif service.s_type == 'bigsmm':
-        print('2')
         # http://bigsmm.ru/api/?method=add_order&api_key=586503944eff44fdb212486c28761793&service_id=11&variation_id=54&order_link=instagram.com/test/
         # {"errorcode":"0","msg":"Успешно","order_id":"7307"}
         url = 'http://bigsmm.ru/api/?method=add_order&api_key=' + Settings.query.filter_by(
@@ -400,7 +371,6 @@ def add_task():
         elif ('errorcode' in r) and (r['errorcode'] > 0):
             return jsonify({'response': 0, 'msg': r['msg']})
     elif service.s_type == 'manual':
-        print('3')
         task.quantity = request.json['quantity']
         task.link = request.json['link']
     current_user.balance -= amount
