@@ -346,7 +346,10 @@ def save_settings(section):
                 service.delete() if i['action'] == 'rm' else db.session.add(service)
         elif section == 'tasks':
             for i in request.json:
-                Tasks.query.filter_by(id=i['id']).first().status = i['status']
+                task = Tasks.query.filter_by(id=i['id']).first()
+                task.status = i['status']
+                current_user.balance += task.amount
+                task.amount = 0
         elif section == 'settings-users':
             for i in request.json:
                 user = Users.query.filter_by(id=i['id']).first()

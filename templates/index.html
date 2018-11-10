@@ -1,4 +1,5 @@
 {% extends 'layout/main.html' %}
+{% set info = {0: ['Указана цена за 1000', 'Количество'], 1: ['Указана цена за 1 аккаунт', 'Количество лайков']} %}
 {% block main %}
     <div class="section" id="index-banner">
         <div class="row center">
@@ -97,7 +98,7 @@
                                         </select>
                                     {% endfor %}
                                     <label>Задание</label>
-                                    <span class="helper-text">Указана цена за 1000</span>
+                                    <span class="helper-text price-h">Указана цена за 1000</span>
                                 </div>
                             </div>
                             <div class="row no-mar-bot">
@@ -109,7 +110,7 @@
                                 <div class="input-field col m4 s12">
                                     <input id="quantity" class="validate" data-task-param="quantity" type="number"
                                            required>
-                                    <label for="quantity">Количество</label>
+                                    <label for="quantity" class="num-h">Количество</label>
                                     <span class="helper-text quantity-help help-data"></span>
                                 </div>
                                 <div class="input-field col m2 s12 center">
@@ -207,6 +208,13 @@
                 var serv = $('.services:eq(' + $('.categ').val() + ') option:selected'), quantity = $('#quantity');
                 hd.show();
                 ss.hide();
+                if (serv.val() === '59') {
+                    $('.price-h').text('Указана цена за 1 аккаунт');
+                    $('.num-h').text('Количество лайков');
+                } else {
+                    $('.price-h').text('Указана цена за 1000');
+                    $('.num-h').text('Количество');
+                }
                 $('.srv-sel .select-wrapper:eq(' + $('.categ').val() + ')').show();
                 $('.service-desc').text(serv.attr('data-task-desc'));
                 $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));

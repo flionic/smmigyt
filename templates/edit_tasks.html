@@ -83,7 +83,6 @@
                         "status": $(this).val()
                     });
                 });
-                console.log(JSON.stringify(params));
                 $.ajax({
                     url: '/ajax/save/' + $(this).attr('id'),
                     type: "POST",
