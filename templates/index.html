@@ -208,17 +208,18 @@
                 var serv = $('.services:eq(' + $('.categ').val() + ') option:selected'), quantity = $('#quantity');
                 hd.show();
                 ss.hide();
-                if (serv.val() === '59') {
-                    $('.price-h').text('Указана цена за 1 аккаунт');
-                    $('.num-h').text('Количество лайков');
-                } else {
-                    $('.price-h').text('Указана цена за 1000');
-                    $('.num-h').text('Количество');
-                }
                 $('.srv-sel .select-wrapper:eq(' + $('.categ').val() + ')').show();
                 $('.service-desc').text(serv.attr('data-task-desc'));
                 $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
-                $('.sum-help').text('Итоговая сумма: ' + 1 * (serv.attr('data-task-price') / 1000 * quantity.val()).toFixed(2) + ' руб.');
+                if (serv.val() === '59') {
+                    $('.price-h').text('Указана цена за 1 аккаунт');
+                    $('.num-h').text('Количество лайков');
+                    $('.sum-help').text('Итоговая сумма: ' + serv.attr('data-task-price') + ' руб.');
+                } else {
+                    $('.price-h').text('Указана цена за 1000');
+                    $('.num-h').text('Количество');
+                    $('.sum-help').text('Итоговая сумма: ' + 1 * (serv.attr('data-task-price') / 1000 * quantity.val()).toFixed(2) + ' руб.');
+                }
                 quantity.attr('min', serv.attr('data-task-min'));
                 quantity.attr('max', serv.attr('data-task-max'));
             });

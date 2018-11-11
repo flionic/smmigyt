@@ -324,7 +324,8 @@ def save_settings(section):
                 task = Tasks.query.filter_by(id=i['id']).first()
                 task.status = i['status']
                 if i['status'] == '3' == '3':
-                    current_user.balance += task.amount
+                    Users.query.filter_by(id=task.uid).first().balance += task.amount
+                    # current_user.balance += task.amount
                     task.amount = 0
         elif section == 'settings-users':
             for i in request.json:
@@ -342,6 +343,7 @@ def save_settings(section):
 def add_task():
     service = Services.query.filter_by(id=request.json['tid']).first()
     amount = service.price / 1000 * float(request.json['quantity'])
+    amount = service.price if request.json['tid'] == '59' else amount
     task = Tasks(current_user.id, service.s_type, request.json['tid'], request.json['link'], request.json['quantity'],
                  amount)
     if amount > current_user.balance:
