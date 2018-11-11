@@ -10,7 +10,7 @@ from time import sleep
 
 import bcrypt
 import requests
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from werkzeug.contrib.fixers import ProxyFix
 
 import flask
@@ -25,7 +25,7 @@ from flask_mail_sendgrid import MailSendGrid
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 # TODO: move to configparser (https://hackernoon.com/4-ways-to-manage-the-configuration-in-python-4623049e841b)
-load_dotenv(os.path.join(basedir, 'settings.cfg'))
+#load_dotenv(os.path.join(basedir, 'settings.cfg'))
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -33,7 +33,7 @@ app.config['APP_NAME'] = '1-SMM'
 app.config['SERVER_NAME'] = os.getenv('APP_DOMAIN')
 app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', '7-DEV_MODE_KEY-7')
 app.config['SESSION_TYPE'] = 'redis'
-db_local = 'sqlite:///' + os.path.join(os.path.join(basedir, 'db'), 'main.db')
+# db_local = 'sqlite:///' + os.path.join(os.path.join(basedir, 'db'), 'main.db')
 # db_link = f"mysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}?charset=utf8mb4"
 db_link = 'mysql://smm_one:y3./}:dKN522T>fT@localhost/smm_one?charset=utf8mb4'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_link
@@ -45,6 +45,7 @@ login_manager.login_view = "users.login"
 sess = Session(app)
 db = SQLAlchemy(app)
 mail = MailSendGrid()
+
 
 @login_manager.user_loader
 def load_user(uid):
@@ -402,5 +403,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or 1 == 1:
     init_settings()
 
 if __name__ == '__main__':
-    app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23023)),
-            threaded=True, ssl_context=('cert.pem', 'key.pem'), use_reloader=False)
+    #app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)),
+    #        threaded=True, ssl_context=('cert.pem', 'key.pem'), use_reloader=False, debug=True)
+    app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)),
+            threaded=True, use_reloader=False, debug=True)

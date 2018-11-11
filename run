@@ -1,2 +1,0 @@
-#!/bin/sh
-FLASK_APP=smm-one python3 -m flask run --no-reload -p 23033 --with-threads --debugger --cert cert.pem --key key.pem
