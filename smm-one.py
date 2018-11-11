@@ -403,7 +403,5 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or 1 == 1:
     init_settings()
 
 if __name__ == '__main__':
-    #app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)),
-    #        threaded=True, ssl_context=('cert.pem', 'key.pem'), use_reloader=False, debug=True)
     app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)),
-            threaded=True, use_reloader=False, debug=True)
+            threaded=True, ssl_context=('cert.pem', 'key.pem'), use_reloader=False, debug=True)
