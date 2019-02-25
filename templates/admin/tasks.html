@@ -1,70 +1,104 @@
 {% extends 'layout/main.html' %}
 {% block main %}
-    {% call section() %}
+    <div class="section">
         <form id="tasks" class="col s12">
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Модерируемые заказы</span>
                     <div class="section row no-mar-bot">
-                        {% if tasks %}
-                            <form>
-                                <table>
-                                    <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Заказчик</th>
-                                        <th>Тип</th>
-                                        <th>Количество</th>
-                                        <th>Сумма заказа</th>
-                                        <th>Ссылка</th>
-                                        <th>Время</th>
-                                        <th style="min-width: 130px;">Статус</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {%- for t in tasks -%}
-                                        <tr>
-                                            <td>{{ t.id }}</td>
-                                            <td>{{ users[t.uid - 1].email }}</td>
-                                            <td>
-                                                {%- for s in services -%}
-                                                    {%- if s.id == t.tid -%}{{ s.title }}{%- endif -%}
-                                                {%- endfor -%}
-                                            </td>
-                                            <td>{{ t.quantity }}</td>
-                                            <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
-                                            <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
-                                            <td>{{ t.date }}</td>
-                                            <td>
-                                                <label>
-                                                    <select class="status" data-tid="{{ t.id }}">
-                                                        {%- for s in states -%}
-                                                            <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>
-                                                        {%- endfor -%}
-                                                    </select>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                    {%- endfor -%}
-                                    </tbody>
-                                </table>
-                            </form>
-                        {% else %}
-                            <i>Заказы отсутствуют</i>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="card-action">
-                    <div class="row">
-                        <div class="col s12 right-align">
-                            <button class="btn waves-effect waves-light green btn-action"
-                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>
-                            </button>
+                        <div class="col s12">
+                            <ul class="tabs">
+                                {% for i in states %}
+                                    <li class="tab col s3"><a href="#tab-{{ i }}"
+                                                              data-tabid="{{ i }}">{{ states[i] }}</a></li>
+                                {% endfor %}
+                            </ul>
                         </div>
+                        {% for i in states %}
+                            <div id="tab-{{ i }}" data-tabid="{{ i }}" class="col s12 tb">
+                                {#                                {{ categories[i] }} s.id != 59 and #}
+                                {#                                {% if tasks %}#}
+                                {#                                    <form>#}
+                                {#                                        <table>#}
+                                {#                                            <thead>#}
+                                {#                                            <tr>#}
+                                {#                                                <th>ID</th>#}
+                                {#                                                <th>Заказчик</th>#}
+                                {#                                                <th>Тип</th>#}
+                                {#                                                <th>Страна</th>#}
+                                {#                                                <th>Город</th>#}
+                                {#                                                <th>Возраст</th>#}
+                                {#                                                <th>Пол</th>#}
+                                {#                                                <th>Количество</th>#}
+                                {#                                                <th>Комментарий</th>#}
+                                {#                                                <th>Сумма заказа</th>#}
+                                {#                                                <th>Ссылка</th>#}
+                                {#                                                <th>Время</th>#}
+                                {#                                                <th style="min-width: 130px;">Статус</th>#}
+                                {#                                            </tr>#}
+                                {#                                            </thead>#}
+                                {#                                            <tbody>#}
+                                {#                                            {%- for t in tasks -%}#}
+                                {#                                                {% if t.status == i %}#}
+                                {#                                                    <tr>#}
+                                {#                                                        <td>{{ t.id }}</td>#}
+                                {#                                                    <td>{{ users[t.uid - 1].email }}</td>#}
+                                {#                                                        <td>id{{ t.uid }}</td>#}
+                                {#                                                        <td>#}
+                                {#                                                            {%- for s in services -%}#}
+                                {#                                                                {%- if s.id == t.tid -%}{{ s.title }}{%- endif -%}#}
+                                {#                                                            {%- endfor -%}#}
+                                {#                                                        </td>#}
+                                {#                                                        <td>{{ t.country }}</td>#}
+                                {#                                                        <td>{{ t.city }}</td>#}
+                                {#                                                        <td>{{ t.age }}</td>#}
+                                {#                                                        <td>{{ t.sex }}</td>#}
+                                {#                                                        <td>{{ t.quantity }}</td>#}
+                                {#                                                        <td>{{ t.comment }}</td>#}
+                                {#                                                        <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }}#}
+                                {#                                                            р.#}
+                                {#                                                        </td>#}
+                                {#                                                        <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>#}
+                                {#                                                        <td>{{ t.date }}</td>#}
+                                {#                                                        <td>#}
+                                {#                                                            <label>#}
+                                {#                                                                <select class="status" data-tid="{{ t.id }}">#}
+                                {#                                                                    {%- for s in states -%}#}
+                                {#                                                                        <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>#}
+                                {#                                                                    {%- endfor -%}#}
+                                {#                                                                </select>#}
+                                {#                                                            </label>#}
+                                {#                                                            <a class="btn-small waves-effect waves-light green btn-send-status"#}
+                                {#                                                               data-tid="{{ t.id }}">Сохранить<i#}
+                                {#                                                                    class="fas fa-save right"></i></a>#}
+                                {#                                                        </td>#}
+                                {#                                                    </tr>#}
+                                {#                                                {% endif %}#}
+                                {#                                            {%- endfor -%}#}
+                                {#                                            </tbody>#}
+                                {#                                        </table>#}
+                                {#                                    </form>#}
+                                {#                                {% else %}#}
+                                {#                                    <i>Заказы отсутствуют</i>#}
+                                {#                                {% endif %}#}
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
+                {#                <div class="card-action">#}
+                {#                    <div class="row">#}
+                {#                        <div class="col s12 right-align">#}
+                {#                            <button class="btn waves-effect waves-light green btn-action"#}
+                {#                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>#}
+                {#                            </button>#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </div>#}
             </div>
         </form>
+    </div>
+    {% call section() %}
+
     {% endcall %}
 {% endblock %}
 {% block scripts %}
@@ -72,6 +106,35 @@
         $(document).ready(function () {
             $('.sending').hide();
             $('select').formSelect();
+            $('.btn-send-status').click(function () {
+                $(this).fadeOut('fast');
+                $.ajax({
+                    url: '/ajax/save/state',
+                    type: "POST",
+                    data: JSON.stringify({
+                        "id": $(this).attr('data-tid'),
+                        "state": $(".status[data-tid=" + $(this).attr('data-tid') + "]").val()
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                        $(this).fadeIn('fast');
+                        if (data['response'] === 1) location.reload();
+                    }
+                });
+            });
+            $('.tab a').click(function () {
+                tabid = $(this).attr('data-tabid');
+                $.ajax({
+                    url: '/ajax/tasks/' + tabid,
+                    type: "GET",
+                    success: function (data) {
+                        $('#tab-' + tabid).html(data);
+                    }
+                });
+            });
+            /*
             $('#tasks').submit(function (event) {
                 event.preventDefault();
                 var sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = [];
@@ -97,6 +160,7 @@
                     }
                 });
             });
+            */
         });
     </script>
 {% endblock %}
