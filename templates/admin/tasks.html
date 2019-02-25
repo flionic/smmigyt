@@ -36,15 +36,6 @@
                         {% endfor %}
                     </div>
                 </div>
-                {#                <div class="card-action">#}
-                {#                    <div class="row">#}
-                {#                        <div class="col s12 right-align">#}
-                {#                            <button class="btn waves-effect waves-light green btn-action"#}
-                {#                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>#}
-                {#                            </button>#}
-                {#                        </div>#}
-                {#                    </div>#}
-                {#                </div>#}
             </div>
         </form>
     </div>
@@ -57,25 +48,6 @@
         $(document).ready(function () {
             $('.sending').hide();
             $('select').formSelect();
-            /*
-            $('.btn-send-status').click(function () {
-                $(this).fadeOut('fast');
-                $.ajax({
-                    url: '/ajax/save/state',
-                    type: "POST",
-                    data: JSON.stringify({
-                        "id": $(this).attr('data-tid'),
-                        "state": $(".status[data-tid=" + $(this).attr('data-tid') + "]").val()
-                    }),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (data) {
-                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
-                        $(this).fadeIn('fast');
-                        if (data['response'] === 1) location.reload();
-                    }
-                });
-            }); */
             function loadTasks(){
                 $('.tab a').click(function () {
                     $('.tab a').unbind();
@@ -97,33 +69,6 @@
             loadTasks();
             $('.loading').hide();
             $('.tab a')[0].click();
-            /*
-            $('#tasks').submit(function (event) {
-                event.preventDefault();
-                var sending = $(this).find('.sending'), btn = $(this).find('.btn-action'), params = [];
-                sending.addClass('active').show();
-                btn.fadeOut('fast');
-                $('.status').each(function (i, elem) {
-                    params.push({
-                        "id": $(this).attr('data-tid'),
-                        "status": $(this).val()
-                    });
-                });
-                $.ajax({
-                    url: '/ajax/save/' + $(this).attr('id'),
-                    type: "POST",
-                    data: JSON.stringify(params),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (data) {
-                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
-                        btn.fadeIn('fast');
-                        sending.hide().removeClass('active');
-                        if (data['response'] === 1) location.reload();
-                    }
-                });
-            });
-            */
         });
     </script>
 {% endblock %}
