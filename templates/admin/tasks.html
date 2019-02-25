@@ -16,71 +16,22 @@
                         </div>
                         {% for i in states %}
                             <div id="tab-{{ i }}" data-tabid="{{ i }}" class="col s12 tb">
-                                {#                                {{ categories[i] }} s.id != 59 and #}
-                                {#                                {% if tasks %}#}
-                                {#                                    <form>#}
-                                {#                                        <table>#}
-                                {#                                            <thead>#}
-                                {#                                            <tr>#}
-                                {#                                                <th>ID</th>#}
-                                {#                                                <th>Заказчик</th>#}
-                                {#                                                <th>Тип</th>#}
-                                {#                                                <th>Страна</th>#}
-                                {#                                                <th>Город</th>#}
-                                {#                                                <th>Возраст</th>#}
-                                {#                                                <th>Пол</th>#}
-                                {#                                                <th>Количество</th>#}
-                                {#                                                <th>Комментарий</th>#}
-                                {#                                                <th>Сумма заказа</th>#}
-                                {#                                                <th>Ссылка</th>#}
-                                {#                                                <th>Время</th>#}
-                                {#                                                <th style="min-width: 130px;">Статус</th>#}
-                                {#                                            </tr>#}
-                                {#                                            </thead>#}
-                                {#                                            <tbody>#}
-                                {#                                            {%- for t in tasks -%}#}
-                                {#                                                {% if t.status == i %}#}
-                                {#                                                    <tr>#}
-                                {#                                                        <td>{{ t.id }}</td>#}
-                                {#                                                    <td>{{ users[t.uid - 1].email }}</td>#}
-                                {#                                                        <td>id{{ t.uid }}</td>#}
-                                {#                                                        <td>#}
-                                {#                                                            {%- for s in services -%}#}
-                                {#                                                                {%- if s.id == t.tid -%}{{ s.title }}{%- endif -%}#}
-                                {#                                                            {%- endfor -%}#}
-                                {#                                                        </td>#}
-                                {#                                                        <td>{{ t.country }}</td>#}
-                                {#                                                        <td>{{ t.city }}</td>#}
-                                {#                                                        <td>{{ t.age }}</td>#}
-                                {#                                                        <td>{{ t.sex }}</td>#}
-                                {#                                                        <td>{{ t.quantity }}</td>#}
-                                {#                                                        <td>{{ t.comment }}</td>#}
-                                {#                                                        <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }}#}
-                                {#                                                            р.#}
-                                {#                                                        </td>#}
-                                {#                                                        <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>#}
-                                {#                                                        <td>{{ t.date }}</td>#}
-                                {#                                                        <td>#}
-                                {#                                                            <label>#}
-                                {#                                                                <select class="status" data-tid="{{ t.id }}">#}
-                                {#                                                                    {%- for s in states -%}#}
-                                {#                                                                        <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>#}
-                                {#                                                                    {%- endfor -%}#}
-                                {#                                                                </select>#}
-                                {#                                                            </label>#}
-                                {#                                                            <a class="btn-small waves-effect waves-light green btn-send-status"#}
-                                {#                                                               data-tid="{{ t.id }}">Сохранить<i#}
-                                {#                                                                    class="fas fa-save right"></i></a>#}
-                                {#                                                        </td>#}
-                                {#                                                    </tr>#}
-                                {#                                                {% endif %}#}
-                                {#                                            {%- endfor -%}#}
-                                {#                                            </tbody>#}
-                                {#                                        </table>#}
-                                {#                                    </form>#}
-                                {#                                {% else %}#}
-                                {#                                    <i>Заказы отсутствуют</i>#}
-                                {#                                {% endif %}#}
+                                <div class="loading center" style="margin: 50px;">
+                                    <div class="preloader-wrapper big active">
+                                        <div class="spinner-layer spinner-blue-only">
+                                            <div class="circle-clipper left">
+                                                <div class="circle"></div>
+                                            </div>
+                                            <div class="gap-patch">
+                                                <div class="circle"></div>
+                                            </div>
+                                            <div class="circle-clipper right">
+                                                <div class="circle"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p>Загрузка...</p>
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -106,6 +57,7 @@
         $(document).ready(function () {
             $('.sending').hide();
             $('select').formSelect();
+            /*
             $('.btn-send-status').click(function () {
                 $(this).fadeOut('fast');
                 $.ajax({
@@ -123,17 +75,28 @@
                         if (data['response'] === 1) location.reload();
                     }
                 });
-            });
-            $('.tab a').click(function () {
-                tabid = $(this).attr('data-tabid');
-                $.ajax({
-                    url: '/ajax/tasks/' + tabid,
-                    type: "GET",
-                    success: function (data) {
-                        $('#tab-' + tabid).html(data);
-                    }
+            }); */
+            function loadTasks(){
+                $('.tab a').click(function () {
+                    $('.tab a').unbind();
+                    tabid = $(this).attr('data-tabid');
+                    tabdata = $('#tab-' + tabid);
+                    tabdata.find('.loading').show();
+                    $('.tasks-list').remove();
+                    $.ajax({
+                        url: '/ajax/tasks/' + tabid,
+                        type: "GET",
+                        success: function (data) {
+                            tabdata.append(data);
+                            tabdata.find('.loading').hide();
+                            loadTasks();
+                        }
+                    });
                 });
-            });
+            }
+            loadTasks();
+            $('.loading').hide();
+            $('.tab a')[0].click();
             /*
             $('#tasks').submit(function (event) {
                 event.preventDefault();

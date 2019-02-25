@@ -1,0 +1,86 @@
+{% if tasks %}
+    {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
+    <form class="tasks-list">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Заказчик</th>
+                <th>Тип</th>
+                <th>Страна</th>
+                <th>Город</th>
+                <th>Возраст</th>
+                <th>Пол</th>
+                <th>Количество</th>
+                <th>Комментарий</th>
+                <th>Сумма заказа</th>
+                <th>Ссылка</th>
+                <th>Время</th>
+                <th style="min-width: 130px;">Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            {%- for t in tasks -%}
+                {#                    {% if t.status == i %}#}
+                <tr>
+                    <td>{{ t.id }}</td>
+                    <td>id{{ t.uid }}</td>
+                    <td>
+                        {%- for s in services -%}
+                            {%- if s.id == t.tid -%}{{ s.title }}{%- endif -%}
+                        {%- endfor -%}
+                    </td>
+                    <td>{{ t.country }}</td>
+                    <td>{{ t.city }}</td>
+                    <td>{{ t.age }}</td>
+                    <td>{{ t.sex }}</td>
+                    <td>{{ t.quantity }}</td>
+                    <td>{{ t.comment }}</td>
+                    <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }}
+                        р.
+                    </td>
+                    <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
+                    <td>{{ t.date }}</td>
+                    <td>
+                        <label>
+                            <select class="status" data-tid="{{ t.id }}">
+                                {%- for s in states -%}
+                                    <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>
+                                {%- endfor -%}
+                            </select>
+                        </label>
+{#                        <a class="btn-small waves-effect waves-light green btn-send-status"#}
+{#                           data-tid="{{ t.id }}">Сохранить<i#}
+{#                                class="fas fa-save right"></i></a>#}
+                    </td>
+                </tr>
+                {#                    {% endif %}#}
+            {%- endfor -%}
+            </tbody>
+        </table>
+        <script type="text/javascript">
+            $('select').formSelect();
+            $('.status').change(function () {
+                var task = $(this).closest("tr");
+                $.ajax({
+                    url: '/ajax/save/state',
+                    type: "POST",
+                    data: JSON.stringify({
+                        "id": $(this).attr('data-tid'),
+                        "state": $(this).val()
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                        task.fadeOut(function () {
+                            $(this).remove();
+                        });
+                    }
+                });
+            });
+        </script>
+    </form>
+{% else %}
+    <i>Заказы отсутствуют</i>
+{% endif %}
