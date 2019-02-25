@@ -301,6 +301,16 @@ def payment():
     return redirect(url_for('index'))
 
 
+@app.route('/ajax/tasks/', methods=['GET'])
+@login_required
+def load_tasks():
+    if current_user.status == 7:
+        # tasks = Tasks.query.filter_by(status=status).order_by(Tasks.id.desc()).offset(0).limit(0)
+        tasks = Tasks.query.filter_by(status=request.args.get("status"))
+        return render_template('tasks_list.html', tasks=tasks)
+    return abort(403)
+
+
 @app.route('/ajax/save/<section>', methods=['POST'])
 @login_required
 def save_settings(section):

@@ -4,34 +4,37 @@
         <form id="tasks" class="col s12">
             <div class="card">
                 <div class="card-content">
-                    <span class="card-title">Модерируемые заказы</span>
+                    <span class="card-title">Управление заказами</span>
                     <div class="section row no-mar-bot">
                         <div class="col s12">
                             <ul class="tabs">
                                 {% for i in states %}
-                                    <li class="tab col s3"><a href="#tab-{{ i }}"
-                                                              data-tabid="{{ i }}">{{ states[i] }}</a></li>
+                                    <li class="tab col s3">
+                                        <a href="#tab-{{ i }}" data-tabid="{{ i }}">{{ states[i] }}
+                                            <span class="count"></span>
+                                        </a>
+                                    </li>
                                 {% endfor %}
                             </ul>
                         </div>
+                        <div class="loading center v-align">
+                            <div class="preloader-wrapper big active">
+                                <div class="spinner-layer spinner-red-only">
+                                    <div class="circle-clipper left">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="gap-patch">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="circle-clipper right">
+                                        <div class="circle"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div><i>Загрузка...</i></div>
+                        </div>
                         {% for i in states %}
                             <div id="tab-{{ i }}" data-tabid="{{ i }}" class="col s12 tb">
-                                <div class="loading center" style="margin: 50px;">
-                                    <div class="preloader-wrapper big active">
-                                        <div class="spinner-layer spinner-blue-only">
-                                            <div class="circle-clipper left">
-                                                <div class="circle"></div>
-                                            </div>
-                                            <div class="gap-patch">
-                                                <div class="circle"></div>
-                                            </div>
-                                            <div class="circle-clipper right">
-                                                <div class="circle"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p>Загрузка...</p>
-                                </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -48,20 +51,26 @@
         $(document).ready(function () {
             $('.sending').hide();
             $('select').formSelect();
-            function loadTasks(){
+
+            function loadTasks() {
                 $('.tab a').click(function () {
                     $('.tab a').unbind();
                     tabid = $(this).attr('data-tabid');
                     tabdata = $('#tab-' + tabid);
-                    tabdata.find('.loading').show();
-                    $('.tasks-list').remove();
+                    $('.loading').show();
+                    $('.page-data').remove();
                     $.ajax({
-                        url: '/ajax/tasks/' + tabid,
+                        url: '/ajax/tasks/',
                         type: "GET",
+                        data: {
+                            status: tabid,
+                            page: 1
+                        },
                         success: function (data) {
                             tabdata.append(data);
-                            tabdata.find('.loading').hide();
+                            $('.loading').hide();
                             loadTasks();
+                            {#$('select').formSelect();#}
                         }
                     });
                 });
