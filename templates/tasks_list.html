@@ -62,7 +62,9 @@
                 </tbody>
             </table>
             <div class="pages center">
-{#                <p>Заказы {{ page*limit - limit }}-{{ page*limit }}, всего {{ tasks.count() }} шт.</p>#}
+                {% set from = tasks.count() - tasks.offset(limit*(page - 1)).count() %}
+                {% set to = from + tasks.offset(limit*(page - 1)).limit(limit).count() %}
+                <p class="grey-text text-darken-1">Заказы {{ from }}-{{ to }} из {{ tasks.count() }}</p>
                 <ul class="pagination">
                     <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
                         <a href="#!" data-page="{{ 1 }}"><i class="fas fa-chevron-left"></i></a>
@@ -76,8 +78,6 @@
                 </ul>
             </div>
             <script type="text/javascript">
-                {#$('select').formSelect();#}
-                $('.pagination li.page').eq({{ page - 1 }}).addClass('active');
                 $('.active .count').text(' ({{ tasks.count() }} шт.)');
                 $('.status').show();
                 $('.status').change(function () {
@@ -96,28 +96,6 @@
                             task.fadeOut(function () {
                                 $(this).remove();
                             });
-                        }
-                    });
-                });
-
-                $('.pagination li.waves-effect a').click(function () {
-                    page = $(this).attr('data-page');
-                    tab_id = $('.tab .active').attr('data-tabid');
-                    tab_data = $('#tab-' + tab_id);
-                    $('.loading').show();
-                    $('.page-data').remove();
-                    $.ajax({
-                        url: '/ajax/tasks/',
-                        type: "GET",
-                        data: {
-                            status: tab_id,
-                            page: page
-                        },
-                        success: function (data) {
-                            tab_data.append(data);
-                            $('.loading').hide();
-                            loadTasks();
-                            {#$('select').formSelect();#}
                         }
                     });
                 });
