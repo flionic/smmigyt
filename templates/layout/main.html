@@ -4,7 +4,9 @@
 {% set services = config['SERVICES'] %}
 {% set ver = config['VERSION'] %}
 {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
-{% set categories = {0: "Одноклассники", 1: "Instagram", 2: "Facebook", 3: "Telegram", 4: "YouTube", 5: "Twitter"} %}
+{#{% set categories = {0: "Одноклассники", 1: "Instagram", 2: "Facebook", 3: "Telegram", 4: "YouTube", 5: "Twitter", 6: "ВКонтакте"} %}#}
+{% set categories = {0: "YouTube", 1: "ВКонтакте", 2: "Instagram", 3: "Facebook", 4: "Одноклассники", 5: "Telegram", 6: "Twitter"} %}
+{# 0 > 4; 1 > 2; 2 > 3; 3 > 5; 4 > 0; 5 > 6; 6 > 1; #}
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
@@ -17,8 +19,8 @@
           href="{{ url_for('static', filename='css/style.css') }}?ver={{ ver }}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
           integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-    {#    <meta name="application-name" content="{{ app_name }}">#}
-    {#    <meta name="theme-color" content="#2196F3">#}
+        <meta name="application-name" content="{{ app_name }}">
+        <meta name="theme-color" content="#880e4f">
     {#    <link rel="manifest" href="manifest.webapp.json">#}
     {#    <meta name="apple-mobile-web-app-title" content="{{ app_name }}">#}
     {#    <meta name="msapplication-TileColor" content="#2b5797">#}
@@ -63,9 +65,9 @@
         <li><a class="btn-login"><i class="fas fa-sign-in-alt"></i>Вход</a></li>
     {%- endif -%}
 {%- endmacro -%}
-<body class="purple darken-3">
+<body class="pink darken-4">
 <header>
-    <nav class="purple darken-4" role="navigation">
+    <nav class="pink darken-4" role="navigation">
         <div class="nav-wrapper container">
             <a id="logo-container" href="/" class="brand-logo"><i class="fab fa-audible hide-on-small-only"></i>
                 {{- app_name -}}
@@ -100,18 +102,18 @@
             <div class="modal-footer">
                 <form id="auth">
                     <div class="input-field col m6 s12">
-                        <input id="email" type="text" required>
+                        <input id="email" type="email" required>
                         <label for="email" class="active">Email</label>
                     </div>
                     <div class="input-field col m6 s12">
                         <input id="pass" type="password" required>
                         <label for="pass" class="active">Пароль</label>
                     </div>
+                    <div class="input-field col s12">
+                        <button data-action="signup" type="submit" class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться</button>
+                        <button data-action="login" type="submit" class="btn waves-effect waves-light green white-text login">Войти</button>
+                    </div>
                 </form>
-                <div class="input-field col s12">
-                    <a class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться</a>
-                    <a class="btn waves-effect waves-light green white-text login">Войти</a>
-                </div>
             </div>
         </div>
         <div class="modal modal-confirm modal-deposit">
@@ -150,21 +152,21 @@
         </div>
     {% endcall %}
 </main>
-<footer class="page-footer purple darken-2">
+<footer class="page-footer transparent">
     <div class="container">
         <div class="row">
             <div class="col l3 m6 s12 offset-l1">
                 <h5 class="white-text"><i class="far fa-question-circle"></i>Чаво</h5>
                 <ul>
-                    <li><a class="white-text" href="/page/help">Помощь</a></li>
+{#                    <li><a class="white-text" href="/page/help">Помощь</a></li>#}
                     <li><a class="white-text" href="/page/policy">Пользовательское соглашение</a></li>
                     <li style="font-size: 29px;">
-                        <a href="/page/ok" tar class="white-text"><i class="fab fa-odnoklassniki"></i></a>
-                        <a href="/page/instagram" tar class="white-text"><i class="fab fa-instagram"></i></a>
-                        <a href="/page/facebook" tar class="white-text"><i class="fab fa-facebook-square"></i></a>
-                        <a href="/page/telegram" tar class="white-text"><i class="fab fa-telegram"></i></a>
-                        <a href="/page/youtube" tar class="white-text"><i class="fab fa-youtube"></i></a>
-                        <a href="/page/twitter" tar class="white-text"><i class="fab fa-twitter"></i></a>
+                        <a href="0/page/ok" class="white-text"><i class="fab fa-odnoklassniki"></i></a>
+                        <a href="0/page/instagram" class="white-text"><i class="fab fa-instagram"></i></a>
+                        <a href="0/page/facebook" class="white-text"><i class="fab fa-facebook-square"></i></a>
+                        <a href="0/page/telegram" class="white-text"><i class="fab fa-telegram"></i></a>
+                        <a href="0/page/youtube" class="white-text"><i class="fab fa-youtube"></i></a>
+                        <a href="0/page/twitter" class="white-text"><i class="fab fa-twitter"></i></a>
                     <li>
                         <!-- Yandex.Metrika informer -->
                         <a href="https://metrika.yandex.ru/stat/?id=51062585&amp;from=informer" target="_blank" rel="nofollow">
@@ -231,9 +233,9 @@
                     <span>Copyright © </span><a class="pink-text text-lighten-3" href="/">{{ app_name }}, 2018</a>
                 </div>
                 <div class="col m6 right-align">
-                    <a href="https://flionic.me/">
+                    <a href="https://flionic.ml/">
                         <span class="pink-text text-lighten-3"><i class="fas fa-hammer"></i>Developed by </span>
-                        <span class="white-text">flionic.me</span>
+                        <span class="white-text">flionic.ml</span>
                     </a>
                 </div>
             </div>
@@ -243,7 +245,6 @@
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script defer src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
 <script type="text/javascript">
-    /*
     (function () {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
@@ -255,29 +256,55 @@
             });
         }
     })();
-*/
+
+    (function ($) {
+        $.fn.extend({
+            donetyping: function (callback, timeout) {
+                timeout = timeout || 1e3 / 2; // 1 second default timeout
+                var timeoutReference,
+                    doneTyping = function (el) {
+                        if (!timeoutReference) return;
+                        timeoutReference = null;
+                        callback.call(el);
+                    };
+                return this.each(function (i, el) {
+                    var $el = $(el);
+                    $el.is(':input') && $el.on('keyup keypress paste keydown', function (e) {
+                        if (e.type == 'keyup' && e.keyCode != 8) return;
+                        if (timeoutReference) clearTimeout(timeoutReference);
+                        timeoutReference = setTimeout(function () {
+                            doneTyping(el);
+                        }, timeout);
+                    }).on('blur', function () {
+                        doneTyping(el);
+                    });
+                });
+            }
+        });
+    })(jQuery);
+
     function makeid() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", text = "";
         for (var i = 0; i < 12; i++)
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         return text;
     }
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                {% if category == 'error' %}
-                    M.toast({
-                        html: '<span class="red-text">Ошибка:&nbsp;</span><span>{{ message }}</span>',
-                        displayLength: 10 * 1000
-                    });
-                {% else %}
-                    M.toast({html: '{{ message }}'});
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+
     $(document).ready(function () {
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        M.toast({
+                            html: '<span class="red-text">Ошибка:&nbsp;</span><span>{{ message }}</span>',
+                            displayLength: 10 * 1000
+                        });
+                    {% else %}
+                        M.toast({html: '{{ message }}'});
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         var modals = M.Modal.init($('.modal'), {'endingTop': '30%'});
         $('.sidenav').sidenav();
         $('.tabs').tabs();

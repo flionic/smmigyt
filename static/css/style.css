@@ -107,6 +107,15 @@ body {
     flex-direction: column;
 }
 
+input {
+    /*font-family: 'Google Sans', sans-serif;*/
+}
+
+body {
+    background: url('/static/img/bg-c.jpg') 100% 100% no-repeat;
+    background-size: cover;
+}
+
 main {
     flex: 1 0 auto;
 }
@@ -335,9 +344,11 @@ h5 {
     nav .brand-logo {
         left: 40%;
     }
+
     .row .col.s12 {
         padding: 10px 0;
     }
+
     .sum {
         font-size: 1.2rem;
     }
@@ -363,12 +374,6 @@ h5 {
 
 .modal .modal-content {
     padding: 0;
-}
-
-.t-link {
-    max-width: 300px;
-    text-overflow: ellipsis;
-    overflow: hidden;
 }
 
 .fa-ellipsis-v {
@@ -425,14 +430,160 @@ table, th, td {
     border: 1px solid #ddd;
 }
 
+.pagination li i.fas {
+    font-size: 1rem;
+}
+
+#tasks .card-content {
+    position: relative;
+    min-height: 45vh;
+}
+
+.page-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 30%;
+    width: 50%;
+    margin: 5vh 0 0 -25%;
+}
+
+.v-align {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 30%;
+    width: 50%;
+    margin: 5vh 0 0 -25%;
+}
+
+#tasks .loading {
+    margin-top: 0;
+}
+
+.spinner-red, .spinner-red-only {
+    border-color: #e91e63;
+}
+
+.tasks .container {
+    max-width: inherit;
+    /* max-width: 5vw; */
+}
+
+.tasks .card .card-content {
+    padding: 0;
+}
+
+.td-type {
+    max-width: 13vw;
+}
+
+.td-comment {
+    max-width: 20vw;
+}
+
+.td-link {
+    max-width: 15vw;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.td-city {
+    max-width: 9vw;
+}
+
+.td-date {
+    min-width: 7vw;
+}
+
+.status {
+    cursor: pointer;
+}
+
+.tab {
+    border-right: 2px solid #e0e0e0;
+}
+
+.tabs .tab a:hover, .tabs .tab a.active, .tabs .tab a:focus.active {
+    background-color: #fff;
+}
+
+.pagination li.active {
+    background-color: #e91e63;
+}
+
+.cur-name {
+    pointer-events: none;
+    position: absolute;
+    /*padding: 15px 0 0 5px;*/
+    /*font-size: 90%;*/
+    padding: 12px 0 0 3px;
+}
+
+.cur-name span {
+    visibility: hidden;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
+input.user-balance::-webkit-outer-spin-button,
+input.user-balance::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input.user-balance[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}
+
+.search-wrapper {
+    /*background-color: #909090;*/
+    border-radius: 10px;
+    padding: 0 15px;
+    -webkit-transition: background-color .3s;
+    transition: background-color .3s;
+}
+
+.settings input:not([type]):focus:not([readonly]) {
+    border-bottom: 0px solid #fff;
+    -webkit-box-shadow: 0 0px 0 0 #fff;
+    box-shadow: 0 0px 0 0 #fff;
+}
+
+.settings .search-wrapper input {
+    border-bottom: 0;
+    margin: 0;
+}
+
+.tasks ::placeholder {
+    color: #e91e63;
+}
+
+.tasks .col .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.tasks .row .col {
+    padding: 0;
+}
+
+tr th {
+    font-size: 85%;
+}
+
+.disabled .fas {
+    color: #d0d0d0;
+}
+
 @media only screen and (min-width: 601px) {
     .container {
         width: 95%;
     }
 
-    tr {
+    tr, td {
         line-height: 1;
-        font-size: 14px;
+        font-size: 10px;
     }
 
     td {
@@ -457,5 +608,45 @@ table, th, td {
 
     .container {
         width: 90%;
+    }
+
+    tr, td {
+        font-size: 11px;
+    }
+}
+
+@media only screen and (min-width: 1201px) {
+    #index-banner .row .col.xl2 {
+        width: 12.666667%;
+    }
+
+    #index-banner .row .col.xl1 {
+        width: 5.833333%;
+    }
+
+    tr, td {
+        font-size: 13px;
+        /*font-size: 11px;*/
+
+    }
+}
+
+@media only screen and (min-width: 1701px) {
+    #index-banner .row .col.xl2 {
+        width: 12.666667%;
+    }
+
+    #index-banner .row .col.xl1 {
+        width: 5.833333%;
+    }
+
+    tr, td {
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 1801px) {
+    #index-banner h5 {
+        font-size: 1.24rem;
     }
 }
