@@ -6,7 +6,9 @@ bcrypt
 flask
 flask-login
 flask-sqlalchemy
+flask-whooshee
 flask-session
 flask-mail
 flask-mail-sendgrid
 mysqlclient
+email_validator
