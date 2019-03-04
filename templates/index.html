@@ -4,56 +4,63 @@
     <div class="section" id="index-banner">
         {% include 'layout/home_info.html' %}
     </div>
-
     {% call section(id='auth') %}
-        {% if current_user and current_user.is_authenticated %}
-            {% block protected %}
-                <form id="new-task" class="col s12 l10 offset-l1 xl8 offset-xl2">
-                    <div class="card">
-                        <div class="card-content">
-                            <div class="row no-mar-bot">
-                                <div class="input-field col m10- s12">
-                                    <select class="categ" data-task-param="categ">
-                                        <option value="" disabled selected>Выбрать..</option>
-                                        {% for i in categories %}
-                                            <option value="{{ i }}">{{ categories[i] }}</option>
+        {% block protected %}
+            <form id="new-task" class="col s12 l10 offset-l1 xl8 offset-xl2">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row no-mar-bot">
+                            <div class="input-field col m10- s12">
+                                <select class="categ" data-task-param="categ">
+                                    <option value="" disabled selected>Выбрать..</option>
+                                    {% for i in categories %}
+                                        <option value="{{ i }}">{{ categories[i] }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label>Социальная сеть</label>
+                            </div>
+                        </div>
+                        <div class="row no-mar-bot">
+                            <div class="input-field srv-sel col m10- s12">
+                                {% for i in categories %}
+{#                                    <select class="services" id="service" data-categ="{{ i }}"#}
+                                    <select class="services" data-categ="{{ i }}"
+                                            data-task-param="service">
+                                        <option value="" disabled selected>Мне нужно...</option>
+                                        {% for s in services %}
+                                            {% if s.state == 1 and s.type == i %}
+                                                <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
+                                                        data-task-price="{{ s.price }}"
+                                                        data-task-desc="{{ s.desc }}"
+                                                        {{ 'data-task-step=100' if s.id == 93 or s.id == 104 else '' }}
+                                                        {{ 'data-task-country=1' if s.country else '' }}
+                                                        {{ 'data-task-city=1' if s.city else '' }}
+                                                        {{ 'data-task-age=1' if s.age else '' }}
+                                                        {{ 'data-task-sex=1' if s.sex else '' }}
+                                                        value="{{ s.id }}">{{ s.title }}
+                                                    - {{ (s.price|round(2)|string).rstrip('0').rstrip('.') }} р.
+                                                </option>
+                                            {% endif %}
                                         {% endfor %}
                                     </select>
-                                    <label>Социальная сеть</label>
-                                </div>
+                                {% endfor %}
+                                <label>Задание</label>
+                                <span class="helper-text price-h">Указана цена за 1000</span>
                             </div>
-                            <div class="row no-mar-bot">
-                                <div class="input-field srv-sel col m10- s12">
-                                    {% for i in categories %}
-                                        <select class="services" data-categ="{{ i }}" data-task-param="service">
-                                            <option value="" disabled selected>Мне нужно...</option>
-                                            {% for s in services %}
-                                                {% if s.state == 1 and s.categ == i %}
-                                                    <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
-                                                            data-task-price="{{ s.price }}"
-                                                            data-task-desc="{{ s.desc }}"
-                                                            value="{{ s.id }}">{{ s.title }} - {{ (s.price|round(2)|string).rstrip('0').rstrip('.') }} р.
-                                                    </option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    {% endfor %}
-                                    <label>Задание</label>
-                                    <span class="helper-text price-h">Указана цена за 1000</span>
-                                </div>
+                        </div>
+                        <div class="row no-mar-bot">
+                            <div class="input-field col m6 s12">
+                                <input id="link" data-task-param="link" type="text" required>
+                                <label for="link">Ссылка</label>
+                                <span class="helper-text sum-help help-data"></span>
                             </div>
-                            <div class="row no-mar-bot">
-                                <div class="input-field col m6 s12">
-                                    <input id="link" data-task-param="link" type="text" required>
-                                    <label for="link">Ссылка</label>
-                                    <span class="helper-text sum-help help-data"></span>
-                                </div>
-                                <div class="input-field col m4 s12">
-                                    <input id="quantity" class="validate" data-task-param="quantity" type="number"
-                                           required>
-                                    <label for="quantity" class="num-h">Количество</label>
-                                    <span class="helper-text quantity-help help-data"></span>
-                                </div>
+                            <div class="input-field col m4 s12">
+                                <input id="quantity" class="validate" data-task-param="quantity" type="number"
+                                       required>
+                                <label for="quantity" class="num-h">Количество</label>
+                                <span class="helper-text quantity-help help-data"></span>
+                            </div>
+                            {% if current_user and current_user.is_authenticated %}
                                 <div class="input-field col m2 s12 center">
                                     <button class="btn btn-action waves-effect waves-light green task-action"
                                             type="submit" name="submit"> Заказать
@@ -72,21 +79,51 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="input-field col s12 help-data">
-                                    <span class="service-desc"></span>
+                            {% else %}
+                                <div class="input-field col m12 center">
+                                    <a class="btn-large waves-effect waves-light blue btn-login"><i
+                                            class="fas fa-sign-in-alt"></i>
+                                        Вход/Регистрация</a>
                                 </div>
+                            {% endif %}
+                            <div class="input-field pm pm-country col m3 s12">
+                                <input id="country" data-task-param="country" type="text">
+                                <label for="country">Стрнана</label>
+                            </div>
+                            <div class="input-field pm pm-city col m3 s12">
+                                <input id="city" data-task-param="city" type="text">
+                                <label for="city">Город</label>
+                            </div>
+                            <div class="input-field pm pm-age col m3 s12">
+                                <input id="age" data-task-param="age" type="text">
+                                <label for="age">Возраст</label>
+                            </div>
+                            <div class="input-field pm pm-sex col m3 s12">
+                                <select class="services" id="sex" data-task-param="sex">
+                                    <option value="-" selected>Любой</option>
+                                    <option value="М">Мужской</option>
+                                    <option value="Ж">Женский</option>
+                                </select>
+                            </div>
+                            <div class="input-field col m12 s12">
+                                <textarea class="materialize-textarea" id="comment" data-length="1000"></textarea>
+                                <label for="comment">Комментарий</label>
+                            </div>
+                            <div class="input-field col s12 help-data">
+                                <span class="service-desc"></span>
                             </div>
                         </div>
                     </div>
-                </form>
-            {% endblock %}
-        {% else %}
-            <div class="row center grey-text">
-                <h6>Требуется авторизация</h6>
-                <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i>
-                    Вход/Регистрация</a>
-            </div>
-        {% endif %}
+                </div>
+            </form>
+        {% endblock %}
+
+        {#<div class="row center grey-text">#}
+        {#    <h6>Требуется авторизация</h6>#}
+        {#    <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i>#}
+        {#        Вход/Регистрация</a>#}
+        {#</div>#}
+
     {% endcall %}
 
     {% call section(id='task-list') %}
@@ -105,6 +142,7 @@
                                             <th>Количество</th>
                                             <th>Сумма заказа</th>
                                             <th>Ссылка</th>
+                                            <th>Комментарий</th>
                                             <th>Время</th>
                                             <th>Статус</th>
                                         </tr>
@@ -121,6 +159,7 @@
                                                 <td>{{ t.quantity }}</td>
                                                 <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
                                                 <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
+                                                <td>{{ t.comment }}</td>
                                                 <td>{{ t.date }}</td>
                                                 <td>{{ states[t.status] }}</td>
                                             </tr>
@@ -141,6 +180,7 @@
 {% block scripts %}
     <script type="text/javascript">
         $(document).ready(function () {
+            $('.pm').hide();
             var pl = $('.preloader-wrapper'), hd = $('.help-data'), ss = $('.srv-sel .select-wrapper');
             pl.hide();
             hd.hide();
@@ -149,10 +189,15 @@
                 var serv = $('.services:eq(' + $('.categ').val() + ') option:selected'), quantity = $('#quantity');
                 hd.show();
                 ss.hide();
+                $('.pm').hide();
                 $('.srv-sel .select-wrapper:eq(' + $('.categ').val() + ')').show();
                 $('.service-desc').text(serv.attr('data-task-desc'));
                 $('.quantity-help').text('Мин: ' + serv.attr('data-task-min') + ' Макс: ' + serv.attr('data-task-max'));
-                if (serv.val() === '59') {
+                if (serv.attr('data-task-country') === '1') $('.pm-country').show();
+                if (serv.attr('data-task-city') === '1') $('.pm-city').show();
+                if (serv.attr('data-task-age') === '1') $('.pm-age').show();
+                if (serv.attr('data-task-sex') === '1') $('.pm-sex').show();
+                if (serv.val() === '210') {
                     $('.price-h').text('Указана цена за 1 аккаунт');
                     $('.num-h').text('Количество лайков');
                     $('.sum-help').text('Итоговая сумма: ' + serv.attr('data-task-price') + ' руб.');
@@ -163,6 +208,7 @@
                 }
                 quantity.attr('min', serv.attr('data-task-min'));
                 quantity.attr('max', serv.attr('data-task-max'));
+                if (serv.attr('data-task-step')) quantity.attr('step', serv.attr('data-task-step'));
             });
             $('#new-task').submit(function (event) {
                 event.preventDefault();
@@ -172,6 +218,11 @@
                 params = {
                     'tid': $('.services:eq(' + $('.categ').val() + ')').val(),
                     'link': $('#link').val(),
+                    'country': $('#country').val(),
+                    'city': $('#city').val(),
+                    'age': $('#age').val(),
+                    'sex': $('#sex').val(),
+                    'comment': $('#comment').val(),
                     'quantity': $('#quantity').val()
                 };
                 $.ajax({
@@ -181,10 +232,17 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {
-                        M.toast({ html: ({0: data['msg'], 1: 'Добавлено'})[data['response']], displayLength: 5 * 1000 });
+                        {#M.toast({html: ({0: data['msg'], 1: 'Добавлено'})[data['response']], displayLength: 5 * 1000});#}
+                        M.toast({html: 'Добавлено', displayLength: 3 * 1000});
+                        if (data['response'] === 1) location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data);
+                        M.toast({html: data['statusText'] + ': ' + data['responseJSON']['msg'], displayLength: 5 * 1000});
+                    },
+                    complete: function () {
                         btn.fadeIn('fast');
                         pl.hide().removeClass('active');
-                        if (data['response'] === 1) location.reload();
                     }
                 });
             });
