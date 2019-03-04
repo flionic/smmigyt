@@ -87,7 +87,7 @@
                     <a href="#!" data-page="{{ 1 }}"><i class="fas fa-angle-double-left"></i></a>
                 </li>
 {#                {% for i in range(pages) %}#}
-                {% for i in range(pages)[page-6 if page-5 > 0 else 0:page+5] %}
+                {% for i in range(pages)[page-5 if page-5 > 0 else 0:page+4] %}
                     <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}">
                         <a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a>
                     </li>
@@ -101,12 +101,6 @@
             $('.active .count').text(' ({{ tasks.count() }} шт.)');
             $('.status').show();
             $('.status').change(function () {
-                /*
-                var task = $(this).closest("tr")
-                $(action).fadeOut(function () {
-                    $(this).append('<span>Сохранение...</span>');
-                }, 'fast');
-                */
                 var task = $(this).closest("tr"), action = $(this), status = $(this).parent('label');
                 $(action).hide();
                 $(status).append('<span>Сохранение...</span>');
