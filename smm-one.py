@@ -30,6 +30,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config['APP_NAME'] = '1-SMM'
+app.config['VERSION'] = '1.3.6'
 app.config['SERVER_NAME'] = os.getenv('APP_DOMAIN')
 app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', '7-DEV_MODE_KEY-7')
 app.config['SESSION_TYPE'] = 'redis'
