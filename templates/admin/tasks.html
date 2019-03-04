@@ -1,46 +1,57 @@
 {% extends 'layout/main.html' %}
 {% block main %}
-    <div class="section">
-        <form id="tasks" class="col s12">
-            <div class="card">
-                <div class="card-content">
-                    <span class="card-title">Управление заказами</span>
-                    <div class="section row no-mar-bot">
-                        <div class="col s12">
-                            <ul class="tabs">
-                                {% for i in states %}
-                                    <li class="tab col s3">
-                                        <a href="#tab-{{ i }}" data-tabid="{{ i }}">{{ states[i] }}
-                                            <span class="count"></span>
+    <div class="section tasks">
+        <div class="container settings">
+            <form id="tasks" class="col s12">
+                <div class="card">
+                    <div class="card-content">
+{#                        <span class="card-title">Управление заказами</span>#}
+                        <div class="section row no-mar-bot">
+                            <div class="col s12">
+                                <ul class="tabs grey lighten-3">
+                                    {% for i in states %}
+                                        <li class="tab col s2">
+                                            <a class="load" href="#tab-{{ i }}" data-tabid="{{ i }}">{{ states[i] }}
+                                                <span class="count"></span>
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                    <li class="tab col s4">
+                                        <a data-tabid="666">
+                                            <div class="search-wrapper">
+                                                <input id="search" placeholder="Поиск..." class="">
+                                            </div>
                                         </a>
                                     </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="loading center v-align">
-                            <div class="preloader-wrapper big active">
-                                <div class="spinner-layer spinner-red-only">
-                                    <div class="circle-clipper left">
-                                        <div class="circle"></div>
-                                    </div>
-                                    <div class="gap-patch">
-                                        <div class="circle"></div>
-                                    </div>
-                                    <div class="circle-clipper right">
-                                        <div class="circle"></div>
+                                </ul>
+                            </div>
+                            <div class="loading center v-align">
+                                <div class="preloader-wrapper big active">
+                                    <div class="spinner-layer spinner-red-only">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
                                     </div>
                                 </div>
+                                <div><i>Загрузка...</i></div>
                             </div>
-                            <div><i>Загрузка...</i></div>
+                            {% for i in states %}
+                                <div id="tab-{{ i }}" data-tabid="{{ i }}" class="col s12 tb">
+                                </div>
+                            {% endfor %}
+                            <div id="tab-666" data-tabid="666" class="col s12 tb search-tab">
+                            </div>
                         </div>
-                        {% for i in states %}
-                            <div id="tab-{{ i }}" data-tabid="{{ i }}" class="col s12 tb">
-                            </div>
-                        {% endfor %}
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
     {% call section() %}
 
@@ -52,30 +63,47 @@
             $('.sending').hide();
             $('select').formSelect();
 
+            function loadPage(tab_id, page = 1, query = '') {
+                tab_data = $('#tab-' + tab_id);
+                $('.loading').show();
+                $('.page-data').remove();
+                $.ajax({
+                    url: '/ajax/tasks/',
+                    type: "GET",
+                    data: {
+                        status: tab_id,
+                        page: page,
+                        query: query
+                    },
+                    success: function (data) {
+                        tab_data.append(data);
+                        $('.loading').hide();
+                        {#$('select').formSelect();#}
+                        $('.pagination li.waves-effect a').click(function (event) {
+                            event.preventDefault();
+                            tab_id = $('.tab .active').attr('data-tabid');
+                            page = $(this).attr('data-page');
+                            loadPage(tab_id, page, query);
+                        });
+                    }
+                });
+            }
+
             function loadTasks() {
                 $('.tab a').click(function () {
                     $('.tab a').unbind();
-                    tabid = $(this).attr('data-tabid');
-                    tabdata = $('#tab-' + tabid);
-                    $('.loading').show();
-                    $('.page-data').remove();
-                    $.ajax({
-                        url: '/ajax/tasks/',
-                        type: "GET",
-                        data: {
-                            status: tabid,
-                            page: 1
-                        },
-                        success: function (data) {
-                            tabdata.append(data);
-                            $('.loading').hide();
-                            loadTasks();
-                            {#$('select').formSelect();#}
-                        }
-                    });
+                    tab_id = $(this).attr('data-tabid');
+                    loadPage(tab_id, 1, $(this).find('#search').val());
+                    loadTasks();
                 });
             }
+
             loadTasks();
+
+            $('#search').donetyping(function () {
+                loadPage(666, 1, $(this).val());
+            });
+
             $('.loading').hide();
             $('.tab a')[0].click();
         });

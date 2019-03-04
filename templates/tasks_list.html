@@ -1,11 +1,15 @@
 {#TODO: перенести это в конфиг или бд#}
-{% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
-{% set services = config['SERVICES'] %}
-{% set limit = 50 %}
-{% set page = request.args.page|int %}
-{% set pages = (tasks.count()/limit)|round(0, 'ceil')|int %}
 <div class="page-data">
-    {% if tasks.count() %}
+    {% if error %}
+        <div class="page-info center v-align">
+            <h6><i class="black-text">{{ error }}</i></h6>
+        </div>
+    {% elif tasks.count() %}
+        {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
+        {% set services = config['SERVICES'] %}
+        {% set limit = 50 %}
+        {% set page = request.args.page|int %}
+        {% set pages = (tasks.count()/limit)|round(0, 'ceil')|int %}
         <form>
             <table>
                 <thead>
@@ -17,9 +21,9 @@
                     <th>Город</th>
                     <th>Возраст</th>
                     <th>Пол</th>
-                    <th>Количество</th>
-                    <th>Комментарий</th>
-                    <th>Сумма заказа</th>
+                    <th>Кол-во</th>
+                    <th>Коммент</th>
+                    <th>Сумма</th>
                     <th>Ссылка</th>
                     <th>Время</th>
                     <th style="min-width: 130px;">Статус</th>
@@ -30,29 +34,40 @@
                     {# {% if t.status == i %} #}
                     <tr>
                         <td>{{ t.id }}</td>
-                        <td>id{{ t.uid }}</td>
-                        <td>
+                        <td class="td-user">
+                            {% set ava = 'https://1-smm.com/static/img/notfound.png' %}
+                            {% set ava = 'mp' %}
+{#                            <div class="chip">#}
+{#                                <img src="https://www.gravatar.com/avatar/{{ t.user.email|lower|md5 }}?d={{ ava }}" alt="Contact Person">#}
+{#                                {{ 'text'|hash('md5') }}#}
+{#                                {{ t.user.email }}#}
+{#                                ID: {{ t.user_id }}#}
+{#                            </div>#}
+                                <p>{{ t.user.email|lower }}</p>
+                                <p>ID: {{ t.user_id }}</p>
+                        </td>
+                        <td class="td-type">
                             {%- for s in services -%}
-                                {%- if s.id == t.tid -%}{{ s.title }}{%- endif -%}
+                                {%- if s.id == t.task_id -%}{{ s.title }}{%- endif -%}
                             {%- endfor -%}
                         </td>
                         <td>{{ t.country }}</td>
-                        <td>{{ t.city }}</td>
+                        <td class="td-city">{{ t.city }}</td>
                         <td>{{ t.age }}</td>
                         <td>{{ t.sex }}</td>
                         <td>{{ t.quantity }}</td>
-                        <td>{{ t.comment }}</td>
-                        <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }}
-                            р.
-                        </td>
-                        <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
-                        <td>{{ t.date }}</td>
-                        <td>
+                        <td class="td-comment">{{ t.comment }}</td>
+                        <td class="td-sum">{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
+                        <td class="td-link">{{ t.link|wurl|safe }}</td>
+{#                        <td class="td-link">{{ t.link|urlize(40, target='_blank') }}</td>#}
+                        <td class="td-date">{{ t.date }}</td>
+                        <td class="td-status">
                             <label>
                                 <select class="status" data-tid="{{ t.id }}">
                                     {%- for s in states -%}
                                         <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>
                                     {%- endfor -%}
+                                    <option value="666">Удалить</option>
                                 </select>
                             </label>
                         </td>
@@ -61,49 +76,63 @@
                 {%- endfor -%}
                 </tbody>
             </table>
-            <div class="pages center">
-                {% set from = tasks.count() - tasks.offset(limit*(page - 1)).count() %}
-                {% set to = from + tasks.offset(limit*(page - 1)).limit(limit).count() %}
-                <p class="grey-text text-darken-1">Заказы {{ from }}-{{ to }} из {{ tasks.count() }}</p>
-                <ul class="pagination">
-                    <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
-                        <a href="#!" data-page="{{ 1 }}"><i class="fas fa-chevron-left"></i></a>
-                    </li>
-                    {% for i in range(pages) %}
-                        <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}"><a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a></li>
-                    {% endfor %}
-                    <li class="{{ 'disabled' if page == pages else 'waves-effect' }}">
-                        <a href="#!" data-page="{{ pages }}"><i class="fas fa-chevron-right"></i></a>
-                    </li>
-                </ul>
-            </div>
-            <script type="text/javascript">
-                $('.active .count').text(' ({{ tasks.count() }} шт.)');
-                $('.status').show();
-                $('.status').change(function () {
-                    var task = $(this).closest("tr");
-                    $.ajax({
-                        url: '/ajax/save/state',
-                        type: "POST",
-                        data: JSON.stringify({
-                            "id": $(this).attr('data-tid'),
-                            "state": $(this).val()
-                        }),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
-                            task.fadeOut(function () {
-                                $(this).remove();
-                            });
-                        }
-                    });
-                });
-            </script>
         </form>
+        <br>
+        <div class="center">
+            {% set from = tasks.count() - tasks.offset(limit*(page - 1)).count() %}
+            {% set to = from + tasks.offset(limit*(page - 1)).limit(limit).count() %}
+            <p class="grey-text text-darken-1">Заказы {{ from + 1 }}-{{ to }} из {{ tasks.count() }}</p>
+            <ul class="pagination">
+                <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
+                    <a href="#!" data-page="{{ 1 }}"><i class="fas fa-angle-double-left"></i></a>
+                </li>
+{#                {% for i in range(pages) %}#}
+                {% for i in range(pages)[page-6 if page-5 > 0 else 0:page+5] %}
+                    <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}">
+                        <a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a>
+                    </li>
+                {% endfor %}
+                <li class="{{ 'disabled' if page == pages else 'waves-effect' }}">
+                    <a href="#!" data-page="{{ pages }}"><i class="fas fa-angle-double-right"></i></a>
+                </li>
+            </ul>
+        </div>
+        <script type="text/javascript">
+            $('.active .count').text(' ({{ tasks.count() }} шт.)');
+            $('.status').show();
+            $('.status').change(function () {
+                /*
+                var task = $(this).closest("tr")
+                $(action).fadeOut(function () {
+                    $(this).append('<span>Сохранение...</span>');
+                }, 'fast');
+                */
+                var task = $(this).closest("tr"), action = $(this), status = $(this).parent('label');
+                $(action).hide();
+                $(status).append('<span>Сохранение...</span>');
+                $.ajax({
+                    url: '/ajax/save/state',
+                    type: "POST",
+                    data: JSON.stringify({
+                        "id": $(this).attr('data-tid'),
+                        "state": $(this).val()
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                        {#$(status).find('span').remove();#}
+                        {#$(action).fadeIn();#}
+                        task.fadeOut(function () {
+                            $(this).remove();
+                        });
+                    }
+                });
+            });
+        </script>
     {% else %}
         <div class="page-info center v-align">
-            <h6><i class="grey-text">Нет заказов с таким статусом</i></h6>
+            <h6><i class="grey-text">Нет таких заказов</i></h6>
         </div>
     {% endif %}
 </div>
