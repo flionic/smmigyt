@@ -4,7 +4,7 @@ Documentation=https://1-smm.com
 
 [Service]
 WorkingDirectory=/var/flask/smm-one
-ExecStart=/usr/local/bin/python3.7 /var/flask/smm-one/smm-one.py
+ExecStart=/usr/bin/python3.7 /var/flask/smm-one/smm-one.py
 Restart=always
 
 [Install]
