@@ -291,16 +291,11 @@
             $('[name=ik_pm_no]').val('PM_' + makeid());
             modals[1].open();
         });
-        $('.login').click(function () {
-            $.post("login", {"email": $('#email').val(), "password": $('#pass').val()})
-                .done(function (data) {
-                    location.reload();
-                });
-        });
-        $('.signup').click(function () {
-            $.post("signup", {"email": $('#email').val(), "password": $('#pass').val()})
-                .done(function (data) {
-                    location.reload();
+        $('.login, .signup').click(function (e) {
+            e.preventDefault();
+            $.post($(this).attr('data-action'), {"email": $('#email').val(), "password": $('#pass').val()})
+                .always(function() {
+                    window.location.replace("/");
                 });
         });
     });
