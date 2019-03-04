@@ -1,0 +1,106 @@
+{% set limit = 50 %}
+{% set page = request.args.page|int %}
+{% set pages = (users.count()/limit)|round(0, 'ceil')|int %}
+{% if users.count() %}
+{%- for u in users.offset(limit*(page - 1)).limit(limit) -%}
+    <div class="col s12 m6">
+        <div class="card blue-grey darken-1">
+            <div class="card-content white-text row" data-uid="{{ u.id }}">
+                <div class="input-field col s12 grey-text text-lighten-2">
+                    <p class="white-text">ID: {{ u.id }}<span class="right">{{ u.signup_date }}</span></p>
+                </div>
+                <br>
+                <div class="input-field col s12 m8">
+                    <input id="email-{{ u.id }}" autocomplete="off" class="user-email white-text validate" type="email" value="{{ u.email }}" required>
+                    <label for="email-{{ u.id }}" class="grey-text text-lighten-2">Логин</label>
+                </div>
+                <div class="input-field col s12 m4">
+                    <span class="cur-name grey-text text-lighten-1">₽</span>
+                    <input id="balance-{{ u.id }}" autocomplete="off" class="user-balance white-text validate right-align-" type="number" step="0.01" value="{{ u.balance }}" style="width: 75%;" required>
+                    <label for="balance-{{ u.id }}" class="grey-text text-lighten-2">Баланс</label>
+                </div>
+                <div class="input-field col s12 m8">
+                    <input id="pass-{{ u.id }}" autocomplete="off" class="user-pass white-text validate" type="password">
+                    <label for="pass-{{ u.id }}" class="grey-text text-lighten-2">Новый пароль</label>
+                </div>
+                <div class="col s12 m4">
+                    <button class="btn waves-effect waves-light green btn-user-save disabled">Применить</button>
+                    <span class="save-status helper-text white-text right"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endfor -%}
+    <div class="center">
+        {% set from = users.count() - users.offset(limit*(page - 1)).count() %}
+        {% set to = from + users.offset(limit*(page - 1)).limit(limit).count() %}
+        <p class="grey-text text-darken-1">Пользователи {{ from + 1 }}-{{ to }} из {{ users.count() }}</p>
+        <ul class="pagination">
+            <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
+                <a href="#!" data-page="{{ 1 }}"><i class="fas fa-angle-double-left"></i></a>
+            </li>
+{#            {% for i in range(pages) %}#}
+            {% for i in range(pages)[page-5 if page-5 > 0 else 0:page+5] %}
+                <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}">
+                    <a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a>
+                </li>
+            {% endfor %}
+            <li class="{{ 'disabled' if page == pages else 'waves-effect' }}">
+                <a href="#!" data-page="{{ pages }}"><i class="fas fa-angle-double-right"></i></a>
+            </li>
+        </ul>
+    </div>
+{% else %}
+    <div class="page-info center v-align">
+        <h6><i class="grey-text">Нет таких пользователей</i></h6>
+    </div>
+{% endif %}
+<script type="text/javascript">
+    M.updateTextFields();
+    $('.sending').hide();
+    $('.btn-user-save').parent().fadeOut();
+    $('select').formSelect();
+
+    $('.btn-user-save').click(function() {
+        event.preventDefault();
+        var btn_save = $(this), card_user = $(this).closest('.card-content');
+        $(btn_save).addClass('disabled');
+        var user_data = {
+            "uid": $(card_user).attr('data-uid'),
+            "email": $(card_user).find('.user-email').val(),
+            "balance": $(card_user).find('.user-balance').val(),
+            "password": $(card_user).find('.user-pass').val()
+        };
+        $.ajax({
+            {#url: '/ajax/edit-user/',#}
+            url: '/ajax/save/user',
+            type: "POST",
+            data: JSON.stringify(user_data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                M.toast({html: ({0: 'Что-то не так..', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                $(btn_save).parent().fadeOut();
+                {#$(card_user).find('.save-status').text('Cохранено');#}
+            },
+            error: function (data) {
+                M.toast({html: '<span class="red-text">' + data['responseJSON']['error'] + '</span>', displayLength: 5 * 1000});
+                {#$(card_user).find('.save-status').text('не сохранено');#}
+            },
+            complete: function () {
+                $(btn_save).removeClass('disabled');
+            }
+        });
+    });
+
+    $('.input-field input').on('input change', function () {
+        var btn = $(this).closest('.card-content').find('.btn-user-save');
+        $(this).closest('.card-content').find('.btn-user-save').removeClass('disabled').parent().fadeIn();
+    });
+
+    function setcname() {
+        var padding = $(this).val().length * (/^(.*([.,]).*)$/.test($(this).val()) ? 8.2 : 9.5);
+        $(this).siblings('.cur-name').css('padding-left', padding < $(this).width() ? padding : $(this).width() / 100 * 103);
+    }
+    $('.user-balance').each(setcname).on('input keydown keyup mousedown mouseup contextmenu drop', setcname);
+</script>

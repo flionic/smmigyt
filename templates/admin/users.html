@@ -1,72 +1,129 @@
 {% extends 'layout/main.html' %}
 {% block main %}
-    {% call section() %}
-        <form id="settings-users" class="col s12 m10 offset-m1">
+    {% call section('settings row') %}
+        <form id="settings-users" class="settings col s12 m10 offset-m1">
             <div class="card">
                 <div class="card-content">
-                    <span class="card-title">Пользователи</span>
-                    {%- for u in users -%}
-                        <div class="row no-mar-bot user">
-                            <div class="input-field col s12" style="margin: 0">
-                                <span>ID: </span><span class="user-id">{{ u.id }}</span>
-                            </div>
-                            <div class="input-field col s12 m6">
-                                <input class="user-email validate" type="email" value="{{ u.email }}" required>
-                                <label>Логин</label>
-                            </div>
-                            <div class="input-field col s12 m2">
-                                <input class="user-balance validate" type="number" step="0.01" value="{{ u.balance }}"
-                                       style="width: 90%;" required>
-                                <span>₽</span>
-                                <label>Баланс</label>
-                            </div>
-                        </div>
-                    {%- endfor -%}
-                </div>
-                <div class="card-action">
                     <div class="row">
-                        <div class="col s12 right-align">
-                            <button class="btn waves-effect waves-light green btn-action"
-                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>
-                            </button>
+                        <div class="col s8">
+                            <span class="card-title">Пользователи</span>
+                        </div>
+                        <div class="col s4">
+                            <div class="search-wrapper pink darken-4 z-depth-1">
+                                <input id="search" placeholder="Поиск..." class="white-text">
+                                <div class="search-results"></div>
+                            </div>
                         </div>
                     </div>
+                    <div class="row users-list">
+                    {#
+                        {%- for u in users -%}
+                            <div class="col s12 m6">
+                                <div class="card blue-grey darken-1">
+                                    <div class="card-content white-text row" data-uid="{{ u.id }}">
+                                        <div class="input-field col s12 grey-text text-lighten-2">
+                                            <p class="white-text">ID: {{ u.id }}<span class="right">{{ u.signup_date }}</span></p>
+                                        </div>
+                                        <br>
+                                        <div class="input-field col s12 m8">
+                                            <input id="email-{{ u.id }}" class="user-email white-text validate" type="email" value="{{ u.email }}" required>
+                                            <label for="email-{{ u.id }}" class="grey-text text-lighten-2">Логин</label>
+                                        </div>
+                                        <div class="input-field col s12 m4">
+                                            <span class="cur-name grey-text text-lighten-1">₽</span>
+                                            <input id="balance-{{ u.id }}" class="user-balance white-text validate right-align-" type="number" step="0.01" value="{{ u.balance }}" style="width: 75%;" required>
+                                            <label for="balance-{{ u.id }}" class="grey-text text-lighten-2">Баланс</label>
+                                        </div>
+                                        <div class="input-field col s12 m8">
+                                            <input id="pass-{{ u.id }}" class="user-pass white-text validate" type="password">
+                                            <label for="pass-{{ u.id }}" class="grey-text text-lighten-2">Новый пароль</label>
+                                        </div>
+                                        <div class="col s12 m4">
+                                            <button class="btn waves-effect waves-light green btn-user-save disabled">Применить</button>
+                                            <span class="save-status helper-text white-text right"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {%- endfor -%}
+                    #}
+                    </div>
+                    {#{%- for u in users -%}#}
+                    {#    <div class="row no-mar-bot user">#}
+                    {#        <div class="input-field col s12" style="margin: 0">#}
+                    {#            <span>ID: </span><span class="user-id">{{ u.id }}</span>#}
+                    {#        </div>#}
+                    {#        <div class="input-field col s12 m6">#}
+                    {#            <input class="user-email validate" type="email" value="{{ u.email }}" required>#}
+                    {#            <label>Логин</label>#}
+                    {#        </div>#}
+                    {#        <div class="input-field col s12 m2">#}
+                    {#            <input class="user-balance validate" type="number" step="0.01" value="{{ u.balance }}"#}
+                    {#                   style="width: 90%;" required>#}
+                    {#            <span>₽</span>#}
+                    {#            <label>Баланс</label>#}
+                    {#        </div>#}
+                    {#    </div>#}
+                    {#{%- endfor -%}#}
                 </div>
+                {#<div class="card-action">#}
+                {#    <div class="row">#}
+                {#        <div class="col s12 right-align">#}
+                {#            <button class="btn waves-effect waves-light green btn-action"#}
+                {#                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>#}
+                {#            </button>#}
+                {#        </div>#}
+                {#    </div>#}
+                {#</div>#}
             </div>
         </form>
     {% endcall %}
 {% endblock %}
+
 {% block scripts %}
     <script type="text/javascript">
         $(document).ready(function () {
-            $('.sending').hide();
-            $('select').formSelect();
-            $('#settings-users').submit(function (event) {
-                event.preventDefault();
-                var pl = $(this).find('.sending'), btn = $(this).find('.btn-action'), fid = $(this).attr('id'), params = [];
-                pl.addClass('active').show();
-                btn.fadeOut('fast');
-                $('.user').each(function (i, elem) {
-                    params.push({
-                        "id": $(this).find('.user-id').text(),
-                        "email": $(this).find('.user-email').val(),
-                        "balance": $(this).find('.user-balance').val()
-                    });
-                });
-                console.log(JSON.stringify(params));
+            function loadPage(page = 1, query = '') {
+                $('.loading').show();
+                $('.users-list').children().remove();
                 $.ajax({
-                    url: '/ajax/save/' + $(this).attr('id'),
-                    type: "POST",
-                    data: JSON.stringify(params),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
+                    url: '/ajax/users/',
+                    type: "GET",
+                    data: {
+                        page: page,
+                        query: query
+                    },
                     success: function (data) {
-                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
-                        btn.fadeIn('fast');
-                        pl.hide().removeClass('active');
+                        $('.loading').hide();
+                        $('.users-list').html(data);
+                        $('.pagination li.waves-effect a').click(function (event) {
+                            event.preventDefault();
+                            page = $(this).attr('data-page');
+                            loadPage(page, query);
+                        });
                     }
                 });
+            }
+            loadPage();
+
+            $('#search').donetyping(function () {
+                loadPage(1, $(this).val());
+            });
+            $('#search').focus(function() {
+                var sw = $(this).parent('.search-wrapper');
+                $(sw).removeClass('z-depth-1');
+                $(sw).addClass('z-depth-2');
+                $(sw).removeClass('darken-4');
+                $(sw).addClass('darken-2');
+            });
+            $('#search').focusout(function() {
+                var sw = $(this).parent('.search-wrapper');
+                $(sw).removeClass('z-depth-2');
+                $(sw).addClass('z-depth-1');
+                $(sw).removeClass('darken-2');
+                $(sw).addClass('darken-4');
             });
         });
     </script>
+{# test.html #}
 {% endblock %}
