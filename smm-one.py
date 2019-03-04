@@ -499,14 +499,6 @@ def save_settings(section):
                 # current_user.balance += task.amount
             elif request.json['state'] == '666':
                 db.session.delete(task)
-        elif section == 'tasks':
-            for i in request.json:
-                task = Tasks.query.filter_by(id=i['id']).first()
-                task.status = i['status']
-                if i['status'] == '3':
-                    Users.query.filter_by(id=task.user_id).first().balance += task.amount
-                    # current_user.balance += task.amount
-                    task.amount = 0
         elif section == 'settings-users':
             for i in request.json:
                 user = Users.query.filter_by(id=i['id']).first()
