@@ -6,7 +6,6 @@
         </div>
     {% elif tasks.count() %}
         {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
-{#        {% set services = config['SERVICES'] %}#}
         {% set limit = 50 %}
         {% set page = request.args.page|int %}
         {% set pages = (tasks.count()/limit)|round(0, 'ceil')|int %}
@@ -31,12 +30,11 @@
                 </thead>
                 <tbody>
                 {% for t in tasks.offset(limit*(page - 1)).limit(limit) %}
-                    {#{% if t.status == i %}#}
                     <tr>
                         <td>{{ t.id }}</td>
                         <td class="td-user">
-                            {% set ava = 'https://1-smm.com/static/img/notfound.png' %}
-                            {% set ava = 'mp' %}
+                                {#{% set ava = 'https://1-smm.com/static/img/notfound.png' %}#}
+                                {#{% set ava = 'mp' %}#}
                                 {#<div class="chip">#}
                                 {#    <img src="https://www.gravatar.com/avatar/{{ t.user.email|lower|md5 }}?d={{ ava }}" alt="Contact Person">#}
                                 {#    {{ 'text'|hash('md5') }}#}
@@ -55,7 +53,6 @@
                         <td class="td-comment">{{ t.comment }}</td>
                         <td class="td-sum">{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
                         <td class="td-link">{{ t.link|wurl|safe }}</td>
-                        {#<td class="td-link">{{ t.link|urlize(40, target='_blank') }}</td>#}
                         <td class="td-date">{{ t.date }}</td>
                         <td class="td-status">
                             <label>
@@ -68,7 +65,6 @@
                             </label>
                         </td>
                     </tr>
-                    {#{% endif %}#}
                 {% endfor %}
                 </tbody>
             </table>
@@ -82,7 +78,6 @@
                 <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
                     <a href="#!" data-page="{{ 1 }}"><i class="fas fa-angle-double-left"></i></a>
                 </li>
-                {#{% for i in range(pages) %}#}
                 {% for i in range(pages)[page-5 if page-5 > 0 else 0:page+4] %}
                     <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}">
                         <a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a>
@@ -111,8 +106,6 @@
                     dataType: "json",
                     success: function (data) {
                         M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
-                        {#$(status).find('span').remove();#}
-                        {#$(action).fadeIn();#}
                         task.fadeOut(function () {
                             $(this).remove();
                         });
