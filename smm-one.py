@@ -110,8 +110,7 @@ class Users(db.Model):
     email = db.Column('email', db.String(40), unique=True, nullable=False, index=True)
     password = db.Column('password', db.String(60), nullable=False)
     balance = db.Column('balance', db.Float, nullable=False, default=0)
-    # 0 - deactivated, 1 - active, 9 - banned, 7 - admin
-    status = db.Column('status', db.Integer, nullable=False, default=0)
+    status = db.Column('status', db.Integer, nullable=False, default=0)  # 0 - locked, 1 - active, 6 - banned, 7 - admin
     signup_date = db.Column('signup_date', db.DateTime)
     last_login = db.Column('last_login', db.DateTime)
 
@@ -216,8 +215,7 @@ class Tasks(db.Model):
     link = db.Column('link', db.String(255))
     quantity = db.Column('quantity', db.String(48))
     amount = db.Column('amount', db.Float)
-    status = db.Column('status', db.Integer, default=0)
-    # 0 - Обработка / 1 - В работе / 2 - Выполнен / 3 - Отменен
+    status = db.Column('status', db.Integer, default=0)  # 0 - Обработка, 1 - В работе, 2 - Выполнен, 3 - Отменен
     date = db.Column('date', db.DateTime)
     country = db.Column('country', db.String(255), default='-')
     city = db.Column('city', db.String(255), default='-')
@@ -291,7 +289,8 @@ class TaskUserWhoosheer(AbstractWhoosheer):
 
 @app.route('/')
 def index():
-    tasks = Tasks.query.filter_by(user_id=current_user.id).all() if current_user.is_anonymous is not True else None
+    # TODO: подгружать сервисы аджаксом
+    tasks = None if current_user.is_anonymous is True else Tasks.query.filter_by(user_id=current_user.id).all()
     return render_template('index.html', tasks=tasks)
 
 
@@ -391,8 +390,7 @@ def payment():
             headers = {'Accept': 'application/json'}
             auth = (app.config['IK_ID'], app.config['IK_KEY'])
             ik_r = requests.get(ik_url + 'co-invoice/' + request.form.get('ik_inv_id'), headers=headers, auth=auth).json()
-            # {'status': 'error', 'code': 4,
-            #  'data': {'innerCode': 0}, 'message': 'Auth: api not enabled for current user'}
+            # {'status': 'error', 'code': 4, 'data': {'innerCode': 0}, 'message': 'Auth: api not enabled for current user'}
             inv.ik_state = ik_r['data']['state']
             if inv.ik_state == '7':
                 inv.ik_inv_prc = ik_r['data']['processed']
@@ -409,6 +407,7 @@ def payment():
     return redirect(url_for('index'))
 
 
+# TODO: we need refactoring
 @app.route('/ajax/tasks/', methods=['GET'])
 @login_required
 def load_tasks():
@@ -429,16 +428,17 @@ def load_tasks():
     return abort(403)
 
 
+# TODO: we need refactoring
 @app.route('/ajax/users/', methods=['GET'])
 @login_required
 def load_users():
     if current_user.status == 7:
         q = request.args.get('query')
-        q = q[:q.find('@')] if '@' in q else q
         if str.isdigit(q):
             users = Users.query.filter_by(id=int(q))
         elif q:
             try:
+                q = q[:q.find('@')] if '@' in q[1:] else q  # removing unsearchable @
                 users = Users.query.whooshee_search(q)
             except Exception as e:
                 return en_to_ru(e)
@@ -451,6 +451,7 @@ def load_users():
 @app.route('/ajax/save/<section>', methods=['POST'])
 @login_required
 def save_settings(section):
+    # TODO: refactoring this
     if current_user.status == 7:
         if section == 'settings-main':
             for i in request.json.items():
@@ -488,14 +489,15 @@ def save_settings(section):
                 user.balance = i['balance']
         elif section == 'user':
             user = Users.query.filter_by(id=request.json['uid']).first()
-            # TODO: если что-то не менялось - не менять
-            try:
-                v = validate_email(request.json['email'])  # validate and get info
-                user.email = v["email"]  # replace with normalized form
-            except Exception as e:
-                return jsonify({'response': 0, 'error': en_to_ru(e)}), 500
-            user.balance = request.json['balance']
+            if request.json['email'] != user.email:
+                try:
+                    user.email = validate_email(request.json['email'])["email"]
+                except Exception as e:
+                    return jsonify({'response': 0, 'error': en_to_ru(e)}), 500
+            if request.json['balance'] != user.balance:
+                user.balance = request.json['balance']
             if request.json['password']:
+                # TODO: разлогин после смены пароля
                 user.password = bcrypt.hashpw(str.encode(request.json['password']), bcrypt.gensalt())
         db.session.commit()
         return jsonify({'response': 1})
