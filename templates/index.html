@@ -221,7 +221,7 @@
                     },
                     error: function (data) {
                         console.log(data);
-                        M.toast({html: data['statusText'] + ': ' + data['responseJSON']['msg'], displayLength: 5 * 1000});
+                        M.toast({html: '<span class="red-text">' + data['statusText'] + ':&nbsp;</span>' + data['responseJSON']['msg'], displayLength: 20 * 1000});
                     },
                     complete: function () {
                         btn.fadeIn('fast');

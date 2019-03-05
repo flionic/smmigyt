@@ -308,7 +308,7 @@
                     {% if category == 'error' %}
                         M.toast({
                             html: '<span class="red-text">Ошибка:&nbsp;</span><span>{{ message }}</span>',
-                            displayLength: 10 * 1000
+                            displayLength: 20 * 1000
                         });
                     {% else %}
                         M.toast({html: '{{ message }}'});
