@@ -18,7 +18,7 @@ from flask_sqlalchemy import SQLAlchemy
 # from sqlalchemy import desc
 from flask_session import Session
 # from flask_mail import Message
-from flask_mail_sendgrid import MailSendGrid
+# from flask_mail_sendgrid import MailSendGrid
 
 from flask_whooshee import Whooshee, AbstractWhoosheer
 from whoosh.index import LockError
@@ -47,7 +47,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = "users.login"
 sess = Session(app)
 db = SQLAlchemy(app)
-mail = MailSendGrid()
+# mail = MailSendGrid()
 whooshee = Whooshee(app)
 
 
@@ -581,7 +581,7 @@ def en_to_ru(text):
 
 
 def init_settings():
-    app.config['MAINTENANCE'] = 1
+    app.config['MAINTENANCE'] = 0
     app.config['APP_NAME'] = Settings.query.filter_by(key='app_name').first().value
     app.config['APP_DOMAIN'] = Settings.query.filter_by(key='app_domain').first().value
     app.config['SERVER_NAME'] = app.config['APP_DOMAIN']
