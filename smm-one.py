@@ -318,9 +318,14 @@ def index():
     return render_template('index.html', tasks=tasks)
 
 
-@app.route('/page/<section>')
-def info_pages(section):
-    return render_template('page/' + section + '.html')
+@app.route('/info/<page>')
+def info_pages(page):
+    return render_template('pages/info.html', data=['Описание', page, 'Конец'])
+
+
+@app.route('/pages/<section>')
+def main_pages(section):
+    return render_template('pages/' + section + '.html')
 
 
 @app.route('/admin/<section>')
