@@ -310,11 +310,8 @@ def main_pages(section):
 @login_required
 def admin_pages(section):
     # TODO: make admin handler
-    # TODO: refactoring this
     if current_user.status == 7:
-        tasks = Tasks.query.filter_by(s_type='manual') if section == 'tasks' else ''
-        users = Users.query.all() if section == 'tasks' or 'users' else ''
-        return render_template('admin/' + section + '.html', tasks=tasks, users=users)
+        return render_template('admin/' + section + '.html')
 
 
 @app.route('/signup', methods=['POST'])
