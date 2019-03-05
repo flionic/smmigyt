@@ -163,37 +163,51 @@
                         <a href="info/youtube" class="white-text"><i class="fab fa-youtube"></i></a>
                         <a href="info/twitter" class="white-text"><i class="fab fa-twitter"></i></a>
                     <li>
-                        <!-- Yandex.Metrika informer -->
-                        <a href="https://metrika.yandex.ru/stat/?id=51062585&amp;from=informer" target="_blank" rel="nofollow">
-                            <img src="https://informer.yandex.ru/informer/51062585/1_0_EFEFEFFF_EFEFEFFF_0_uniques" style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (уникальные посетители)" />
-                        </a>
-                        <!-- /Yandex.Metrika informer -->
-                        <!-- Yandex.Metrika counter -->
-                        <script type="text/javascript" >
-                            (function (d, w, c) {
-                                (w[c] = w[c] || []).push(function() {
-                                    try {
-                                        w.yaCounter51062585 = new Ya.Metrika2({
-                                            id:51062585,
-                                            clickmap:true,
-                                            trackLinks:true,
-                                            accurateTrackBounce:true
-                                        });
-                                    } catch(e) { }
-                                });
-                                var n = d.getElementsByTagName("script")[0],
-                                    s = d.createElement("script"),
-                                    f = function () { n.parentNode.insertBefore(s, n); };
-                                s.type = "text/javascript";
-                                s.async = true;
-                                s.src = "https://mc.yandex.ru/metrika/tag.js";
-                                if (w.opera == "[object Opera]") {
-                                    d.addEventListener("DOMContentLoaded", f, false);
-                                } else { f(); }
-                            })(document, window, "yandex_metrika_callbacks2");
-                        </script>
-                        <noscript><div><img src="https://mc.yandex.ru/watch/51062585" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-                        <!-- /Yandex.Metrika counter -->
+                        {% if request.remote_addr|country != 'UA' %}
+                            <!-- Yandex.Metrika informer -->
+                            <a href="https://metrika.yandex.ru/stat/?id=51062585&amp;from=informer" target="_blank"
+                               rel="nofollow">
+                                <img src="https://informer.yandex.ru/informer/51062585/1_0_EFEFEFFF_EFEFEFFF_0_uniques"
+                                     style="width:80px; height:15px; border:0;" alt="Яндекс.Метрика"
+                                     title="Яндекс.Метрика: данные за сегодня (уникальные посетители)"/>
+                            </a>
+                            <!-- /Yandex.Metrika informer -->
+                            <!-- Yandex.Metrika counter -->
+                            <script type="text/javascript">
+                                (function (d, w, c) {
+                                    (w[c] = w[c] || []).push(function () {
+                                        try {
+                                            w.yaCounter51062585 = new Ya.Metrika2({
+                                                id: 51062585,
+                                                clickmap: true,
+                                                trackLinks: true,
+                                                accurateTrackBounce: true
+                                            });
+                                        } catch (e) {
+                                        }
+                                    });
+                                    var n = d.getElementsByTagName("script")[0],
+                                        s = d.createElement("script"),
+                                        f = function () {
+                                            n.parentNode.insertBefore(s, n);
+                                        };
+                                    s.type = "text/javascript";
+                                    s.async = true;
+                                    s.src = "https://mc.yandex.ru/metrika/tag.js";
+                                    if (w.opera == "[object Opera]") {
+                                        d.addEventListener("DOMContentLoaded", f, false);
+                                    } else {
+                                        f();
+                                    }
+                                })(document, window, "yandex_metrika_callbacks2");
+                            </script>
+                            <noscript>
+                                <div><img src="https://mc.yandex.ru/watch/51062585"
+                                          style="position:absolute; left:-9999px;"
+                                          alt=""/></div>
+                            </noscript>
+                            <!-- /Yandex.Metrika counter -->
+                        {% endif %}
                     </li>
                 </ul>
             </div>
