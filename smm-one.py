@@ -16,11 +16,12 @@ import requests
 # from dotenv import load_dotenv
 # from MySQLdb._exceptions import DataError
 import whoosh.fields
+# from jinja2 import Environment, FileSystemLoader
 from werkzeug.contrib.fixers import ProxyFix
-from email_validator import validate_email, EmailNotValidError
+from email_validator import validate_email  # , EmailNotValidError
 
 # import flask
-from flask import Flask, render_template, request, redirect, url_for, flash, abort, json, make_response
+from flask import Flask, render_template, request, redirect, url_for, flash, abort  # , json, make_response
 # from flask import render_template_string, send_from_directory
 from flask.json import jsonify
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
@@ -32,6 +33,7 @@ from flask_session import Session
 from flask_mail_sendgrid import MailSendGrid
 
 from flask_whooshee import Whooshee, AbstractWhoosheer
+from whoosh.index import LockError
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 # TODO: move to configparser (https://hackernoon.com/4-ways-to-manage-the-configuration-in-python-4623049e841b)
