@@ -10,17 +10,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <title>{{ app_name }} — {% block title -%}Безопасное продвижение в соц. сетях{%- endblock -%}</title>
-    <meta name="description"
-          content="{% block description %}Здесь вы можете заказать качественную накрутку подписчиков и лайков для различных социальных сетей{% endblock %}">
-    <link rel=stylesheet type=text/css media="screen,projection"
-          href="{{ url_for('static', filename='css/materialize.min.css') }}">
-    <link rel=stylesheet type=text/css media="screen,projection"
-          href="{{ url_for('static', filename='css/style.css') }}?ver={{ ver }}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
-          integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-        <meta name="application-name" content="{{ app_name }}">
-        <meta name="theme-color" content="#880e4f">
+    <title>{{ app_name }} — {% block title %}Безопасное продвижение в соц. сетях{% endblock %}</title>
+    <meta name="description" content="{% block description %}Здесь вы можете заказать качественную накрутку подписчиков и лайков для различных социальных сетей{% endblock %}">
+    <link rel=stylesheet type=text/css media="screen,projection" href="{{ url_for('static', filename='css/materialize.min.css') }}">
+    <link rel=stylesheet type=text/css media="screen,projection" href="{{ url_for('static', filename='css/style.css') }}?ver={{ ver }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <meta name="application-name" content="{{ app_name }}">
+    <meta name="theme-color" content="#880e4f">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
     {#    <link rel="manifest" href="manifest.webapp.json">#}
     {#    <meta name="apple-mobile-web-app-title" content="{{ app_name }}">#}
     {#    <meta name="msapplication-TileColor" content="#2b5797">#}
@@ -31,72 +28,66 @@
     {#    <meta name="interkassa-verification" content="46871daa498d3550fb477f1fe2eb4442"/>#}
     <!-- Global site tag (gtag.js) - Google Analytics -->
     {#    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-42401203-20"></script>#}
-{#    <script>#}
-{#        window.dataLayer = window.dataLayer || [];#}
-{##}
-{#        function gtag() {#}
-{#            dataLayer.push(arguments);#}
-{#        }#}
-{##}
-{#        gtag('js', new Date());#}
-{#        gtag('config', 'UA-42401203-20');#}
-{#    </script>#}
-    {%- block head -%}{%- endblock -%}
+    {#    <script>#}
+    {#        window.dataLayer = window.dataLayer || [];#}
+    {##}
+    {#        function gtag() {#}
+    {#            dataLayer.push(arguments);#}
+    {#        }#}
+    {##}
+    {#        gtag('js', new Date());#}
+    {#        gtag('config', 'UA-42401203-20');#}
+    {#    </script>#}
+    {% block head %}{% endblock %}
 </head>
-{%- macro section(classes='row', id='') -%}
+{% macro section(classes='row', id='') %}
     <div class="section" id="{{ id }}">
-        <div class="container"><div class="{{ classes }}">{{ caller() }}</div></div>
+        <div class="container">
+            <div class="{{ classes }}">
+                {{ caller() }}
+            </div>
+        </div>
     </div>
-{%- endmacro -%}
-{%- macro navmenu() -%}
-    {%- if current_user and current_user.is_authenticated -%}
-        {%- if current_user.status == 7 -%}
+{% endmacro %}
+{% macro navmenu() %}
+    {% if current_user and current_user.is_authenticated %}
+        {% if current_user.status == 7 %}
             <li><a href="/admin/tasks"><i class="fas fa-pen"></i>Модерация</a></li>
             <li><a href="/admin/users"><i class="fas fa-user-edit"></i>Пользователи</a></li>
             <li><a href="/admin/settings"><i class="fas fa-wrench"></i>Настройки</a></li>
-        {%- endif -%}
-        <li>
-            <a class="btn-deposit" href="#!">
-                <i class="fas fa-wallet"></i>Баланс: {{ (current_user.balance|round(2)|string).rstrip('0').rstrip('.') }} ₽
-            </a>
-        </li>
+        {% endif %}
+        <li><a class="btn-deposit" href="#!"><i class="fas fa-wallet"></i>Баланс:&nbsp;{{ (current_user.balance|round(2)|string).rstrip('0').rstrip('.') }}&nbsp;₽</a></li>
         {{ caller() }}
-    {%- else -%}
+    {% else %}
         <li><a class="btn-login"><i class="fas fa-sign-in-alt"></i>Вход</a></li>
-    {%- endif -%}
-{%- endmacro -%}
+    {% endif %}
+{% endmacro %}
 <body class="pink darken-4">
 <header>
     <nav class="pink darken-4" role="navigation">
         <div class="nav-wrapper container">
-            <a id="logo-container" href="/" class="brand-logo"><i class="fab fa-audible hide-on-small-only"></i>
-                {{- app_name -}}
-            </a>
+            <a id="logo-container" href="/" class="brand-logo"><i class="fab fa-audible hide-on-small-only"></i>{{ app_name }}</a>
             <ul class="right hide-on-med-and-down">
-                {%- call navmenu() -%}
-                    <li>
-                        <a class="dropdown-trigger" href="#!" data-target="actions_dd">
-                            <i class="fas fa-user"></i>{{ current_user.email }}<i class="fas fa-ellipsis-v right"></i>
-                        </a>
-                    </li>
+                {% call navmenu() %}
+                    <li><a class="dropdown-trigger" href="#!" data-target="actions_dd">
+                        <i class="fas fa-user"></i>{{ current_user.email }}<i class="fas fa-ellipsis-v right"></i>
+                    </a></li>
                     <ul id="actions_dd" class="dropdown-content">
                         <li class="divider"></li>
                         <li><a class="red-text right-align" href="/logout">Выйти</a></li>
                     </ul>
-                {%- endcall -%}
+                {% endcall %}
             </ul>
             <ul id="nav-mobile" class="sidenav">
-                {%- call navmenu() -%}
-                    <li><a href="/logout"><i class="fas fa-sign-in-alt"></i>Выйти: {{ current_user.email }}</a></li>
-                {%- endcall -%}
+                {% call navmenu() %}<li><a href="/logout"><i class="fas fa-sign-in-alt"></i>Выйти: {{ current_user.email }}</a></li>{% endcall %}
             </ul>
             <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="fas fa-bars"></i></a>
         </div>
     </nav>
 </header>
 <main>
-    {%- block main -%}
-    {%- endblock -%}
+    {% block main %}
+    {% endblock %}
     {% call section(id='modals') %}
         <div class="modal modal-confirm modal-login">
             <div class="modal-footer">
@@ -110,8 +101,12 @@
                         <label for="pass" class="active">Пароль</label>
                     </div>
                     <div class="input-field col s12">
-                        <button data-action="signup" type="submit" class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться</button>
-                        <button data-action="login" type="submit" class="btn waves-effect waves-light green white-text login">Войти</button>
+                        <button data-action="signup" type="submit"
+                                class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться
+                        </button>
+                        <button data-action="login" type="submit"
+                                class="btn waves-effect waves-light green white-text login">Войти
+                        </button>
                     </div>
                 </form>
             </div>
@@ -158,15 +153,15 @@
             <div class="col l3 m6 s12 offset-l1">
                 <h5 class="white-text"><i class="far fa-question-circle"></i>Чаво</h5>
                 <ul>
-{#                    <li><a class="white-text" href="/page/help">Помощь</a></li>#}
-                    <li><a class="white-text" href="/page/policy">Пользовательское соглашение</a></li>
+                    {#<li><a class="white-text" href="/pages/help">Помощь</a></li>#}
+                    <li><a class="white-text" href="/pages/policy">Пользовательское соглашение</a></li>
                     <li style="font-size: 29px;">
-                        <a href="0/page/ok" class="white-text"><i class="fab fa-odnoklassniki"></i></a>
-                        <a href="0/page/instagram" class="white-text"><i class="fab fa-instagram"></i></a>
-                        <a href="0/page/facebook" class="white-text"><i class="fab fa-facebook-square"></i></a>
-                        <a href="0/page/telegram" class="white-text"><i class="fab fa-telegram"></i></a>
-                        <a href="0/page/youtube" class="white-text"><i class="fab fa-youtube"></i></a>
-                        <a href="0/page/twitter" class="white-text"><i class="fab fa-twitter"></i></a>
+                        <a href="info/ok" class="white-text"><i class="fab fa-odnoklassniki"></i></a>
+                        <a href="info/instagram" class="white-text"><i class="fab fa-instagram"></i></a>
+                        <a href="info/facebook" class="white-text"><i class="fab fa-facebook-square"></i></a>
+                        <a href="info/telegram" class="white-text"><i class="fab fa-telegram"></i></a>
+                        <a href="info/youtube" class="white-text"><i class="fab fa-youtube"></i></a>
+                        <a href="info/twitter" class="white-text"><i class="fab fa-twitter"></i></a>
                     <li>
                         <!-- Yandex.Metrika informer -->
                         <a href="https://metrika.yandex.ru/stat/?id=51062585&amp;from=informer" target="_blank" rel="nofollow">
@@ -216,8 +211,10 @@
                     <li><a class="white-text btn-deposit">Пополнить баланс</a></li>
                     <!-- begin WebMoney Transfer : attestation label -->
                     <li style="padding-top: 5px;">
-                        <a class="white-text" href="https://passport.webmoney.ru/asp/certview.asp?wmid=136250161007" target="_blank">
-                            <img src="/static/img/v_blue_on_white_ru.png" alt="Здесь находится аттестат нашего WM идентификатора 136250161007" border="0"/>
+                        <a class="white-text" href="https://passport.webmoney.ru/asp/certview.asp?wmid=136250161007"
+                           target="_blank">
+                            <img src="/static/img/v_blue_on_white_ru.png"
+                                 alt="Здесь находится аттестат нашего WM идентификатора 136250161007" border="0"/>
                             <br/><span style="font-size: 0.7em;">Проверить аттестат</span>
                         </a>
                     </li>

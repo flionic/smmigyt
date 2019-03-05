@@ -40,6 +40,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # load_dotenv(os.path.join(basedir, 'settings.cfg'))
 
 app = Flask(__name__)
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config['APP_NAME'] = '1-SMM'
 app.config['VERSION'] = '1.3.6'

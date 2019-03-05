@@ -2,7 +2,7 @@
 {% set page = request.args.page|int %}
 {% set pages = (users.count()/limit)|round(0, 'ceil')|int %}
 {% if users.count() %}
-{%- for u in users.offset(limit*(page - 1)).limit(limit) -%}
+{% for u in users.offset(limit*(page - 1)).limit(limit) %}
     <div class="col s12 m6">
         <div class="card blue-grey darken-1">
             <div class="card-content white-text row" data-uid="{{ u.id }}">
@@ -30,7 +30,7 @@
             </div>
         </div>
     </div>
-{%- endfor -%}
+{% endfor %}
     <div class="center">
         {% set from = users.count() - users.offset(limit*(page - 1)).count() %}
         {% set to = from + users.offset(limit*(page - 1)).limit(limit).count() %}
@@ -39,7 +39,7 @@
             <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
                 <a href="#!" data-page="{{ 1 }}"><i class="fas fa-angle-double-left"></i></a>
             </li>
-{#            {% for i in range(pages) %}#}
+            {#{% for i in range(pages) %}#}
             {% for i in range(pages)[page-5 if page-5 > 0 else 0:page+5] %}
                 <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}">
                     <a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a>

@@ -30,8 +30,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                {%- for t in tasks.offset(limit*(page - 1)).limit(limit) -%}
-                    {# {% if t.status == i %} #}
+                {% for t in tasks.offset(limit*(page - 1)).limit(limit) %}
+                    {#{% if t.status == i %}#}
                     <tr>
                         <td>{{ t.id }}</td>
                         <td class="td-user">
@@ -47,9 +47,9 @@
                                 <p>ID: {{ t.user_id }}</p>
                         </td>
                         <td class="td-type">
-                            {%- for s in services -%}
-                                {%- if s.id == t.task_id -%}{{ s.title }}{%- endif -%}
-                            {%- endfor -%}
+                            {% for s in services %}
+                                {% if s.id == t.task_id %}{{ s.title }}{% endif %}
+                            {% endfor %}
                         </td>
                         <td>{{ t.country }}</td>
                         <td class="td-city">{{ t.city }}</td>
@@ -64,16 +64,16 @@
                         <td class="td-status">
                             <label>
                                 <select class="status" data-tid="{{ t.id }}">
-                                    {%- for s in states -%}
+                                    {% for s in states %}
                                         <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>
-                                    {%- endfor -%}
+                                    {% endfor %}
                                     <option value="666">Удалить</option>
                                 </select>
                             </label>
                         </td>
                     </tr>
-                    {# {% endif %} #}
-                {%- endfor -%}
+                    {#{% endif %}#}
+                {% endfor %}
                 </tbody>
             </table>
         </form>

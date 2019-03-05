@@ -23,22 +23,19 @@
                         <div class="row no-mar-bot">
                             <div class="input-field srv-sel col m10- s12">
                                 {% for i in categories %}
-{#                                    <select class="services" id="service" data-categ="{{ i }}"#}
-                                    <select class="services" data-categ="{{ i }}"
-                                            data-task-param="service">
+                                    {#<select class="services" id="service" data-categ="{{ i }}"#}
+                                    <select class="services" data-categ="{{ i }}" data-task-param="service">
                                         <option value="" disabled selected>Мне нужно...</option>
                                         {% for s in services %}
                                             {% if s.state == 1 and s.type == i %}
                                                 <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
-                                                        data-task-price="{{ s.price }}"
-                                                        data-task-desc="{{ s.desc }}"
+                                                        data-task-price="{{ s.price }}" data-task-desc="{{ s.desc|striptags }}"
                                                         {{ 'data-task-step=100' if s.id == 93 or s.id == 104 else '' }}
                                                         {{ 'data-task-country=1' if s.country else '' }}
                                                         {{ 'data-task-city=1' if s.city else '' }}
                                                         {{ 'data-task-age=1' if s.age else '' }}
                                                         {{ 'data-task-sex=1' if s.sex else '' }}
-                                                        value="{{ s.id }}">{{ s.title }}
-                                                    - {{ (s.price|round(2)|string).rstrip('0').rstrip('.') }} р.
+                                                        value="{{ s.id }}">{{ s.title }} - {{ (s.price|round(2)|string).rstrip('0').rstrip('.') + 'р.' -}}
                                                 </option>
                                             {% endif %}
                                         {% endfor %}
@@ -55,16 +52,13 @@
                                 <span class="helper-text sum-help help-data"></span>
                             </div>
                             <div class="input-field col m4 s12">
-                                <input id="quantity" class="validate" data-task-param="quantity" type="number"
-                                       required>
+                                <input id="quantity" class="validate" data-task-param="quantity" type="number" required>
                                 <label for="quantity" class="num-h">Количество</label>
                                 <span class="helper-text quantity-help help-data"></span>
                             </div>
                             {% if current_user and current_user.is_authenticated %}
                                 <div class="input-field col m2 s12 center">
-                                    <button class="btn btn-action waves-effect waves-light green task-action"
-                                            type="submit" name="submit"> Заказать
-                                    </button>
+                                    <button class="btn btn-action waves-effect waves-light green task-action" type="submit" name="submit">Заказать</button>
                                     <div class="preloader-wrapper">
                                         <div class="spinner-layer spinner-blue-only">
                                             <div class="circle-clipper left">
@@ -81,9 +75,7 @@
                                 </div>
                             {% else %}
                                 <div class="input-field col m12 center">
-                                    <a class="btn-large waves-effect waves-light blue btn-login"><i
-                                            class="fas fa-sign-in-alt"></i>
-                                        Вход/Регистрация</a>
+                                    <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i>Вход/Регистрация</a>
                                 </div>
                             {% endif %}
                             <div class="input-field pm pm-country col m3 s12">
@@ -117,15 +109,12 @@
                 </div>
             </form>
         {% endblock %}
-
         {#<div class="row center grey-text">#}
         {#    <h6>Требуется авторизация</h6>#}
         {#    <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i>#}
         {#        Вход/Регистрация</a>#}
         {#</div>#}
-
     {% endcall %}
-
     {% call section(id='task-list') %}
         {% if current_user and current_user.is_authenticated %}
             <div class="col s12">
@@ -133,7 +122,7 @@
                     <div class="card-content">
                         <div class="row no-mar-bot">
                             <div class="input-field col m10- s12 center">
-                                {%- if tasks -%}
+                                {% if tasks %}
                                     <table>
                                         <thead>
                                         <tr>
@@ -148,14 +137,10 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {%- for t in tasks -%}
+                                        {% for t in tasks %}
                                             <tr>
                                                 <td>{{ t.id }}</td>
-                                                <td>
-                                                    {%- for s in services -%}
-                                                        {%- if s.id == t.tid -%}{{ s.title }}{%- endif -%}
-                                                    {%- endfor -%}
-                                                </td>
+                                                <td>{{ t.service.title }}</td>
                                                 <td>{{ t.quantity }}</td>
                                                 <td>{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
                                                 <td class="t-link"><a href="{{ t.link }}">{{ t.link }}</a></td>
@@ -163,12 +148,12 @@
                                                 <td>{{ t.date }}</td>
                                                 <td>{{ states[t.status] }}</td>
                                             </tr>
-                                        {%- endfor -%}
+                                        {% endfor %}
                                         </tbody>
                                     </table>
-                                {%- else -%}
+                                {% else %}
                                     <i>История заказов пуста</i>
-                                {%- endif -%}
+                                {% endif %}
                             </div>
                         </div>
                     </div>

@@ -48,15 +48,12 @@
                 <div class="card-action">
                     <div class="row">
                         <div class="col s12 right-align">
-                            <button class="btn-large waves-effect waves-light green btn-action"
-                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>
-                            </button>
+                            <button class="btn-large waves-effect waves-light green btn-action" type="submit" name="submit">Сохранить<i class="fas fa-save right"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
         </form>
-
         <form id="settings-services" class="col s12 m10 offset-m1">
             <div class="card">
                 <div class="card-content">
@@ -71,32 +68,25 @@
                         </div>
                         {% for i in categories %}
                             <div id="tab-{{ i }}" class="col s12 tb">
-{#                                {{ categories[i] }} s.id != 210 and #}
-                                {%- for s in services -%}
+                                {#{{ categories[i] }} s.id != 210 and #}
+                                {% for s in services %}
                                     {% if s.type == i %}
                                         <div class="row no-mar-bot service" data-service-id="{{ s.id }}">
-                                            {#                            <div class="input-field col s12" style="margin: 0">#}
-                                            {#                                <span class="service-name">{{ s.s_type }} - {{ s.name }}</span>#}
-                                            {#                            </div>#}
+                                            {#<div class="input-field col s12" style="margin: 0">#}
+                                            {#    <span class="service-name">{{ s.s_type }} - {{ s.name }}</span>#}
+                                            {#</div>#}
                                             <div class="input-field col s12 m6">
                                                 <input class="service-title validate" type="text" value="{{ s.title }}" required>
                                                 <label>Заголовок</label>
                                             </div>
                                             <div class="input-field col s12 m2">
-                                                <input class="service-price validate" type="number" step="0.01" value="{{ s.price }}"
-                                                       style="width: 90%;" required>
+                                                <input class="service-price validate" type="number" step="0.01" value="{{ s.price }}" style="width: 90%;" required>
                                                 <span>₽</span>
                                                 <label>Цена</label>
                                             </div>
                                             <div class="input-field col s12 m2">
                                                 <div class="switch">
-                                                    <label>
-                                                        Выкл
-                                                        <input class="service-state"
-                                                               type="checkbox" {{ 'checked' if s.state == 1 else '' }}>
-                                                        <span class="lever"></span>
-                                                        Вкл
-                                                    </label>
+                                                    <label>Выкл<input class="service-state" type="checkbox" {{ 'checked' if s.state == 1 else '' }}> <span class="lever"></span>Вкл</label>
                                                     <label><input class="service-action" type="hidden" value="upd"></label>
                                                 </div>
                                             </div>
@@ -106,27 +96,23 @@
                                                 </div>
                                             {% endif %}
                                             <div class="input-field col s12">
-                                    <textarea class="service-desc materialize-textarea"
-                                              data-length="1000">{{ s.desc }}</textarea>
+                                                <textarea class="service-desc materialize-textarea" data-length="1000">{{ s.desc }}</textarea>
                                                 <label>Описание</label>
                                             </div>
                                             <div class="input-field col s6 m3">
-                                                <input class="service-min" type="number" value="{{ s.min }}"
-                                                       style="width: 90%;" required>
+                                                <input class="service-min" type="number" value="{{ s.min }}" style="width: 90%;" required>
                                                 <label>Минимум</label>
                                             </div>
                                             <div class="input-field col s6 m3">
-                                                <input class="service-max" type="number" value="{{ s.max }}"
-                                                       style="width: 90%;" required>
+                                                <input class="service-max" type="number" value="{{ s.max }}" style="width: 90%;" required>
                                                 <label>Максимум</label>
                                             </div>
                                             <div class="input-field col s12 m3">
                                                 Категория
                                                 <select class="category browser-default">
-                                                    {%- for i in categories -%}
-                                                        <option class="service-categ"
-                                                                value="{{ i }}" {{ 'selected' if i == s.type else '' }}>{{ categories[i] }}</option>
-                                                    {%- endfor -%}
+                                                    {% for i in categories %}
+                                                        <option class="service-categ" value="{{ i }}" {{ 'selected' if i == s.type else '' }}>{{ categories[i] }}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                             <div class="input-field col s12 m3">
@@ -135,68 +121,40 @@
                                             <div class="input-field col s12 m2">
                                                 <div class="switch">
                                                     <span>Критерий "Страна"</span>
-                                                    <label>
-                                                        Выкл
-                                                        <input class="service-param-country"
-                                                               type="checkbox" {{ 'checked' if s.country == 1 else '' }}>
-                                                        <span class="lever"></span>
-                                                        Вкл
-                                                    </label>
+                                                    <label>Выкл<input class="service-param-country" type="checkbox" {{ 'checked' if s.country == 1 else '' }}><span class="lever"></span>Вкл</label>
                                                 </div>
                                             </div>
                                             <div class="input-field col s12 m2">
                                                 <div class="switch">
                                                     <span>Критерий "Город"</span>
-                                                    <label>
-                                                        Выкл
-                                                        <input class="service-param-city"
-                                                               type="checkbox" {{ 'checked' if s.city == 1 else '' }}>
-                                                        <span class="lever"></span>
-                                                        Вкл
-                                                    </label>
+                                                    <label>Выкл<input class="service-param-city" type="checkbox" {{ 'checked' if s.city == 1 else '' }}><span class="lever"></span>Вкл</label>
                                                 </div>
                                             </div>
                                             <div class="input-field col s12 m2">
                                                 <div class="switch">
                                                     <span>Критерий "Пол"</span>
-                                                    <label>
-                                                        Выкл
-                                                        <input class="service-param-sex"
-                                                               type="checkbox" {{ 'checked' if s.sex == 1 else '' }}>
-                                                        <span class="lever"></span>
-                                                        Вкл
+                                                    <label>Выкл<input class="service-param-sex" type="checkbox" {{ 'checked' if s.sex == 1 else '' }}><span class="lever"></span>Вкл
                                                     </label>
                                                 </div>
                                             </div>
                                             <div class="input-field col s12 m2">
                                                 <div class="switch">
                                                     <span>Критерий "Возраст"</span>
-                                                    <label>
-                                                        Выкл
-                                                        <input class="service-param-age"
-                                                               type="checkbox" {{ 'checked' if s.age == 1 else '' }}>
-                                                        <span class="lever"></span>
-                                                        Вкл
-                                                    </label>
+                                                    <label>Выкл<input class="service-param-age" type="checkbox" {{ 'checked' if s.age == 1 else '' }}><span class="lever"></span>Вкл</label>
                                                 </div>
                                             </div>
                                         </div>
                                     {% endif %}
-                                {%- endfor -%}
+                                {% endfor %}
                             </div>
                         {% endfor %}
                     </div>
-
                 </div>
                 <div class="card-action">
                     <div class="row">
                         <div class="col s12 right-align">
-                            <button class="btn btn-add waves-effect waves-light blue">
-                                Создать<i class="fas fa-plus right"></i>
-                            </button>
-                            <button class="btn waves-effect waves-light green btn-action"
-                                    type="submit" name="submit">Сохранить<i class="fas fa-save right"></i>
-                            </button>
+                            <button class="btn btn-add waves-effect waves-light blue">Создать<i class="fas fa-plus right"></i></button>
+                            <button class="btn waves-effect waves-light green btn-action" type="submit" name="submit">Сохранить<i class="fas fa-save right"></i></button>
                         </div>
                     </div>
                 </div>
