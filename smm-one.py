@@ -86,6 +86,25 @@ def go_home(e):
     return redirect(url_for('index'))
 
 
+@app.template_filter('md5')
+def md5_filter(s):
+    return hashlib.md5(s.encode('utf-8')).hexdigest()
+
+
+@app.template_filter('wurl')
+def wbr_url_filter(s):
+    s = html.escape(s)
+    wbr_pos = s.find('/', s.find('/') + 2) + 1
+    slink = s[:wbr_pos] + "<wbr>" + s[wbr_pos:]
+    return f'<a href="{s}" target="_blank">{slink}</a>'
+    # return [s[:wbr_pos], s[wbr_pos:]]
+
+
+@app.template_filter('country')
+def get_user_country(ip):
+    return requests.get('http://ip-api.com/json/' + ip).json()['countryCode']
+
+
 class Settings(db.Model):
     __tablename__ = 'settings'
     key = db.Column('key', db.String(24), primary_key=True, unique=True, nullable=False)
