@@ -342,7 +342,7 @@ def signup():
         v = validate_email(request.form['email'])  # validate and get info
         email = v["email"]  # replace with normalized form
     except Exception as e:
-        flash(error_ru(e), 'error')
+        flash(en_to_ru(e), 'error')
         # return jsonify({'response': 0, 'error': str(e) + ' (' + r['text'][0] + ')'}), 400
     if email is None:
         pass
@@ -452,7 +452,7 @@ def load_tasks():
                 # tasks = Tasks.query.join(Users).whooshee_search(q).order_by(Tasks.id.desc())
                 # print(Tasks.query.join(Users).whooshee_search(q).order_by(Tasks.id.desc()))
             except Exception as e:
-                return render_template('tasks_list.html', error=error_ru(e))
+                return render_template('tasks_list.html', error=en_to_ru(e))
         else:
             tasks = Tasks.query.filter_by(status=request.args.get("status"))
         return render_template('tasks_list.html', tasks=tasks)
@@ -471,7 +471,7 @@ def load_users():
             try:
                 users = Users.query.whooshee_search(q)
             except Exception as e:
-                return error_ru(e)
+                return en_to_ru(e)
         else:
             users = Users.query
         return render_template('users_list.html', users=users)
@@ -525,7 +525,7 @@ def save_settings(section):
                 v = validate_email(request.json['email'])  # validate and get info
                 user.email = v["email"]  # replace with normalized form
             except Exception as e:
-                return jsonify({'response': 0, 'error': error_ru(e)}), 500
+                return jsonify({'response': 0, 'error': en_to_ru(e)}), 500
             user.balance = request.json['balance']
             if request.json['password']:
                 user.password = bcrypt.hashpw(str.encode(request.json['password']), bcrypt.gensalt())
@@ -550,7 +550,7 @@ def add_task():
         # return jsonify({'response': -1, 'msg': 'Неверное значение одного из параметров'}), 400
         return jsonify({'response': 0, 'error_code': 1, 'msg': 'Неверное значение одного из параметров'}), 400
     except Exception as e:
-        return jsonify({'response': 0, 'error_code': 666, 'msg': 'Неизвестная ошибка: ' + e}), 400
+        return jsonify({'response': 0, 'error_code': 666, 'msg': 'Неизвестная ошибка: ' + en_to_ru(str(e))}), 400
     if int(request.json['quantity']) < int(service.min) or int(request.json['quantity']) > int(service.max):
         return jsonify({'response': 0, 'error_code': 3, 'msg': 'Указан недопустимый объем заказа'}), 400
     elif amount < 0:
@@ -603,14 +603,18 @@ def add_task():
         return jsonify({'response': 1})
 
 
-def error_ru(text):
-    d = {
-        'key': 'trnsl.1.1.20150724T160237Z.3773b6e8841caa1b.3fe37f6c20f79391bd69ff57129c5f118fd56d6a',
-        'text': str(text),
-        'lang': 'en-ru'
-    }
-    r = requests.get('https://translate.yandex.net/api/v1.5/tr.json/translate', data=d).json()
-    return r['text'][0]
+def en_to_ru(text):
+    try:
+        d = {
+            'key': app.config['YA_TRANSLATE_KEY'],
+            'text': str(text),
+            'lang': 'en-ru'
+        }
+        text = requests.get('https://translate.yandex.net/api/v1.5/tr.json/translate', data=d).json()['text'][0]
+    except Exception as e:
+        print(e)
+    finally:
+        return text
 
 
 def init_settings():
@@ -624,7 +628,8 @@ def init_settings():
     app.config['NAKRUTKA_APIKEY'] = Settings.query.filter_by(key='nakrutka_apikey').first().value
     app.config['BIGSMM_APIKEY'] = Settings.query.filter_by(key='bigsmm_apikey').first().value
     app.config['SERVICES'] = Services.query.all()
-    # app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
+    app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
+    app.config['YA_TRANSLATE_KEY'] = Settings.query.filter_by(key='ya_translate_key').first().value
     # mail.init_app(app)
     # whooshee.init_app(app)
 
