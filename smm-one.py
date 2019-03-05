@@ -226,7 +226,7 @@ class Tasks(db.Model):
     user = db.relationship('Users', lazy=True)
     service_id = db.Column('service_id', db.String(20))
     task_id = db.Column('task_id', db.Integer, db.ForeignKey('services.id'))
-    task = db.relationship('Services', lazy=True)
+    service = db.relationship('Services', lazy=True)
     s_type = db.Column('s_type', db.String(20), nullable=False)
     # TODO: Data too long for column 'link'
     link = db.Column('link', db.String(255))
