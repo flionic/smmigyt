@@ -21,7 +21,6 @@
                         <div class="row no-mar-bot">
                             <div class="input-field srv-sel col m10- s12">
                                 {% for i in categories %}
-                                    {#<select class="services" id="service" data-categ="{{ i }}"#}
                                     <select class="services" data-categ="{{ i }}" data-task-param="service">
                                         <option value="" disabled selected>Мне нужно...</option>
                                         {% for s in services %}
@@ -107,11 +106,6 @@
                 </div>
             </form>
         {% endblock %}
-        {#<div class="row center grey-text">#}
-        {#    <h6>Требуется авторизация</h6>#}
-        {#    <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i>#}
-        {#        Вход/Регистрация</a>#}
-        {#</div>#}
     {% endcall %}
     {% call section(id='task-list') %}
         {% if current_user and current_user.is_authenticated %}
@@ -215,7 +209,6 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {
-                        {#M.toast({html: ({0: data['msg'], 1: 'Добавлено'})[data['response']], displayLength: 5 * 1000});#}
                         M.toast({html: 'Добавлено', displayLength: 3 * 1000});
                         if (data['response'] === 1) location.reload();
                     },

@@ -4,9 +4,7 @@
 {% set services = config['SERVICES'] %}
 {% set ver = config['VERSION'] %}
 {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
-{#{% set categories = {0: "Одноклассники", 1: "Instagram", 2: "Facebook", 3: "Telegram", 4: "YouTube", 5: "Twitter", 6: "ВКонтакте"} %}#}
 {% set categories = {0: "YouTube", 1: "ВКонтакте", 2: "Instagram", 3: "Facebook", 4: "Одноклассники", 5: "Telegram", 6: "Twitter"} %}
-{# 0 > 4; 1 > 2; 2 > 3; 3 > 5; 4 > 0; 5 > 6; 6 > 1; #}
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
@@ -26,18 +24,6 @@
     {#    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">#}
     {#    <link rel="mask-icon" href="{{ url_for('static', filename='img/safari-pinned-tab.svg') }}" color="#5bbad5">#}
     {#    <meta name="interkassa-verification" content="46871daa498d3550fb477f1fe2eb4442"/>#}
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    {#    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-42401203-20"></script>#}
-    {#    <script>#}
-    {#        window.dataLayer = window.dataLayer || [];#}
-    {##}
-    {#        function gtag() {#}
-    {#            dataLayer.push(arguments);#}
-    {#        }#}
-    {##}
-    {#        gtag('js', new Date());#}
-    {#        gtag('config', 'UA-42401203-20');#}
-    {#    </script>#}
     {% block head %}{% endblock %}
 </head>
 {% macro section(classes='row', id='') %}
@@ -153,7 +139,6 @@
             <div class="col l3 m6 s12 offset-l1">
                 <h5 class="white-text"><i class="far fa-question-circle"></i>Чаво</h5>
                 <ul>
-                    {#<li><a class="white-text" href="/pages/help">Помощь</a></li>#}
                     <li><a class="white-text" href="/pages/policy">Пользовательское соглашение</a></li>
                     <li style="font-size: 29px;">
                         <a href="info/ok" class="white-text"><i class="fab fa-odnoklassniki"></i></a>
@@ -253,9 +238,7 @@
         </div>
     </div>
 </footer>
-{#<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>#}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-{#<script>if(!window.jQuery){document.write('<script src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"><\/script>');}</script>#}
 <script defer src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
 <script type="text/javascript">
     (function () {

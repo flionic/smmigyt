@@ -24,9 +24,6 @@ from flask_whooshee import Whooshee, AbstractWhoosheer
 from whoosh.index import LockError
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-# TODO: move to configparser (https://hackernoon.com/4-ways-to-manage-the-configuration-in-python-4623049e841b)
-# load_dotenv(os.path.join(basedir, 'settings.cfg'))
-
 app = Flask(__name__)
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
@@ -38,6 +35,8 @@ app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', '7-DEV_MODE_KEY-7')
 app.config['SESSION_TYPE'] = 'redis'
 # db_local = 'sqlite:///' + os.path.join(os.path.join(basedir, 'db'), 'main.db')
 # db_link = f"mysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}?charset=utf8mb4"
+# TODO: move to configparser (https://hackernoon.com/4-ways-to-manage-the-configuration-in-python-4623049e841b)
+# load_dotenv(os.path.join(basedir, 'settings.cfg'))
 db_link = 'mysql://smm_one:gJT^n<{Y72:}@localhost/smm_one?charset=utf8mb4'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_link
 app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(basedir, 'db_repository')
@@ -413,7 +412,6 @@ def payment():
 @app.route('/ajax/tasks/', methods=['GET'])
 @login_required
 def load_tasks():
-    # TODO: i need refactoring
     if current_user.status == 7:
         q = request.args.get('query')
         q = q[:q.find('@')] if '@' in q else q
@@ -476,13 +474,11 @@ def save_settings(section):
                 service.delete() if i['action'] == 'rm' else db.session.add(service)
             flash('Сохранено успешно')
         elif section == 'state':
-            # TODO: нулевая стоимость заказа для отмененных
             task = Tasks.query.filter_by(id=request.json['id']).first()
             task.status = request.json['state']
             if request.json['state'] == '3':
                 Users.query.filter_by(id=task.user_id).first().balance += task.amount
                 task.amount = 0
-                # current_user.balance += task.amount
             elif request.json['state'] == '666':
                 db.session.delete(task)
         elif section == 'settings-users':
@@ -501,9 +497,6 @@ def save_settings(section):
             user.balance = request.json['balance']
             if request.json['password']:
                 user.password = bcrypt.hashpw(str.encode(request.json['password']), bcrypt.gensalt())
-                # user.status = -1
-                # user.is_active = False
-                # user.is_authenticated = False
         db.session.commit()
         return jsonify({'response': 1})
     return abort(403)

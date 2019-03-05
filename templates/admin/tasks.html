@@ -5,7 +5,6 @@
             <form id="tasks" class="col s12">
                 <div class="card">
                     <div class="card-content">
-                        {#<span class="card-title">Управление заказами</span>#}
                         <div class="section row no-mar-bot">
                             <div class="col s12">
                                 <ul class="tabs grey lighten-3">
@@ -76,7 +75,6 @@
                     success: function (data) {
                         tab_data.append(data);
                         $('.loading').hide();
-                        {#$('select').formSelect();#}
                         $('.pagination li.waves-effect a').click(function (event) {
                             event.preventDefault();
                             tab_id = $('.tab .active').attr('data-tabid');

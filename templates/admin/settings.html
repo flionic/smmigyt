@@ -68,13 +68,9 @@
                         </div>
                         {% for i in categories %}
                             <div id="tab-{{ i }}" class="col s12 tb">
-                                {#{{ categories[i] }} s.id != 210 and #}
                                 {% for s in services %}
                                     {% if s.type == i %}
                                         <div class="row no-mar-bot service" data-service-id="{{ s.id }}">
-                                            {#<div class="input-field col s12" style="margin: 0">#}
-                                            {#    <span class="service-name">{{ s.s_type }} - {{ s.name }}</span>#}
-                                            {#</div>#}
                                             <div class="input-field col s12 m6">
                                                 <input class="service-title validate" type="text" value="{{ s.title }}" required>
                                                 <label>Заголовок</label>
@@ -165,7 +161,6 @@
 {% block scripts %}
     <script type="text/javascript">
         $(document).ready(function () {
-            {#$('.tbs div.active').text();#}
             $('.sending').hide();
             $('select').formSelect();
             $('#settings-main, #settings-services').submit(function (event) {
@@ -197,7 +192,6 @@
                         });
                     });
                 }
-                {#console.log(JSON.stringify(params));#}
                 $.ajax({
                     url: '/ajax/save/' + $(this).attr('id'),
                     type: "POST",

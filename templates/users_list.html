@@ -39,7 +39,6 @@
             <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
                 <a href="#!" data-page="{{ 1 }}"><i class="fas fa-angle-double-left"></i></a>
             </li>
-            {#{% for i in range(pages) %}#}
             {% for i in range(pages)[page-5 if page-5 > 0 else 0:page+5] %}
                 <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}">
                     <a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a>
@@ -72,7 +71,6 @@
             "password": $(card_user).find('.user-pass').val()
         };
         $.ajax({
-            {#url: '/ajax/edit-user/',#}
             url: '/ajax/save/user',
             type: "POST",
             data: JSON.stringify(user_data),
@@ -81,11 +79,9 @@
             success: function (data) {
                 M.toast({html: ({0: 'Что-то не так..', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
                 $(btn_save).parent().fadeOut();
-                {#$(card_user).find('.save-status').text('Cохранено');#}
             },
             error: function (data) {
                 M.toast({html: '<span class="red-text">' + data['responseJSON']['error'] + '</span>', displayLength: 5 * 1000});
-                {#$(card_user).find('.save-status').text('не сохранено');#}
             },
             complete: function () {
                 $(btn_save).removeClass('disabled');
