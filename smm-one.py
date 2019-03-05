@@ -330,6 +330,7 @@ def signup():
         else:
             hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
             user = Users(email, hashed_password)
+            user.last_login = datetime.now()
             db.session.add(user)
             db.session.commit()
             login_user(user)
