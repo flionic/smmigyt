@@ -1,9 +1,7 @@
 {% extends 'layout/main.html' %}
 {% set info = {0: ['Указана цена за 1000', 'Количество'], 1: ['Указана цена за 1 аккаунт', 'Количество лайков']} %}
 {% block main %}
-    <div class="section" id="index-banner">
-        {% include 'layout/home_info.html' %}
-    </div>
+    {% include 'layout/home_info.html' %}
     {% call section(id='auth') %}
         {% block protected %}
             <form id="new-task" class="col s12 l10 offset-l1 xl8 offset-xl2">
