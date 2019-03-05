@@ -1,32 +1,20 @@
 #!/usr/bin/env python3
-# import ast
-# import math
 import hashlib
 import os
 import html
-# import random
-# import re
-# import string
-# import threading
-from datetime import datetime, timedelta
-# from time import sleep
+from datetime import datetime
 
 import bcrypt
 import requests
 # from dotenv import load_dotenv
-# from MySQLdb._exceptions import DataError
 import whoosh.fields
-# from jinja2 import Environment, FileSystemLoader
 from werkzeug.contrib.fixers import ProxyFix
-from email_validator import validate_email  # , EmailNotValidError
+from email_validator import validate_email
 
-# import flask
-from flask import Flask, render_template, request, redirect, url_for, flash, abort  # , json, make_response
-# from flask import render_template_string, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask.json import jsonify
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
-# from sqlalchemy import asc
 # from sqlalchemy import desc
 from flask_session import Session
 # from flask_mail import Message
@@ -44,13 +32,12 @@ app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config['APP_NAME'] = '1-SMM'
-app.config['VERSION'] = '1.3.6'
+app.config['VERSION'] = '1.4.0'
 app.config['SERVER_NAME'] = os.getenv('APP_DOMAIN')
 app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', '7-DEV_MODE_KEY-7')
 app.config['SESSION_TYPE'] = 'redis'
 # db_local = 'sqlite:///' + os.path.join(os.path.join(basedir, 'db'), 'main.db')
 # db_link = f"mysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}?charset=utf8mb4"
-# db_link = 'mysql://smm_one:y3./}:dKN522T>fT@localhost/smm_one?charset=utf8mb4'
 db_link = 'mysql://smm_one:gJT^n<{Y72:}@localhost/smm_one?charset=utf8mb4'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_link
 app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(basedir, 'db_repository')
@@ -97,7 +84,6 @@ def wbr_url_filter(s):
     wbr_pos = s.find('/', s.find('/') + 2) + 1
     slink = s[:wbr_pos] + "<wbr>" + s[wbr_pos:]
     return f'<a href="{s}" target="_blank">{slink}</a>'
-    # return [s[:wbr_pos], s[wbr_pos:]]
 
 
 @app.template_filter('country')
@@ -171,9 +157,9 @@ class Invoices(db.Model):
         self.ik_inv_id = ik_inv_id
         self.ik_pm_no = ik_pm_no
 
+    # TODO: refactoring me
     def __repr__(self):
-        return "<Payment(user_id='%s', ik_inv_id='%s', ik_pm_no='%s', ik_state='%s')>" % (
-            self.user_id, self.ik_inv_id, self.ik_pm_no, self.ik_state)
+        return "<Payment(user_id='%s', ik_inv_id='%s', ik_pm_no='%s', ik_state='%s')>" % (self.user_id, self.ik_inv_id, self.ik_pm_no, self.ik_state)
 
 
 class Types(db.Model):
@@ -212,9 +198,9 @@ class Services(db.Model):
     def __init__(self, name):
         self.name = name
 
+    # TODO: refactoring me
     def __repr__(self):
-        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s', id='%s', type='%s')>" % (
-            self.title, self.desc, self.price, self.state, self.s_type, self.s_id, self.id, self.type)
+        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s', id='%s', type='%s')>" % (self.title, self.desc, self.price, self.state, self.s_type, self.s_id, self.id, self.type)
 
 
 # @whooshee.register_model('link', 'comment', 'country', 'city')
@@ -222,7 +208,6 @@ class Tasks(db.Model):
     __tablename__ = 'tasks'
     id = db.Column('id', db.Integer, unique=True, nullable=False, primary_key=True, index=True)
     user_id = db.Column('user_id', db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # user = db.relationship('Users', backref=db.backref('entries'))
     user = db.relationship('Users', lazy=True)
     service_id = db.Column('service_id', db.String(20))
     task_id = db.Column('task_id', db.Integer, db.ForeignKey('services.id'))
@@ -251,12 +236,12 @@ class Tasks(db.Model):
         self.date = datetime.now()
 
     def __repr__(self):
-        return "<Task(user_id='%s', service_id='%s', task_id='%s', s_type='%s', link='%s', quantity='%s', status='%s')>" % (
-            self.user_id, self.service_id, self.task_id, self.s_type, self.link, self.quantity, self.status)
+        return "<Task(user_id='%s', service_id='%s', task_id='%s', s_type='%s', link='%s', quantity='%s', status='%s')>" % (self.user_id, self.service_id, self.task_id, self.s_type, self.link, self.quantity, self.status)
 
 
 @whooshee.register_whoosheer
 class TaskUserWhoosheer(AbstractWhoosheer):
+    # TODO: refactoring me
     # create schema, the unique attribute must be in form of
     # model.__name__.lower() + '_' + 'id' (name of model primary key)
     schema = whoosh.fields.Schema(
@@ -308,8 +293,6 @@ class TaskUserWhoosheer(AbstractWhoosheer):
 @app.route('/')
 def index():
     tasks = Tasks.query.filter_by(user_id=current_user.id).all() if current_user.is_anonymous is not True else None
-    # tasks = Tasks.query.order_by(asc(tasks.sid))
-    # u = Users.query.whooshee_search('admin').order_by(Users.id.desc()).all()
     return render_template('index.html', tasks=tasks)
 
 
@@ -326,43 +309,40 @@ def main_pages(section):
 @app.route('/admin/<section>')
 @login_required
 def admin_pages(section):
+    # TODO: make admin handler
+    # TODO: refactoring this
     if current_user.status == 7:
         tasks = Tasks.query.filter_by(s_type='manual') if section == 'tasks' else ''
         users = Users.query.all() if section == 'tasks' or 'users' else ''
         return render_template('admin/' + section + '.html', tasks=tasks, users=users)
 
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/signup', methods=['POST'])
 def signup():
-    if request.method == 'GET' or current_user.is_authenticated:
-        return redirect(url_for('index'))
-    email = None
+    email = request.form['email']
     password = str.encode(request.form['password'])
-    try:
-        v = validate_email(request.form['email'])  # validate and get info
-        email = v["email"]  # replace with normalized form
-    except Exception as e:
-        flash(en_to_ru(e), 'error')
-        # return jsonify({'response': 0, 'error': str(e) + ' (' + r['text'][0] + ')'}), 400
-    if email is None:
-        pass
-    elif len(password) < 6:
-        flash('Пароль должен состоять минимум из 6 символов', 'error')
+    if current_user.is_authenticated:
+        flash('Вы уже авторизированы', 'error')
     elif Users.query.filter_by(email=email).first():
         flash('Этот email уже зарегистрирован', 'error')
+    elif len(password) < 6:
+        flash('Пароль должен состоять минимум из 6 символов', 'error')
     else:
-        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-        user = Users(email, hashed_password)
-        db.session.add(user)
-        db.session.commit()
-        login_user(user)
-        flash(f'Зарегистрирован пользователь {user.email}')
-        # return jsonify({'response': 1})
-    # return redirect(url_for('index'))
+        try:
+            email = validate_email(email)["email"]
+        except Exception as e:
+            flash(en_to_ru(e), 'error')
+        else:
+            hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+            user = Users(email, hashed_password)
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            flash(f'Добро пожаловать, {user.email}!')
     return jsonify({'response': 1})
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
     if current_user.is_authenticated:
         flash('Вы уже авторизированы', 'warning')
@@ -414,8 +394,7 @@ def payment():
             ik_url = 'https://api.interkassa.com/v1/'
             headers = {'Accept': 'application/json'}
             auth = (app.config['IK_ID'], app.config['IK_KEY'])
-            ik_r = requests.get(ik_url + 'co-invoice/' + request.form.get('ik_inv_id'),
-                                headers=headers, auth=auth).json()
+            ik_r = requests.get(ik_url + 'co-invoice/' + request.form.get('ik_inv_id'), headers=headers, auth=auth).json()
             # {'status': 'error', 'code': 4,
             #  'data': {'innerCode': 0}, 'message': 'Auth: api not enabled for current user'}
             inv.ik_state = ik_r['data']['state']
@@ -425,8 +404,7 @@ def payment():
                 inv.ik_cur = ik_r['data']['currencyCodeChar']
                 inv.total_am = inv.ik_am
                 if ik_r['data']['currencyId'] != 40:
-                    ik_curr = requests.get(ik_url + 'currency/' + str(ik_r['data']['currencyId']),
-                                           headers=headers, auth=auth).json()
+                    ik_curr = requests.get(ik_url + 'currency/' + str(ik_r['data']['currencyId']), headers=headers, auth=auth).json()
                     inv.total_am *= float(ik_curr['data'][inv.ik_cur]['RUB']['out'])
                 user.balance = round(user.balance + inv.total_am, 2)
                 print(f'Added {inv.ik_am} {inv.ik_cur} to {user.email}')
@@ -438,19 +416,16 @@ def payment():
 @app.route('/ajax/tasks/', methods=['GET'])
 @login_required
 def load_tasks():
+    # TODO: i need refactoring
     if current_user.status == 7:
-        # tasks = Tasks.query.filter_by(status=status).order_by(Tasks.id.desc()).offset(0).limit(0)
-        # tasks = Tasks.query.filter_by(status=request.args.get("status"))
         q = request.args.get('query')
         q = q[:q.find('@')] if '@' in q else q
         if str.isdigit(q):
             tasks = Tasks.query.filter_by(id=int(q))
         elif q:
             try:
-                # tasks = Tasks.query.whooshee_search(q, order_by_relevance=-1)
-                tasks = Tasks.query.whooshee_search(q, whoosheer=TaskUserWhoosheer).order_by(Tasks.id.desc())
-                # tasks = Tasks.query.join(Users).whooshee_search(q).order_by(Tasks.id.desc())
-                # print(Tasks.query.join(Users).whooshee_search(q).order_by(Tasks.id.desc()))
+                # tasks = Tasks.query.join(Users).whooshee_search(q, order_by_relevance=-1).order_by(Tasks.id.desc())
+                tasks = Tasks.query.whooshee_search(q, whoosheer=TaskUserWhoosheer)
             except Exception as e:
                 return render_template('tasks_list.html', error=en_to_ru(e))
         else:
@@ -544,10 +519,8 @@ def add_task():
         service = Services.query.filter_by(id=request.json['tid']).first()
         amount = service.price / 1000 * float(request.json['quantity'])
         amount = service.price if request.json['tid'] == '210' else amount
-        task = Tasks(current_user.id, service.s_type, int(request.json['tid']), html.escape(request.json['link']),
-                     html.escape(request.json['quantity']), amount)
+        task = Tasks(current_user.id, service.s_type, int(request.json['tid']), html.escape(request.json['link']), html.escape(request.json['quantity']), amount)
     except ValueError:
-        # return jsonify({'response': -1, 'msg': 'Неверное значение одного из параметров'}), 400
         return jsonify({'response': 0, 'error_code': 1, 'msg': 'Неверное значение одного из параметров'}), 400
     except Exception as e:
         return jsonify({'response': 0, 'error_code': 666, 'msg': 'Неизвестная ошибка: ' + en_to_ru(str(e))}), 400
@@ -642,7 +615,6 @@ def init_settings():
     app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
     app.config['YA_TRANSLATE_KEY'] = Settings.query.filter_by(key='ya_translate_key').first().value
     # mail.init_app(app)
-    # whooshee.init_app(app)
 
 
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or 1 == 1:

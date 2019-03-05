@@ -362,10 +362,7 @@
 {% if config['MAINTENANCE'] and current_user.status == 7 %}
     <script type="text/javascript">
         $(document).ready(function () {
-            M.toast({
-                html: '<span class="red-text">Ведутся технические работы</span>',
-                displayLength: Infinity
-            });
+            M.toast({html: '<span class="red-text">Ведутся технические работы</span>', displayLength: Infinity});
         });
     </script>
 {% endif %}
