@@ -603,6 +603,17 @@ def add_task():
         return jsonify({'response': 1})
 
 
+@app.route('/ajax/system/reindex', methods=['GET', 'POST'])
+@login_required
+def reindex_search():
+    if current_user.status == 7:
+        app.config['REINDEXING'] = 1
+        whooshee.reindex()
+        app.config['REINDEXING'] = 0
+        return jsonify({'response': 1})
+    return abort(403)
+
+
 def en_to_ru(text):
     try:
         d = {
