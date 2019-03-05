@@ -40,8 +40,8 @@ app.config['SESSION_TYPE'] = 'redis'
 db_link = 'mysql://smm_one:gJT^n<{Y72:}@localhost/smm_one?charset=utf8mb4'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_link
 app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(basedir, 'db_repository')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.testing = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.testing = True
 app.url_map.strict_slashes = False
 login_manager = LoginManager(app)
 login_manager.login_view = "users.login"
