@@ -305,20 +305,6 @@ class TaskUserWhoosheer(AbstractWhoosheer):
     #     writer.delete_by_term('tasks_id', tasks.id)
 
 
-@app.template_filter('md5')
-def md5_filter(s):
-    return hashlib.md5(s.encode('utf-8')).hexdigest()
-
-
-@app.template_filter('wurl')
-def wbr_url_filter(s):
-    s = html.escape(s)
-    wbr_pos = s.find('/', s.find('/') + 2) + 1
-    slink = s[:wbr_pos] + "<wbr>" + s[wbr_pos:]
-    return f'<a href="{s}" target="_blank">{slink}</a>'
-    # return [s[:wbr_pos], s[wbr_pos:]]
-
-
 @app.route('/')
 def index():
     tasks = Tasks.query.filter_by(user_id=current_user.id).all() if current_user.is_anonymous is not True else None
