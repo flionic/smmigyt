@@ -409,46 +409,6 @@ def payment():
     return redirect(url_for('index'))
 
 
-# TODO: we need refactoring
-@app.route('/ajax/tasks/', methods=['GET'])
-@login_required
-def load_tasks():
-    if current_user.status == 7:
-        q = request.args.get('query')
-        if str.isdigit(q):
-            tasks = Tasks.query.filter_by(id=int(q))
-        elif q:
-            try:
-                q = q[:q.find('@')] if '@' in q[1:] else q.replace('@', '')  # removing unsearchable @
-                tasks = Tasks.query.whooshee_search(q, whoosheer=TaskUserWhoosheer)
-            except Exception as e:
-                return render_template('tasks_list.html', error=en_to_ru(e))
-        else:
-            tasks = Tasks.query.filter_by(status=request.args.get("status"))
-        return render_template('tasks_list.html', tasks=tasks)
-    return abort(403)
-
-
-# TODO: we need refactoring
-@app.route('/ajax/users/', methods=['GET'])
-@login_required
-def load_users():
-    if current_user.status == 7:
-        q = request.args.get('query')
-        if str.isdigit(q):
-            users = Users.query.filter_by(id=int(q))
-        elif q:
-            try:
-                q = q[:q.find('@')] if '@' in q[1:] else q.replace('@', '')  # removing unsearchable @
-                users = Users.query.whooshee_search(q)
-            except Exception as e:
-                return en_to_ru(e)
-        else:
-            users = Users.query
-        return render_template('users_list.html', users=users)
-    return abort(403)
-
-
 @app.route('/ajax/get/<section>', methods=['GET'])
 @login_required
 def load_data(section):
