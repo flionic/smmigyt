@@ -305,6 +305,11 @@ class TaskUserWhoosheer(AbstractWhoosheer):
     #     writer.delete_by_term('tasks_id', tasks.id)
 
 
+@app.route('/info/<page>')
+def info_pages(page):
+    return render_template('pages/info.html', data=['Описание', page, 'Конец'])
+
+
 @app.route('/')
 def index():
     tasks = Tasks.query.filter_by(user_id=current_user.id).all() if current_user.is_anonymous is not True else None
