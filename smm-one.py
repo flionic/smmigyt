@@ -412,6 +412,11 @@ def payment():
 @app.route('/ajax/get/<section>', methods=['GET'])
 @login_required
 def load_data(section):
+    """
+    args: status, page, query
+    :param section: users or tasks
+    :return: list of target users or tasks
+    """
     if current_user.status == 7:
         data = (Users if section == 'users' else Tasks).query
         q = request.args.get('query')
