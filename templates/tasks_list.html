@@ -11,7 +11,7 @@
         {% set page = request.args.page|int %}
         {% set pages = (tasks.count()/limit)|round(0, 'ceil')|int %}
         <form>
-            <table>
+            <table id="tasks-table" class="display">
                 <thead>
                 <tr>
                     <th>ID</th>
