@@ -610,8 +610,7 @@ def error_ru(text):
 
 
 def init_settings():
-    db.create_all()
-    # auto-parser
+    app.config['MAINTENANCE'] = 1
     app.config['APP_NAME'] = Settings.query.filter_by(key='app_name').first().value
     app.config['APP_DOMAIN'] = Settings.query.filter_by(key='app_domain').first().value
     app.config['SERVER_NAME'] = app.config['APP_DOMAIN']

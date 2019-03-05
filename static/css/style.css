@@ -331,6 +331,22 @@ input:not([type]):focus:not([readonly]), input[type=text]:not(.browser-default):
     border-radius: 8px;
 }
 
+.modal-maintenance {
+    width: 90%;
+}
+
+.modal-maintenance .modal-content, .modal-maintenance .modal-footer {
+    text-align: center;
+}
+
+.modal-maintenance h2 {
+    font-size: -webkit-xxx-large;
+}
+
+.modal-maintenance h6 {
+    font-size: large;
+}
+
 .section, .icon-block h2, .icon-block h5, .icon-block p {
     padding: 0;
     margin: 0;
@@ -340,6 +356,7 @@ h5 {
     padding: 10px 0;
 }
 
+/*TODO: перенести в один блок*/
 @media only screen and (max-width: 992px) {
     nav .brand-logo {
         left: 40%;
@@ -352,12 +369,20 @@ h5 {
     .sum {
         font-size: 1.2rem;
     }
+
+    .modal-maintenance h2 {
+        font-size: xx-large;
+    }
 }
 
 @media only screen and (min-width: 992px) {
     .modal-confirm {
         max-height: 40%;
         width: 20%;
+    }
+
+    .modal-maintenance {
+        width: fit-content;
     }
 }
 
@@ -372,7 +397,7 @@ h5 {
     cursor: pointer;
 }
 
-.modal .modal-content {
+.modal-confirm .modal-content {
     padding: 0;
 }
 
@@ -522,7 +547,7 @@ table, th, td {
 
 .cur-name span {
     visibility: hidden;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 input.user-balance::-webkit-outer-spin-button,
@@ -533,7 +558,7 @@ input.user-balance::-webkit-inner-spin-button {
 }
 
 input.user-balance[type=number] {
-    -moz-appearance:textfield; /* Firefox */
+    -moz-appearance: textfield; /* Firefox */
 }
 
 .search-wrapper {

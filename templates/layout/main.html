@@ -302,7 +302,7 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        var modals = M.Modal.init($('.modal'), {'endingTop': '30%'});
+        var modals = M.Modal.init($('.modal-confirm'), {'endingTop': '30%'});
         $('.sidenav').sidenav();
         $('.tabs').tabs();
         $('.collapsible').collapsible();
@@ -325,6 +325,34 @@
         });
     });
 </script>
+{% if config['MAINTENANCE'] and current_user.status != 7 %}
+    <div class="modal modal-maintenance">
+        <div class="modal-content">
+            <h2>Технические работы</h2>
+            <h6>Сейчас идет работа над улучшениями сайта, в связи с этим <b>могут наблюдаться сбои</b>.</h6>
+            <h6>В ближайшее время мы заработаем в штатном режиме. Спасибо за понимание!</h6>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-close waves-effect waves-light btn red">Перейти к сайту</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var mt_modal = $('.modal-maintenance').modal({'endingTop': '25%', 'dismissible': false, 'opacity': 0.85});
+            M.Modal.getInstance($(mt_modal)).open();
+        });
+    </script>
+{% endif %}
+{% if config['MAINTENANCE'] and current_user.status == 7 %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            M.toast({
+                html: '<span class="red-text">Ведутся технические работы</span>',
+                displayLength: Infinity
+            });
+        });
+    </script>
+{% endif %}
 {% block scripts %}{% endblock %}
 </body>
 </html>
