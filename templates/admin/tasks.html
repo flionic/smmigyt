@@ -25,6 +25,7 @@
                                 </ul>
                             </div>
                             <div class="loading center v-align">
+                                {#TODO: все прелоадеры в одном html или макросе#}
                                 <div class="preloader-wrapper big active">
                                     <div class="spinner-layer spinner-red-only">
                                         <div class="circle-clipper left">
@@ -65,7 +66,7 @@
                 $('.loading').show();
                 $('.page-data').remove();
                 $.ajax({
-                    url: '/ajax/get/tasks/',
+                    url: '/ajax/get/tasks',
                     type: "GET",
                     data: {
                         status: tab_id,

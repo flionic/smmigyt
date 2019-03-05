@@ -11,12 +11,10 @@
                         <div class="col s4">
                             <div class="search-wrapper pink darken-4 z-depth-1">
                                 <input id="search" placeholder="Поиск..." class="white-text">
-                                <div class="search-results"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="row users-list">
-                    </div>
+                    <div class="row users-list"></div>
                 </div>
             </div>
         </form>
@@ -29,7 +27,7 @@
                 $('.loading').show();
                 $('.users-list').children().remove();
                 $.ajax({
-                    url: '/ajax/get/users/',
+                    url: '/ajax/get/users',
                     type: "GET",
                     data: {
                         page: page,

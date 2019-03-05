@@ -15,7 +15,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash, abo
 from flask.json import jsonify
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
-# from sqlalchemy import desc
 from flask_session import Session
 # from flask_mail import Message
 # from flask_mail_sendgrid import MailSendGrid
@@ -29,7 +28,7 @@ app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config['APP_NAME'] = '1-SMM'
-app.config['VERSION'] = '1.4.3'
+app.config['VERSION'] = '1.4.4'
 app.config['SERVER_NAME'] = os.getenv('APP_DOMAIN')
 app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', '7-DEV_MODE_KEY-7')
 app.config['SESSION_TYPE'] = 'redis'
@@ -590,7 +589,6 @@ def init_settings():
     app.config['IK_KEY'] = Settings.query.filter_by(key='ik_key').first().value
     app.config['NAKRUTKA_APIKEY'] = Settings.query.filter_by(key='nakrutka_apikey').first().value
     app.config['BIGSMM_APIKEY'] = Settings.query.filter_by(key='bigsmm_apikey').first().value
-    # app.config['SERVICES'] = Services.query.all()
     app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
     app.config['YA_TRANSLATE_KEY'] = Settings.query.filter_by(key='ya_translate_key').first().value
     # mail.init_app(app)
