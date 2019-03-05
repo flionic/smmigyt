@@ -415,12 +415,11 @@ def payment():
 def load_tasks():
     if current_user.status == 7:
         q = request.args.get('query')
-        q = q[:q.find('@')] if '@' in q else q
         if str.isdigit(q):
             tasks = Tasks.query.filter_by(id=int(q))
         elif q:
             try:
-                # tasks = Tasks.query.join(Users).whooshee_search(q, order_by_relevance=-1).order_by(Tasks.id.desc())
+                q = q[:q.find('@')] if '@' in q[1:] else q.replace('@', '')  # removing unsearchable @
                 tasks = Tasks.query.whooshee_search(q, whoosheer=TaskUserWhoosheer)
             except Exception as e:
                 return render_template('tasks_list.html', error=en_to_ru(e))
@@ -440,13 +439,34 @@ def load_users():
             users = Users.query.filter_by(id=int(q))
         elif q:
             try:
-                q = q[:q.find('@')] if '@' in q[1:] else q  # removing unsearchable @
+                q = q[:q.find('@')] if '@' in q[1:] else q.replace('@', '')  # removing unsearchable @
                 users = Users.query.whooshee_search(q)
             except Exception as e:
                 return en_to_ru(e)
         else:
             users = Users.query
         return render_template('users_list.html', users=users)
+    return abort(403)
+
+
+@app.route('/ajax/get/<section>', methods=['GET'])
+@login_required
+def load_data(section):
+    if current_user.status == 7:
+        data = (Users if section == 'users' else Tasks).query
+        q = request.args.get('query')
+        if str.isdigit(q):
+            data = data.filter_by(id=int(q))
+        elif q:
+            try:
+                q = q[:q.find('@')] if '@' in q[1:] else q.replace('@', '')  # removing unsearchable @
+                # tasks = Tasks.query.join(Users).whooshee_search(q, order_by_relevance=-1).order_by(Tasks.id.desc())
+                data = data.whooshee_search(q) if section == 'users' else data.whooshee_search(q, whoosheer=TaskUserWhoosheer)
+            except Exception as e:
+                return en_to_ru(e)
+        elif request.args.get('status'):
+            data = data.filter_by(status=request.args.get("status"))
+        return render_template(section + '_list.html', data=data)
     return abort(403)
 
 
@@ -617,5 +637,4 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or 1 == 1:
     whooshee.register_whoosheer(TaskUserWhoosheer)
 
 if __name__ == '__main__':
-    app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)),
-            threaded=True, use_reloader=False, debug=True)
+    app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)), threaded=True, use_reloader=False, debug=True)

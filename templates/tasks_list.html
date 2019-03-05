@@ -1,5 +1,6 @@
 {#TODO: перенести это в конфиг или бд#}
 <div class="page-data">
+    {% set tasks = data %}
     {% if error %}
         <div class="page-info center v-align">
             <h6><i class="black-text">{{ error }}</i></h6>

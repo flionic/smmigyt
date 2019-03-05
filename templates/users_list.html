@@ -1,5 +1,6 @@
 {% set limit = 50 %}
 {% set page = request.args.page|int %}
+{% set users = data %}
 {% set pages = (users.count()/limit)|round(0, 'ceil')|int %}
 {% if users.count() %}
 {% for u in users.offset(limit*(page - 1)).limit(limit) %}

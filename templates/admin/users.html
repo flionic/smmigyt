@@ -29,7 +29,7 @@
                 $('.loading').show();
                 $('.users-list').children().remove();
                 $.ajax({
-                    url: '/ajax/users/',
+                    url: '/ajax/get/users/',
                     type: "GET",
                     data: {
                         page: page,
