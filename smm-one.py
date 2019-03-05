@@ -217,7 +217,7 @@ class Services(db.Model):
             self.title, self.desc, self.price, self.state, self.s_type, self.s_id, self.id, self.type)
 
 
-@whooshee.register_model('id', 'link', 'comment', 'country', 'city')
+# @whooshee.register_model('link', 'comment', 'country', 'city')
 class Tasks(db.Model):
     __tablename__ = 'tasks'
     id = db.Column('id', db.Integer, unique=True, nullable=False, primary_key=True, index=True)
@@ -480,6 +480,7 @@ def save_settings(section):
         if section == 'settings-main':
             for i in request.json.items():
                 Settings.query.filter_by(key=i[0]).first().value = i[1]
+                init_settings()
         elif section == 'settings-services':
             for i in request.json:
                 service = Services.query.filter_by(id=i['id'])
@@ -528,7 +529,6 @@ def save_settings(section):
                 # user.is_active = False
                 # user.is_authenticated = False
         db.session.commit()
-        init_settings()
         return jsonify({'response': 1})
     return abort(403)
 
@@ -591,9 +591,12 @@ def add_task():
         task.comment = html.escape(request.json['comment'])
     current_user.balance -= amount
     db.session.add(task)
-    db.session.commit()
-    init_settings()
-    return jsonify({'response': 1})
+    try:
+        db.session.commit()
+    except LockError:
+        return jsonify({'response': 0, 'msg': 'В данный момент идет переиндексация базы, повторите попытку через минуту'}), 503
+    else:
+        return jsonify({'response': 1})
 
 
 def error_ru(text):
@@ -621,12 +624,12 @@ def init_settings():
     # app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
     # mail.init_app(app)
     # whooshee.init_app(app)
-    whooshee.register_whoosheer(TaskUserWhoosheer)
-    # whooshee.reindex()
 
 
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or 1 == 1:
+    db.create_all()
     init_settings()
+    whooshee.register_whoosheer(TaskUserWhoosheer)
 
 if __name__ == '__main__':
     app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)),
