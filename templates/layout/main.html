@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
+{#{% set services = config['SERVICES'] %}#}
 {% set app_name = config['APP_NAME'] %}
-{% set services = config['SERVICES'] %}
 {% set ver = config['VERSION'] %}
 {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
 {% set categories = {0: "YouTube", 1: "ВКонтакте", 2: "Instagram", 3: "Facebook", 4: "Одноклассники", 5: "Telegram", 6: "Twitter"} %}

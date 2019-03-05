@@ -291,7 +291,7 @@ class TaskUserWhoosheer(AbstractWhoosheer):
 def index():
     # TODO: подгружать сервисы аджаксом
     tasks = None if current_user.is_anonymous is True else Tasks.query.filter_by(user_id=current_user.id).all()
-    return render_template('index.html', tasks=tasks)
+    return render_template('index.html', tasks=tasks, services=Services.query)
 
 
 @app.route('/info/<page>')
@@ -309,7 +309,8 @@ def main_pages(section):
 def admin_pages(section):
     # TODO: make admin handler
     if current_user.status == 7:
-        return render_template('admin/' + section + '.html')
+        services = Services.query if section == 'settings' else None
+        return render_template('admin/' + section + '.html', services=services)
 
 
 @app.route('/signup', methods=['POST'])
@@ -604,7 +605,7 @@ def init_settings():
     app.config['IK_KEY'] = Settings.query.filter_by(key='ik_key').first().value
     app.config['NAKRUTKA_APIKEY'] = Settings.query.filter_by(key='nakrutka_apikey').first().value
     app.config['BIGSMM_APIKEY'] = Settings.query.filter_by(key='bigsmm_apikey').first().value
-    app.config['SERVICES'] = Services.query.all()
+    # app.config['SERVICES'] = Services.query.all()
     app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
     app.config['YA_TRANSLATE_KEY'] = Settings.query.filter_by(key='ya_translate_key').first().value
     # mail.init_app(app)
