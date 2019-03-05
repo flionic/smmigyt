@@ -305,11 +305,6 @@ class TaskUserWhoosheer(AbstractWhoosheer):
     #     writer.delete_by_term('tasks_id', tasks.id)
 
 
-@app.route('/info/<page>')
-def info_pages(page):
-    return render_template('pages/info.html', data=['Описание', page, 'Конец'])
-
-
 @app.route('/')
 def index():
     tasks = Tasks.query.filter_by(user_id=current_user.id).all() if current_user.is_anonymous is not True else None
@@ -494,8 +489,7 @@ def save_settings(section):
         elif section == 'settings-services':
             for i in request.json:
                 service = Services.query.filter_by(id=i['id'])
-                service = Services(str(i['title'])) if i['action'] == 'add' else service.first() if i[
-                                                                                                        'action'] == 'upd' else service
+                service = Services(str(i['title'])) if i['action'] == 'add' else service.first() if i['action'] == 'upd' else service
                 service.title = i['title']
                 service.desc = i['desc']
                 service.price = i['price']

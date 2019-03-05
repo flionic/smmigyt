@@ -37,12 +37,12 @@
                         <td class="td-user">
                             {% set ava = 'https://1-smm.com/static/img/notfound.png' %}
                             {% set ava = 'mp' %}
-{#                            <div class="chip">#}
-{#                                <img src="https://www.gravatar.com/avatar/{{ t.user.email|lower|md5 }}?d={{ ava }}" alt="Contact Person">#}
-{#                                {{ 'text'|hash('md5') }}#}
-{#                                {{ t.user.email }}#}
-{#                                ID: {{ t.user_id }}#}
-{#                            </div>#}
+                                {#<div class="chip">#}
+                                {#    <img src="https://www.gravatar.com/avatar/{{ t.user.email|lower|md5 }}?d={{ ava }}" alt="Contact Person">#}
+                                {#    {{ 'text'|hash('md5') }}#}
+                                {#    {{ t.user.email }}#}
+                                {#    ID: {{ t.user_id }}#}
+                                {#</div>#}
                                 <p>{{ t.user.email|lower }}</p>
                                 <p>ID: {{ t.user_id }}</p>
                         </td>
@@ -59,7 +59,7 @@
                         <td class="td-comment">{{ t.comment }}</td>
                         <td class="td-sum">{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
                         <td class="td-link">{{ t.link|wurl|safe }}</td>
-{#                        <td class="td-link">{{ t.link|urlize(40, target='_blank') }}</td>#}
+                        {#<td class="td-link">{{ t.link|urlize(40, target='_blank') }}</td>#}
                         <td class="td-date">{{ t.date }}</td>
                         <td class="td-status">
                             <label>
@@ -86,7 +86,7 @@
                 <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
                     <a href="#!" data-page="{{ 1 }}"><i class="fas fa-angle-double-left"></i></a>
                 </li>
-{#                {% for i in range(pages) %}#}
+                {#{% for i in range(pages) %}#}
                 {% for i in range(pages)[page-5 if page-5 > 0 else 0:page+4] %}
                     <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}">
                         <a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a>
