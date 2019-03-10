@@ -59,6 +59,7 @@
                     </a></li>
                     <ul id="actions_dd" class="dropdown-content">
                         <li class="divider"></li>
+                        <li><a class="blue-text right-align reset-pass">Изменить пароль</a></li>
                         <li><a class="red-text right-align" href="/logout">Выйти</a></li>
                     </ul>
                 {% endcall %}
@@ -76,24 +77,31 @@
     {% call section(id='modals') %}
         <div class="modal modal-confirm modal-login">
             <div class="modal-footer">
-                <form id="auth">
-                    <div class="input-field col m6 s12">
-                        <input id="email" type="email" required>
-                        <label for="email" class="active">Email</label>
-                    </div>
-                    <div class="input-field col m6 s12">
-                        <input id="pass" type="password" required>
-                        <label for="pass" class="active">Пароль</label>
-                    </div>
-                    <div class="input-field col s12">
-                        <button data-action="signup" type="submit"
-                                class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться
-                        </button>
-                        <button data-action="login" type="submit"
-                                class="btn waves-effect waves-light green white-text login">Войти
-                        </button>
-                    </div>
-                </form>
+                {% if not current_user.is_authenticated %}
+                    <form id="auth">
+                        <div class="input-field col m6 s12">
+                            <input id="email" type="email" required>
+                            <label for="email" class="active">Email</label>
+                        </div>
+                        <div class="input-field col m6 s12">
+                            <input id="pass" type="password" required>
+                            <label for="pass" class="active">Пароль</label>
+                        </div>
+                        <br>
+                        <span style="font-size: 90%">Если Вы забыли пароль, введите только email</span>
+                        <div class="input-field col s12">
+                            <button data-action="reset" type="submit"
+                                    class="btn waves-effect waves-light grey white-text reset">Сбросить пароль
+                            </button>
+                            <button data-action="signup" type="submit"
+                                    class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться
+                            </button>
+                            <button data-action="login" type="submit"
+                                    class="btn waves-effect waves-light green white-text login">Войти
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
             </div>
         </div>
         <div class="modal modal-confirm modal-deposit">
@@ -126,6 +134,28 @@
                             <button class="btn waves-effect waves-light green" type="submit" name="submit">
                                 К оплате<i class="far fa-credit-card right"></i></button>
                         </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal modal-confirm modal-reset">
+            <div class="modal-content center">
+                <h5 style="margin: 10px 0 5px 0;">Ваш аккаунт: <b>{{ current_user.email }}</b></h5>
+            </div>
+            <div class="modal-footer">
+                <form id="reset">
+                    <div class="input-field col m6 s12">
+                        <input id="pass" type="password" required>
+                        <label for="pass" class="active">Новый пароль</label>
+                    </div>
+                    <div class="input-field col m6 s12">
+                        <input id="pass_two" type="password" required>
+                        <label for="pass_two" class="active">Подтвердите пароль</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <button data-action="change-pass" type="submit"
+                                class="btn waves-effect waves-light green white-text save">Сохранить
+                        </button>
                     </div>
                 </form>
             </div>
@@ -314,13 +344,24 @@
             $('[name=ik_pm_no]').val('PM_' + makeid());
             modals[1].open();
         });
-        $('.login, .signup').click(function (e) {
+        $('.login, .signup, .save, .reset').click(function (e) {
             e.preventDefault();
-            $.post($(this).attr('data-action'), {"email": $('#email').val(), "password": $('#pass').val()})
+            $.post($(this).attr('data-action'), {"email": $('#email').val(), "password": $('#pass').val(), "password_two": $('#pass_two').val()})
                 .always(function() {
                     window.location.replace("/");
                 });
         });
+
+        $('.reset-pass').click(function (e) {
+            e.preventDefault();
+            modals[2].open();
+        });
+
+        var url = new URL(window.location.href);
+        var r = url.searchParams.get("reset");
+        if (r) {
+            modals[2].open();
+        }
     });
 </script>
 {% if config['MAINTENANCE'] and current_user.status != 7 %}

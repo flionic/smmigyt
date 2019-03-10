@@ -2,6 +2,7 @@
 import hashlib
 import os
 import html
+import secrets
 from datetime import datetime
 
 import bcrypt
@@ -16,8 +17,8 @@ from flask.json import jsonify
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
-# from flask_mail import Message
-# from flask_mail_sendgrid import MailSendGrid
+from flask_mail import Message
+from flask_mail_sendgrid import MailSendGrid
 
 from flask_whooshee import Whooshee, AbstractWhoosheer
 from whoosh.index import LockError
@@ -28,7 +29,7 @@ app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config['APP_NAME'] = '1-SMM'
-app.config['VERSION'] = '1.4.4'
+app.config['VERSION'] = '1.4.5'
 app.config['SERVER_NAME'] = os.getenv('APP_DOMAIN')
 app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', '7-DEV_MODE_KEY-7')
 app.config['SESSION_TYPE'] = 'redis'
@@ -47,6 +48,8 @@ login_manager.login_view = "users.login"
 sess = Session(app)
 db = SQLAlchemy(app)
 # mail = MailSendGrid()
+app.config['MAIL_SENDGRID_API_KEY'] = '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'
+mail = MailSendGrid(app)
 whooshee = Whooshee(app)
 
 
@@ -112,6 +115,7 @@ class Users(db.Model):
     status = db.Column('status', db.Integer, nullable=False, default=0)  # 0 - locked, 1 - active, 6 - banned, 7 - admin
     signup_date = db.Column('signup_date', db.DateTime)
     last_login = db.Column('last_login', db.DateTime)
+    token = db.Column('token', db.UnicodeText)
 
     def __init__(self, email, password):
         self.email = email
@@ -132,6 +136,9 @@ class Users(db.Model):
 
     def get_id(self):
         return str.encode(str(self.id))
+
+    def make_token(self):
+        return str.encode(str(self.token))
 
     def __repr__(self):
         return '<User(id=%s, email=%s, balance=%s)>' % (self.id, self.email, self.balance)
@@ -364,6 +371,56 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/reset', methods=['GET', 'POST'])
+def reset_pass():
+    if request.form.get('email'):
+        token = secrets.token_hex(16)
+        user = Users.query.filter_by(email=request.form['email']).first()
+        if user:
+            user.token = token
+            db.session.commit()
+            msg = Message("Восстановление пароля", sender=Settings.query.filter_by(key='email').first().value, recipients=["bionic.mods@gmail.com"])
+            msg.html = f"<h1>Сброс пароля</h1><br>" \
+                       f"Вы запрашивали <b>сброс пароля</b> на сайте. <a href=https://1-smm.com/reset?token={ token }>Подтвердите это действие</a>."
+            mail.send(msg)
+            flash('На Ваш email было отправлено письмо с ссылкой для сброса пароля')
+        else:
+            flash('Пользователь с таким email не зарегистрирован', 'error')
+    elif 'token' in request.args:
+        user = Users.query.filter_by(token=request.args.get('token')).first()
+        if user:
+            user.token = None
+            login_user(user)
+            db.session.commit()
+            return redirect(url_for('index') + '?reset=1')
+        else:
+            flash('Недействительная ссылка для сброса пароля', 'error')
+    else:
+        flash('Вы не ввели email адрес', 'error')
+    if request.method == 'GET':
+        return redirect(url_for('index'))
+    else:
+        return jsonify({'response': 1})
+
+
+@app.route('/change-pass', methods=['POST'])
+@login_required
+def change_password():
+    password = str.encode(request.form.get('password'))
+    password_two = str.encode(request.form.get('password_two'))
+    if password != password_two:
+        flash('Пароли не совпадают', 'error')
+    elif len(password) < 6:
+        flash('Пароль должен состоять минимум из 6 символов', 'error')
+    else:
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        user = Users.query.filter_by(id=current_user.id).first()
+        user.password = hashed_password
+        db.session.commit()
+        flash('Пароль успешно изменен')
+    return jsonify({"response": 1})
+
+
 # TODO удалить GET метод
 @app.route('/payment/pending', methods=['GET', 'POST'])
 def payment_status():
@@ -589,8 +646,9 @@ def init_settings():
     app.config['IK_KEY'] = Settings.query.filter_by(key='ik_key').first().value
     app.config['NAKRUTKA_APIKEY'] = Settings.query.filter_by(key='nakrutka_apikey').first().value
     app.config['BIGSMM_APIKEY'] = Settings.query.filter_by(key='bigsmm_apikey').first().value
-    app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
+    # app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
     app.config['YA_TRANSLATE_KEY'] = Settings.query.filter_by(key='ya_translate_key').first().value
+
     # mail.init_app(app)
 
 
