@@ -1,0 +1,99 @@
+{% extends 'layout/main.html' %}
+{% block main %}
+    <div class="section tasks">
+        <div class="container settings">
+            <form id="tasks" class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="section row no-mar-bot">
+                            <div class="col s12">
+                                <ul class="tabs grey lighten-3">
+                                    {% for i in range(1, now.month + 1) %}
+                                        <li class="tab col s2">
+                                            {% set j = now.month + 1 - i %}
+                                            <a class="load {{ 'active' if j == now.month else ''}}" href="#tab-{{ j }}" data-tabid="{{ j }}">{{ '0' if j < 10 else '' }}{{ j }}/19
+                                                <span class="count"></span>
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="loading center v-align">
+                                {#TODO: все прелоадеры в одном html или макросе#}
+                                <div class="preloader-wrapper big active">
+                                    <div class="spinner-layer spinner-red-only">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div><i>Загрузка...</i></div>
+                            </div>
+                            {% for i in range(1, now.month + 1) %}
+                                <div id="tab-{{ i }}" data-tabid="{{ i }}" class="col s12 tb"></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% call section() %}
+
+    {% endcall %}
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript">
+        $('footer').hide();
+        $('.container').css('width', '100%');
+        $(document).ready(function () {
+            $('.sending').hide();
+            $('select').formSelect();
+
+            function loadPage(tab_id, page = 1, query = '') {
+                tab_data = $('#tab-' + tab_id);
+                $('.loading').show();
+                $('.page-data').remove();
+                $.ajax({
+                    url: '/ajax/get/crm',
+                    type: "GET",
+                    data: {
+                        month: tab_id,
+                        page: page,
+                        query: query
+                    },
+                    success: function (data) {
+                        tab_data.append(data);
+                        $('.loading').hide();
+                        $('.pagination li.waves-effect a').click(function (event) {
+                            event.preventDefault();
+                            tab_id = $('.tab .active').attr('data-tabid');
+                            page = $(this).attr('data-page');
+                            loadPage(tab_id, page, query);
+                        });
+                    }
+                });
+            }
+
+            function loadTasks() {
+                $('.tab a').click(function () {
+                    $('.tab a').unbind();
+                    tab_id = $(this).attr('data-tabid');
+                    loadPage(tab_id, 1, $(this).find('#search').val());
+                    loadTasks();
+                });
+            }
+
+            loadTasks();
+
+            $('.loading').hide();
+            $('.tab a')[0].click();
+        });
+    </script>
+{% endblock %}

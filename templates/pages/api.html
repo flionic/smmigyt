@@ -1,0 +1,62 @@
+{% extends 'layout/main.html' %}
+{% block main %}
+    {% call section() %}
+        <h2 class="center white-text">API - документация</h2>
+        <button class="btn btn-action waves-effect waves-light green api-key-action">Сгенерировать новый API Token</button>
+        <div class="white-text">
+            <span>Ваш API Token: <b>{{ current_user.api_token -}}</b></span><br>
+            <span>API URL: <b>https://1-smm.com/api/</b></span><br>
+            <br>
+            <h4>ADD</h4>
+            <img src="https://i.ibb.co/P19r0m0/image.png" alt="image" border="0"><br>
+            <span>Допустимые параметры:</span><br>
+            <span><b>id</b> - берется с главной, обозначает ID задачи (обязательный параметр)</span><br>
+            <span><b>quantity</b> - требуемое количество (обязательный параметр)</span><br>
+            <span><b>link</b> - ссылка для накрутки (обязательный параметр)</span><br>
+            <span><b>token</b> - ваш API Token (обязательный параметр)</span><br>
+            <span><b>comment</b> - комментарий для заказа (не обязательный параметр)</span><br>
+            <span><b>Обратите внимание на ограничения по минимальном количеству, его можно узнать на главной странице.</b></span><br>
+            <br>
+            <span><b>Пример GET запроса:</b> https://1-smm.com/api/add?id=115&quantity=1000&link=https://youtube.com/blabla&token=ffb09c1e27b2ec4e3dc2f9844be10948</span><br>
+            <span><b>Пример успешного ответа: </b>{"response": {"tid": 115}}</span><br>
+            <span><b>Пример не успешного ответа: </b>{"response": {"error": "Описание ошибки"}}</span><br>
+            <br>
+            <h4>STATUS</h4>
+            <span>Допустимые параметры:</span><br>
+            <span><b>tid</b> - tid, который был возвращен при создании заказа, либо id из таблицы заказов на главной (обязательный параметр)</span><br>
+            <span><b>token</b> - ваш API Token (обязательный параметр)</span><br>
+            <br>
+            <span><b>Пример GET запроса: </b>https://1-smm.com/api/status?tid=115&token=ffb09c1e27b2ec4e3dc2f9844be10948</span><br>
+            <span><b>Пример ответа: </b>{"response": {"tid": 115, "status": 0-3}}</span><br>
+            <span>0 - Обработка, 1 - В работе, 2 - Выполнен, 3 - Отменен</span><br>
+        </div>
+    {% endcall %}
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.api-key-action').click(function () {
+                event.preventDefault();
+                var btn_save = $(this);
+                $(btn_save).addClass('disabled');
+                $.ajax({
+                    url: '/ajax/save/gen-token',
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({html: ({0: 'Что-то не так..', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                        $(btn_save).parent().fadeOut();
+                        location.reload();
+                    },
+                    error: function (data) {
+                        M.toast({html: '<span class="red-text">' + data['responseJSON']['error'] + '</span>', displayLength: 5 * 1000});
+                    },
+                    complete: function () {
+                        $(btn_save).removeClass('disabled');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

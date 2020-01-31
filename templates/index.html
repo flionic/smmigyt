@@ -26,13 +26,13 @@
                                         {% for s in services %}
                                             {% if s.state == 1 and s.type == i %}
                                                 <option data-task-min="{{ s.min }}" data-task-max="{{ s.max }}"
-                                                        data-task-price="{{ s.price }}" data-task-desc="{{ s.desc|striptags }}"
+                                                        data-task-price="{{ (s.price_resellers if current_user.reseller else s.price) }}" data-task-desc="{{ s.desc|striptags }}"
                                                         {{ 'data-task-step=100' if s.id == 93 or s.id == 104 else '' }}
                                                         {{ 'data-task-country=1' if s.country else '' }}
                                                         {{ 'data-task-city=1' if s.city else '' }}
                                                         {{ 'data-task-age=1' if s.age else '' }}
                                                         {{ 'data-task-sex=1' if s.sex else '' }}
-                                                        value="{{ s.id }}">{{ s.title }} - {{ (s.price|round(2)|string).rstrip('0').rstrip('.') + 'р.' -}}
+                                                        value="{{ s.id }}">[id{{ s.id }}] {{ s.title }} - {{ ((s.price_resellers if current_user.reseller else s.price)|round(2)|string).rstrip('0').rstrip('.') + 'р.' -}}
                                                 </option>
                                             {% endif %}
                                         {% endfor %}
@@ -72,12 +72,13 @@
                                 </div>
                             {% else %}
                                 <div class="input-field col m12 center">
-                                    <a class="btn-large waves-effect waves-light blue btn-login"><i class="fas fa-sign-in-alt"></i>Вход/Регистрация</a>
+                                    <a class="btn-large waves-effect waves-light green btn-login"><i class="fas fa-sign-in-alt"></i>Вход</a>
+                                    <a class="btn-large waves-effect waves-light blue btn-reg"><i class="fas fa-sign-in-alt"></i>Регистрация</a>
                                 </div>
                             {% endif %}
                             <div class="input-field pm pm-country col m3 s12">
                                 <input id="country" data-task-param="country" type="text">
-                                <label for="country">Стрнана</label>
+                                <label for="country">Страна</label>
                             </div>
                             <div class="input-field pm pm-city col m3 s12">
                                 <input id="city" data-task-param="city" type="text">

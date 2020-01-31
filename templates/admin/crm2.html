@@ -1,0 +1,162 @@
+{% extends 'layout/main.html' %}
+{% block main %}
+    {#TODO: перенести это в конфиг или бд#}
+    <div class="page-data" style="background-color: #fff;">
+        {% set tasks = data %}
+        {% if error %}
+            <div class="page-info center v-align">
+                <h6><i class="black-text">{{ error }}</i></h6>
+            </div>
+        {% elif tasks.count() %}
+            {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
+            <form>
+                <table id="tasks-table" class="display">
+                    <thead>
+                    <tr>
+                        <th>ID ЗАКАЗА</th>
+                        <th>Заказчик</th>
+                        <th>Тип</th>
+                        <th>Страна</th>
+                        <th>Город</th>
+                        <th>Возраст</th>
+                        <th>Пол</th>
+                        <th>Кол-во</th>
+                        <th>Коммент</th>
+                        <th>СУММА КЛИЕНТА</th>
+                        <th>Ссылка</th>
+                        <th>ДАТА</th>
+                        <th style="min-width: 130px;">Статус</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for t in tasks %}
+                        {% if t.id < 100 %}
+                        <tr>
+                            <td>{{ t.id }}</td>
+                            <td class="td-user">
+                                {#{% set ava = 'https://1-smm.com/static/img/notfound.png' %}#}
+                                {#{% set ava = 'mp' %}#}
+                                {#<div class="chip">#}
+                                {#    <img src="https://www.gravatar.com/avatar/{{ t.user.email|lower|md5 }}?d={{ ava }}" alt="Contact Person">#}
+                                {#    {{ 'text'|hash('md5') }}#}
+                                {#    {{ t.user.email }}#}
+                                {#    ID: {{ t.user_id }}#}
+                                {#</div>#}
+                                <p>{{ t.user.email|lower }}</p>
+                                <p>ID: {{ t.user_id }}</p>
+                            </td>
+                            <td class="td-type">{{ t.service.title }}</td>
+                            <td>{{ t.country }}</td>
+                            <td class="td-city">{{ t.city }}</td>
+                            <td>{{ t.age }}</td>
+                            <td>{{ t.sex }}</td>
+                            <td>{{ t.quantity }}</td>
+                            <td class="td-comment">{{ t.comment }}</td>
+                            <td class="td-sum">{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }} р.</td>
+                            <td class="td-link">{{ t.link|wurl|safe }}</td>
+                            <td class="td-date">{{ t.date }}</td>
+                            <td class="td-status">
+                                <label>
+                                    <select class="status" data-tid="{{ t.id }}">
+                                        {% for s in states %}
+                                            <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>
+                                        {% endfor %}
+                                        <option value="666">Удалить</option>
+                                    </select>
+                                </label>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+            <br>
+            <script type="text/javascript">
+                $('.active .count').text(' ({{ tasks.count() }} шт.)');
+                $('.status').show();
+                $('.status').change(function () {
+                    var task = $(this).closest("tr"), action = $(this), status = $(this).parent('label'), msg = '';
+                    $(action).hide();
+                    $(status).append('<span>Сохранение...</span>');
+                    if ($(this).val() === '3') { msg = prompt('Укажите причину отмены'); }
+                    $.ajax({
+                        url: '/ajax/save/state',
+                        type: "POST",
+                        data: JSON.stringify({
+                            "id": $(this).attr('data-tid'),
+                            "state": $(this).val(),
+                            "msg": msg
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                            task.fadeOut(function () {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                });
+            </script>
+        {% else %}
+            <div class="page-info center v-align">
+                <h6><i class="grey-text">Нет таких заказов</i></h6>
+            </div>
+        {% endif %}
+    </div>
+    {% call section() %}
+
+    {% endcall %}
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.sending').hide();
+            $('select').formSelect();
+
+            function loadPage(tab_id, page = 1, query = '') {
+                tab_data = $('#tab-' + tab_id);
+                $('.loading').show();
+                $('.page-data').remove();
+                $.ajax({
+                    url: '/ajax/get/tasks',
+                    type: "GET",
+                    data: {
+                        status: tab_id,
+                        page: page,
+                        query: query
+                    },
+                    success: function (data) {
+                        tab_data.append(data);
+                        $('.loading').hide();
+                        $('.pagination li.waves-effect a').click(function (event) {
+                            event.preventDefault();
+                            tab_id = $('.tab .active').attr('data-tabid');
+                            page = $(this).attr('data-page');
+                            loadPage(tab_id, page, query);
+                        });
+                    }
+                });
+            }
+
+            function loadTasks() {
+                $('.tab a').click(function () {
+                    $('.tab a').unbind();
+                    tab_id = $(this).attr('data-tabid');
+                    loadPage(tab_id, 1, $(this).find('#search').val());
+                    loadTasks();
+                });
+            }
+
+            loadTasks();
+
+            $('#search').donetyping(function () {
+                loadPage(666, 1, $(this).val());
+            });
+
+            $('.loading').hide();
+            $('.tab a')[0].click();
+        });
+    </script>
+{% endblock %}

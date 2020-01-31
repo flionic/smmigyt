@@ -1,11 +1,26 @@
 [Unit]
-Description=Flask for: smm-one
+Description=Flask App smmone
 Documentation=https://1-smm.com
+After=network.target network-online.target nss-lookup.target
 
 [Service]
-WorkingDirectory=/var/flask/smm-one
-ExecStart=/usr/bin/python3.7 /var/flask/smm-one/smm-one.py
+Type=simple
+#PIDFile=/run/smmone.pid
+WorkingDirectory=/var/flask/smm-one/
+ReadWriteDirectories=-/var/flask/smm-one/
+LogsDirectory=logs
+ExecStart=/var/flask/smm-one/wsgi.py
+User=flask
+Group=flask
+#PAMName=smmone
+SyslogIdentifier=smmone
+KillSignal=SIGTERM
 Restart=always
+RestartSec=5s
+#StandardOutput=file:/var/flask/smm-one/logs/flask.log
+#StandardError=file:/var/flask/smm-one/logs/error.log
+#PrivateDevices=yes
+#NotifyAccess=all
 
 [Install]
 WantedBy=multi-user.target

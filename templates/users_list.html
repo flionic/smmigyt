@@ -24,6 +24,13 @@
                     <input id="pass-{{ u.id }}" autocomplete="off" class="user-pass white-text validate" type="password">
                     <label for="pass-{{ u.id }}" class="grey-text text-lighten-2">Новый пароль</label>
                 </div>
+                <div class="input-field col s12 m6">
+                    <div class="switch">
+                        <span>Реселлер</span>
+                        <label>Выкл<input class="user-reseller" type="checkbox" {{ 'checked=""' if u.reseller else '' }}> <span class="lever"></span>Вкл</label>
+                        <label><input class="service-action" type="hidden" value="upd"></label>
+                    </div>
+                </div>
                 <div class="col s12 m4">
                     <button class="btn waves-effect waves-light green btn-user-save disabled">Применить</button>
                     <span class="save-status helper-text white-text right"></span>
@@ -69,7 +76,8 @@
             "uid": $(card_user).attr('data-uid'),
             "email": $(card_user).find('.user-email').val(),
             "balance": $(card_user).find('.user-balance').val(),
-            "password": $(card_user).find('.user-pass').val()
+            "password": $(card_user).find('.user-pass').val(),
+            "reseller": $(card_user).find('.user-reseller:checkbox:checked').val()
         };
         $.ajax({
             url: '/ajax/save/user',

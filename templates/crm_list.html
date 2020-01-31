@@ -1,0 +1,202 @@
+{#TODO: перенести это в конфиг или бд#}
+<div class="page-data">
+    {% set tasks = data %}
+    {% if error %}
+        <div class="page-info center v-align">
+            <h6><i class="black-text">{{ error }}</i></h6>
+        </div>
+    {% elif tasks.count() %}
+        {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
+        {% set limit = 10000 %}
+        {% set page = request.args.page|int %}
+        {% set pages = (tasks.count()/limit)|round(0, 'ceil')|int %}
+        <h6 class="all-profit"></h6>
+        <form>
+            <table id="tasks-table" class="display">
+                <thead>
+                <tr>
+                    <th>ID ЗАКАЗА</th>
+                    <th>ДАТА</th>
+                    <th>СУММА КЛИЕНТА</th>
+                    <th>ЗАКУПКА</th>
+                    <th>ПОМЕТКИ</th>
+                    <th>ПРИБЫЛЬ</th>
+{#                    <th>КОММЕНТАРИЙ</th>#}
+{#                    <th>Кол-во</th>#}
+{#                    <th>Коммент</th>#}
+{#                    <th>Сумма</th>#}
+{#                    <th>Ссылка</th>#}
+{#                    <th>Время</th>#}
+{#                    <th style="min-width: 130px;">Статус</th>#}
+                </tr>
+                </thead>
+                <tbody>
+                {% for t in tasks.offset(limit*(page - 1)).limit(limit) %}
+                    <tr id="{{ t.id }}">
+                        <td class="td-id">{{ t.id }}</td>
+                        <td class="td-date">{{ t.date }}</td>
+                        <td class="td-sum">{{ (t.amount|round(2)|string).rstrip('0').rstrip('.') }}</td>
+                        <td class="td-cons">
+                            <input value="{{ t.cons if t.cons else '' }}" type="number" style="max-width: 100px; height: 2rem;">
+                        </td>
+                        {% set stypes = {0: "YT", 1: "ВК", 2: "Inst", 3: "FB", 4: "ОК", 5: "TG", 6: "Twt"} %}
+                        {% set comment = t.quantity + " шт. " + (stypes[t.service.type] if t.service.type else '') + " : " + (t.service.title if t.service.title else '') + " [" + t.comment + " " + t.country + " " + t.city + " " + t.sex + " " + t.age + "] " %}
+{#                        <td class="td-adm-comment"><input value="{{ t.adm_comment if t.adm_comment else comment }}" type="text" style="height: 2rem;"></td>#}
+                        <td class="td-adm-comment" style="min-width: 300px;"><input value="{{ t.adm_comment if t.adm_comment else comment }}" type="text" style="height: 2rem;"></td>
+                        {#<td class="td-comment">{{ t.quantity }} шт. {{ stypes[t.service.type] }} : {{ t.service.title }} [{{ t.comment }} {{ t.country }} {{ t.city }} {{ t.sex }} {{ t.age }}]</td>#}
+                        <td class="td-profit" style="background-color: yellow;">0</td>
+{#                        <td class="td-adm-comment"><input value="{{ t.adm_comment if t.adm_comment else '' }}" type="text" style="height: 2rem;"></td>#}
+                        {#                        <td class="td-user">#}
+                                {#{% set ava = 'https://1-smm.com/static/img/notfound.png' %}#}
+                                {#{% set ava = 'mp' %}#}
+                                {#<div class="chip">#}
+                                {#    <img src="https://www.gravatar.com/avatar/{{ t.user.email|lower|md5 }}?d={{ ava }}" alt="Contact Person">#}
+                                {#    {{ 'text'|hash('md5') }}#}
+                                {#    {{ t.user.email }}#}
+                                {#    ID: {{ t.user_id }}#}
+                                {#</div>#}
+{#                                <p>{{ t.user.email|lower }}</p>#}
+{#                                <p>ID: {{ t.user_id }}</p>#}
+{#                        </td>#}
+                        {#<td class="td-link">{{ t.link|wurl|safe }}</td>#}
+{#                        <td class="td-status">#}
+{#                            <label>#}
+{#                                <select class="status" data-tid="{{ t.id }}">#}
+{#                                    {% for s in states %}#}
+{#                                        <option value="{{ s }}" {{ 'selected' if s == t.status else '' }}>{{ states[s] }}</option>#}
+{#                                    {% endfor %}#}
+{#                                    <option value="666">Удалить</option>#}
+{#                                </select>#}
+{#                            </label>#}
+{#                        </td>#}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </form>
+        <br>
+        <div class="center info">
+            {% set from = tasks.count() - tasks.offset(limit*(page - 1)).count() %}
+            {% set to = from + tasks.offset(limit*(page - 1)).limit(limit).count() %}
+            <p class="grey-text text-darken-1">Заказы {{ from + 1 }}-{{ to }} из {{ tasks.count() }}</p>
+            <ul class="pagination">
+                <li class="{{ 'disabled' if page == 1 else 'waves-effect' }}">
+                    <a href="#!" data-page="{{ 1 }}"><i class="fas fa-angle-double-left"></i></a>
+                </li>
+                {% for i in range(pages)[page-5 if page-5 > 0 else 0:page+4] %}
+                    <li class="{{ 'active' if page == i + 1 else 'waves-effect' }}">
+                        <a href="#!" data-page="{{ i + 1 }}">{{ i + 1 }}</a>
+                    </li>
+                {% endfor %}
+                <li class="{{ 'disabled' if page == pages else 'waves-effect' }}">
+                    <a href="#!" data-page="{{ pages }}"><i class="fas fa-angle-double-right"></i></a>
+                </li>
+            </ul>
+        </div>
+        <script type="text/javascript">
+            $('td, th, input').css('text-align', 'center');
+            $('input').css('font-size', '14px');
+            {#$('.td-id, .td-sum, .td-cons').css('max-width', '80px');#}
+            $('.active .count').text(' ({{ tasks.count() }} шт.)');
+            $('.info').hide();
+            $('.status').show();
+            $('.status').change(function () {
+                var task = $(this).closest("tr"), action = $(this), status = $(this).parent('label'), msg = '';
+                $(action).hide();
+                $(status).append('<span>Сохранение...</span>');
+                if ($(this).val() === '3') { msg = prompt('Укажите причину отмены'); }
+                $.ajax({
+                    url: '/ajax/save/state',
+                    type: "POST",
+                    data: JSON.stringify({
+                        "id": $(this).attr('data-tid'),
+                        "state": $(this).val(),
+                        "msg": msg
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({html: ({0: 'Ошибка', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                        task.fadeOut(function () {
+                            $(this).remove();
+                        });
+                    }
+                });
+            });
+
+            $('.td-cons input').on('input', function() {
+                var tr = $(this).closest('tr');
+                var cons = parseFloat($(this).val());
+                var sum = parseFloat(tr.find('.td-sum').text());
+                var profit = tr.find('.td-profit');
+                profit.text(sum - cons);
+            });
+
+            $('.td-cons input').each(function() {
+                var tr = $(this).closest('tr');
+                var cons = parseFloat($(this).val());
+                if (cons){
+                    var sum = parseFloat(tr.find('.td-sum').text());
+                    var profit = tr.find('.td-profit');
+                    {#profit.text(sum - cons);#}
+                    profit.text(Math.round((sum - cons) * 100) / 100);
+                }
+            });
+
+            $('.td-cons input').donetyping(function () {
+                $.ajax({
+                    url: '/ajax/save/crm_cons',
+                    type: "POST",
+                    data: JSON.stringify({
+                        "task_id": $(this).closest('tr').attr('id'),
+                        "cons": $(this).val(),
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({html: ({0: 'Что-то не так..', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                    },
+                    error: function (data) {
+                        M.toast({html: '<span class="red-text">' + data['responseJSON']['error'] + '</span>', displayLength: 5 * 1000});
+                    }
+                });
+                var profit = 0;
+                $('.td-profit').each(function() {
+                    profit += parseFloat($(this).text()) ? parseFloat($(this).text()) : 0;
+                });
+                $('.all-profit').text('Общая прибыль: ' + Math.round((profit) * 100) / 100 + ' р.');
+            });
+
+            $('.td-adm-comment input').donetyping(function () {
+                $.ajax({
+                    url: '/ajax/save/crm_comment',
+                    type: "POST",
+                    data: JSON.stringify({
+                        "task_id": $(this).closest('tr').attr('id'),
+                        "adm-comment": $(this).val(),
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        M.toast({html: ({0: 'Что-то не так..', 1: 'Сохранено'})[data['response']], displayLength: 5 * 1000});
+                    },
+                    error: function (data) {
+                        M.toast({html: '<span class="red-text">' + data['responseJSON']['error'] + '</span>', displayLength: 5 * 1000});
+                    }
+                });
+            });
+
+            $( ".td-comment:contains('АДМИНИСТРАЦИЯ')" ).css( "background-color", "#ff000050" );
+            $( ".td-adm-comment input[value*='АДМИНИСТРАЦИЯ']" ).css( "background-color", "#ff000050" );
+            var profit = 0;
+            $('.td-profit').each(function() {
+                profit += parseFloat($(this).text()) ? parseFloat($(this).text()) : 0;
+            });
+            $('.all-profit').text('Общая прибыль: ' + Math.round((profit) * 100) / 100 + ' р.');
+        </script>
+    {% else %}
+        <div class="page-info center v-align">
+            <h6><i class="grey-text">Нет таких заказов</i></h6>
+        </div>
+    {% endif %}
+</div>

@@ -79,6 +79,7 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="flask.wrappers.Request.get" />
+          <option value="wsgi.sersmm" />
         </list>
       </option>
     </inspection_tool>

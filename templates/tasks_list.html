@@ -93,15 +93,17 @@
             $('.active .count').text(' ({{ tasks.count() }} шт.)');
             $('.status').show();
             $('.status').change(function () {
-                var task = $(this).closest("tr"), action = $(this), status = $(this).parent('label');
+                var task = $(this).closest("tr"), action = $(this), status = $(this).parent('label'), msg = '';
                 $(action).hide();
                 $(status).append('<span>Сохранение...</span>');
+                if ($(this).val() === '3') { msg = prompt('Укажите причину отмены'); }
                 $.ajax({
                     url: '/ajax/save/state',
                     type: "POST",
                     data: JSON.stringify({
                         "id": $(this).attr('data-tid'),
-                        "state": $(this).val()
+                        "state": $(this).val(),
+                        "msg": msg
                     }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",

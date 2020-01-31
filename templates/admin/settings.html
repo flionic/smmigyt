@@ -81,6 +81,11 @@
                                                 <label>Цена</label>
                                             </div>
                                             <div class="input-field col s12 m2">
+                                                <input class="service-price-resellers validate" type="number" step="0.01" value="{{ s.price_resellers }}" style="width: 90%;" required>
+                                                <span>₽</span>
+                                                <label>Цена реселлерам</label>
+                                            </div>
+                                            <div class="input-field col s12 m2">
                                                 <div class="switch">
                                                     <label>Выкл<input class="service-state" type="checkbox" {{ 'checked' if s.state == 1 else '' }}> <span class="lever"></span>Вкл</label>
                                                     <label><input class="service-action" type="hidden" value="upd"></label>
@@ -180,6 +185,7 @@
                             "title": $(this).find('.service-title').val(),
                             "desc": $(this).find('.service-desc').val(),
                             "price": $(this).find('.service-price').val(),
+                            "price-resellers": $(this).find('.service-price-resellers').val(),
                             "state": $(this).find('.service-state').is(':checkbox:checked') ? '1' : '0',
                             "action": $(this).find('.service-action').val(),
                             "min": $(this).find('.service-min').val(),

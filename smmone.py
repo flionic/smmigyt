@@ -1,6 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.7
 import hashlib
 import os
+import sys
 import html
 import secrets
 from datetime import datetime
@@ -9,6 +10,7 @@ import bcrypt
 import requests
 # from dotenv import load_dotenv
 import whoosh.fields
+from sqlalchemy import extract
 from werkzeug.contrib.fixers import ProxyFix
 from email_validator import validate_email
 
@@ -24,12 +26,12 @@ from flask_whooshee import Whooshee, AbstractWhoosheer
 from whoosh.index import LockError
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 app.wsgi_app = ProxyFix(app.wsgi_app)
-app.config['APP_NAME'] = '1-SMM'
-app.config['VERSION'] = '1.4.5'
+app.config['APP_NAME'] = 'smmone'
+app.config['VERSION'] = '1.5.2'
 app.config['SERVER_NAME'] = os.getenv('APP_DOMAIN')
 app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', '7-DEV_MODE_KEY-7')
 app.config['SESSION_TYPE'] = 'redis'
@@ -38,6 +40,7 @@ app.config['SESSION_TYPE'] = 'redis'
 # TODO: move to configparser (https://hackernoon.com/4-ways-to-manage-the-configuration-in-python-4623049e841b)
 # load_dotenv(os.path.join(basedir, 'settings.cfg'))
 db_link = 'mysql://smm_one:gJT^n<{Y72:}@localhost/smm_one?charset=utf8mb4'
+# db_link = 'mysql://sersmm:S6KHk95(=7K9@localhost/sersmm?charset=utf8mb4'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_link
 app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(basedir, 'db_repository')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -92,6 +95,11 @@ def get_user_country(ip):
     return requests.get('http://ip-api.com/json/' + ip).json()['countryCode']
 
 
+@app.context_processor
+def inject_now():
+    return {'now': datetime.utcnow()}
+
+
 class Settings(db.Model):
     __tablename__ = 'settings'
     key = db.Column('key', db.String(24), primary_key=True, unique=True, nullable=False)
@@ -116,6 +124,8 @@ class Users(db.Model):
     signup_date = db.Column('signup_date', db.DateTime)
     last_login = db.Column('last_login', db.DateTime)
     token = db.Column('token', db.UnicodeText)
+    api_token = db.Column('api_token', db.UnicodeText)
+    reseller = db.Column('reseller', db.Integer)
 
     def __init__(self, email, password):
         self.email = email
@@ -190,6 +200,7 @@ class Services(db.Model):
     title = db.Column('title', db.String(128), default=name)
     desc = db.Column('desc', db.String(1000), default='Описание отсутствует')
     price = db.Column('price', db.Float, default=0)
+    price_resellers = db.Column('price_resellers', db.Float, default=0)
     min = db.Column('min', db.String(12), default='0')
     max = db.Column('max', db.String(12), default='999999999')
     state = db.Column('state', db.Integer, default=1)
@@ -204,7 +215,8 @@ class Services(db.Model):
 
     # TODO: refactoring me
     def __repr__(self):
-        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s', id='%s', type='%s')>" % (self.title, self.desc, self.price, self.state, self.s_type, self.s_id, self.id, self.type)
+        return "<Service(title='%s', desc='%s', price='%s', state='%s', s_type='%s', s_id='%s', id='%s', type='%s')>" % (
+        self.title, self.desc, self.price, self.state, self.s_type, self.s_id, self.id, self.type)
 
 
 # @whooshee.register_model('link', 'comment', 'country', 'city')
@@ -228,6 +240,8 @@ class Tasks(db.Model):
     age = db.Column('age', db.String(255), default='-')
     sex = db.Column('sex', db.String(255), default='-')
     comment = db.Column('comment', db.String(1000), default='-')
+    cons = db.Column(db.String(1000), default='0')
+    adm_comment = db.Column(db.String(1000), default='')
 
     def __init__(self, user_id, s_type, task_id, link='', quantity='', amount=''):
         self.user_id = user_id
@@ -239,7 +253,8 @@ class Tasks(db.Model):
         self.date = datetime.now()
 
     def __repr__(self):
-        return "<Task(user_id='%s', service_id='%s', task_id='%s', s_type='%s', link='%s', quantity='%s', status='%s')>" % (self.user_id, self.service_id, self.task_id, self.s_type, self.link, self.quantity, self.status)
+        return "<Task(user_id='%s', service_id='%s', task_id='%s', s_type='%s', link='%s', quantity='%s', status='%s')>" % (
+        self.user_id, self.service_id, self.task_id, self.s_type, self.link, self.quantity, self.status)
 
 
 @whooshee.register_whoosheer
@@ -317,6 +332,14 @@ def admin_pages(section):
     if current_user.status == 7:
         services = Services.query if section == 'settings' else None
         return render_template('admin/' + section + '.html', services=services)
+    else:
+        flash('Упс, этот раздел недоступен для Вас', 'error')
+        return redirect(url_for('index'))
+
+
+@app.route('/wordpess/vivian')
+def photo_test():
+    return jsonify({'response': 'ok', 'code': "get_template_part('template', 'blog')"})
 
 
 @app.route('/signup', methods=['POST'])
@@ -379,9 +402,9 @@ def reset_pass():
         if user:
             user.token = token
             db.session.commit()
-            msg = Message("Восстановление пароля", sender=Settings.query.filter_by(key='email').first().value, recipients=["bionic.mods@gmail.com"])
+            msg = Message("Восстановление пароля", sender=Settings.query.filter_by(key='email').first().value, recipients=[user.email])
             msg.html = f"<h1>Сброс пароля</h1><br>" \
-                       f"Вы запрашивали <b>сброс пароля</b> на сайте. <a href=https://1-smm.com/reset?token={ token }>Подтвердите это действие</a>."
+                       f"Вы запрашивали <b>сброс пароля</b> на сайте. <a href=https://{ app.config['APP_DOMAIN'] }/reset?token={ token }>Подтвердите это действие</a>."
             mail.send(msg)
             flash('На Ваш email было отправлено письмо с ссылкой для сброса пароля')
         else:
@@ -475,6 +498,8 @@ def load_data(section):
     """
     if current_user.status == 7:
         data = (Users if section == 'users' else Tasks).query
+        if section == 'crm':
+            data = Tasks.query.order_by(Tasks.id.desc()).filter(extract('month', Tasks.date) == request.args.get('month'))
         q = request.args.get('query')
         if str.isdigit(q):
             data = data.filter_by(id=int(q))
@@ -507,6 +532,7 @@ def save_settings(section):
                 service.title = i['title']
                 service.desc = i['desc']
                 service.price = i['price']
+                service.price_resellers = i['price-resellers']
                 service.state = i['state']
                 service.country = i['param-country']
                 service.city = i['param-city']
@@ -521,8 +547,13 @@ def save_settings(section):
             task = Tasks.query.filter_by(id=request.json['id']).first()
             task.status = request.json['state']
             if request.json['state'] == '3':
-                Users.query.filter_by(id=task.user_id).first().balance += task.amount
+                user = Users.query.filter_by(id=task.user_id).first()
+                user.balance += task.amount
                 task.amount = 0
+                task.comment = 'АДМИНИСТРАЦИЯ: ' + request.json['msg']
+                msg = Message("Ваш заказ отменен", sender=Settings.query.filter_by(key='email').first().value, recipients=[user.email])
+                msg.html = f"Причина отмены: { request.json['msg'] }"
+                mail.send(msg)
             elif request.json['state'] == '666':
                 db.session.delete(task)
         elif section == 'settings-users':
@@ -542,9 +573,80 @@ def save_settings(section):
             if request.json['password']:
                 # TODO: разлогин после смены пароля
                 user.password = bcrypt.hashpw(str.encode(request.json['password']), bcrypt.gensalt())
+            if 'reseller' in request.json:
+                user.reseller = 1
+            else:
+                user.reseller = 0
+        elif section == 'gen-token':
+            user = Users.query.filter_by(id=current_user.id).first()
+            user.api_token = secrets.token_hex(16)
+        elif section == 'crm_cons':
+            task = Tasks.query.filter_by(id=int(request.json['task_id'])).first()
+            task.cons = float(request.json['cons'])
+        elif section == 'crm_comment':
+            task = Tasks.query.filter_by(id=int(request.json['task_id'])).first()
+            task.adm_comment = request.json['adm-comment']
+        db.session.commit()
+        return jsonify({'response': 1})
+    elif section == 'gen-token':
+        user = Users.query.filter_by(id=current_user.id).first()
+        user.api_token = secrets.token_hex(16)
         db.session.commit()
         return jsonify({'response': 1})
     return abort(403)
+
+
+@app.route('/api/<section>', methods=['GET'])
+def app_api(section):
+    user = Users.query.filter_by(api_token=request.args.get('token')).first()
+    if user:
+        if section == 'add':
+            if request.args.get('quantity') and request.args.get('link') and request.args.get('id'):
+                try:
+                    service = Services.query.filter_by(id=request.args.get('id')).first()
+                    price = service.price_resellers if user.reseller == 1 else service.price
+                    amount = price / 1000 * float(request.args.get('quantity'))
+                    amount = price if request.args.get('id') == '210' else amount
+                    task = Tasks(user.id, service.s_type, int(request.args.get('id')), html.escape(request.args.get('link')), html.escape(request.args.get('quantity')), amount)
+                except ValueError:
+                    return jsonify({'response': {'error': 'Неверное значение одного из параметров'}}), 400
+                except Exception as e:
+                    return jsonify({'response': {'error': 'Неизвестная ошибка: ' + en_to_ru(str(e))}}), 400
+                if int(request.args.get('quantity')) < int(service.min) or int(request.args.get('quantity')) > int(service.max):
+                    return jsonify({'response': {'error': 'Указан недопустимый объем заказа'}}), 400
+                elif amount < 0:
+                    return jsonify({'response': {'error': 'Сумма заказа не может быть отрицательным =('}}), 400
+                elif (request.args.get('link').find('http://') == 0 or request.args.get('link').find('https://') == 0) is False:
+                    return jsonify({'response': {'error': 'Ссылка должна начинаться с http:// или https://'}}), 400
+                elif amount > user.balance:
+                    return jsonify({'response': {'error': 'Недостаточно средств на Вашем счету'}}), 400
+                elif (service.id == 93 or service.id == 104) and int(html.escape(request.args.get('quantity'))) % 100:
+                    return jsonify({'response': {'error': 'Количество должно быть кратно 100'}}), 400
+                elif service.s_type == 'manual':
+                    task.quantity = html.escape(request.args.get('quantity'))
+                    task.link = html.escape(request.args.get('link'))
+                    task.comment = html.escape(request.args.get('comment')) if request.args.get('comment') else ''
+                current_user.balance -= amount
+                db.session.add(task)
+                try:
+                    db.session.commit()
+                except LockError:
+                    return jsonify({'response': 0, 'error': 'В данный момент идет переиндексация базы, повторите попытку через минуту'}), 503
+                else:
+                    return jsonify({"response": {"tid": task.id}})
+            else:
+                return jsonify({"response": {"error": "Отсутствует обязательный параметр"}})
+        elif section == 'status':
+            task = Tasks.query.filter_by(id=request.args.get('tid')).first()
+            if task is None:
+                return jsonify({"response": {"error": "Такой задачи не существует"}})
+            if task.user_id != user.id:
+                return jsonify({"response": {"error": "Эта задача была создана с другого аккаунта"}})
+            return jsonify({"response": {"status": task.status}})
+        else:
+            return jsonify({"response": {"error": "Неизвестный запрос"}})
+    else:
+        return jsonify({"response": {"error": "Неверный token"}})
 
 
 @app.route('/ajax/new-task', methods=['POST'])
@@ -552,8 +654,9 @@ def save_settings(section):
 def add_task():
     try:
         service = Services.query.filter_by(id=request.json['tid']).first()
-        amount = service.price / 1000 * float(request.json['quantity'])
-        amount = service.price if request.json['tid'] == '210' else amount
+        price = service.price_resellers if current_user.reseller == 1 else service.price
+        amount = price / 1000 * float(request.json['quantity'])
+        amount = price if request.json['tid'] == '210' else amount
         task = Tasks(current_user.id, service.s_type, int(request.json['tid']), html.escape(request.json['link']), html.escape(request.json['quantity']), amount)
     except ValueError:
         return jsonify({'response': 0, 'error_code': 1, 'msg': 'Неверное значение одного из параметров'}), 400
@@ -565,7 +668,7 @@ def add_task():
         return jsonify({'response': 0, 'error_code': 2, 'msg': 'Сумма заказа не может быть отрицательным =('}), 400
     elif (request.json['link'].find('http://') == 0 or request.json['link'].find('https://') == 0) is False:
         return jsonify({'response': 0, 'error_code': 4, 'msg': 'Ссылка должна начинаться с http:// или https://'}), 400
-    elif amount > current_user.balance:
+    elif amount > current_user.balance + 1:
         return jsonify({'response': 0, 'error_code': 5, 'msg': 'Недостаточно средств на Вашем счету'}), 400
     elif (service.id == 93 or service.id == 104) and int(html.escape(request.json['quantity'])) % 100:
         return jsonify({'response': 0, 'error_code': 6, 'msg': 'Количество должно быть кратно 100'}), 400
@@ -638,7 +741,7 @@ def en_to_ru(text):
 
 def init_settings():
     app.config['MAINTENANCE'] = 0
-    app.config['APP_NAME'] = Settings.query.filter_by(key='app_name').first().value
+    app.config['APP_TITLE'] = Settings.query.filter_by(key='app_name').first().value
     app.config['APP_DOMAIN'] = Settings.query.filter_by(key='app_domain').first().value
     app.config['SERVER_NAME'] = app.config['APP_DOMAIN']
     app.config['IK_ID_CHECKOUT'] = Settings.query.filter_by(key='ik_id_checkout').first().value
@@ -649,6 +752,7 @@ def init_settings():
     # app.config['MAIL_SENDGRID_API_KEY'] = Settings.query.filter_by(key='mailgrid_key').first().value
     app.config['YA_TRANSLATE_KEY'] = Settings.query.filter_by(key='ya_translate_key').first().value
 
+    # flask.request.headers['Host']
     # mail.init_app(app)
 
 
@@ -658,4 +762,6 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or 1 == 1:
     whooshee.register_whoosheer(TaskUserWhoosheer)
 
 if __name__ == '__main__':
-    app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)), threaded=True, use_reloader=False, debug=True)
+    print('Start Flask')
+    # app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23033)), threaded=True, use_reloader=False, debug=True)
+    app.run(host=os.getenv('APP_IP', '0.0.0.0'), port=int(os.getenv('APP_PORT', 23038)), threaded=True, use_reloader=False, debug=True)

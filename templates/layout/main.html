@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
-{% set app_name = config['APP_NAME'] %}
+{% set app_name = config['APP_TITLE'] %}
 {% set ver = config['VERSION'] %}
 {% set states = {0: "Обработка", 1: "В работе", 2: "Выполнен", 3: "Отменен"} %}
 {% set categories = {0: "YouTube", 1: "ВКонтакте", 2: "Instagram", 3: "Facebook", 4: "Одноклассники", 5: "Telegram", 6: "Twitter"} %}
@@ -11,7 +11,8 @@
     <meta name="description" content="{% block description %}Здесь вы можете заказать качественную накрутку подписчиков и лайков для различных социальных сетей{% endblock %}">
     <link rel=stylesheet type=text/css media="screen,projection" href="{{ url_for('static', filename='css/materialize.min.css') }}">
     <link rel=stylesheet type=text/css media="screen,projection" href="{{ url_for('static', filename='css/style.css') }}?ver={{ ver }}">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+{#    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">#}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
     <meta name="application-name" content="{{ app_name }}">
     <meta name="theme-color" content="#880e4f">
     {#<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">#}
@@ -23,6 +24,15 @@
     {#<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">#}
     {#<link rel="mask-icon" href="{{ url_for('static', filename='img/safari-pinned-tab.svg') }}" color="#5bbad5">#}
     {#<meta name="interkassa-verification" content="46871daa498d3550fb477f1fe2eb4442"/>#}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-42401203-20"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-42401203-20');
+    </script>
     {% block head %}{% endblock %}
 </head>
 {% macro section(classes='row', id='') %}
@@ -37,13 +47,17 @@
 {% macro navmenu() %}
     {% if current_user and current_user.is_authenticated %}
         {% if current_user.status == 7 %}
+            <li><a href="/admin/crm"><i class="fas fa-pen"></i>CRM</a></li>
             <li><a href="/admin/tasks"><i class="fas fa-pen"></i>Модерация</a></li>
             <li><a href="/admin/users"><i class="fas fa-user-edit"></i>Пользователи</a></li>
             <li><a href="/admin/settings"><i class="fas fa-wrench"></i>Настройки</a></li>
         {% endif %}
+{#        Если Вы забыли пароль, введите только email#}
+        <li><a class="" href="/pages/api"><i class="fas fa-wave-square"></i>API</a></li>
         <li><a class="btn-deposit" href="#!"><i class="fas fa-wallet"></i>Баланс:&nbsp;{{ (current_user.balance|round(2)|string).rstrip('0').rstrip('.') }}&nbsp;₽</a></li>
         {{ caller() }}
     {% else %}
+        <li><a class="btn-reg"><i class="fas fa-sign-in-alt"></i>Регистрация</a></li>
         <li><a class="btn-login"><i class="fas fa-sign-in-alt"></i>Вход</a></li>
     {% endif %}
 {% endmacro %}
@@ -55,7 +69,7 @@
             <ul class="right hide-on-med-and-down">
                 {% call navmenu() %}
                     <li><a class="dropdown-trigger" href="#!" data-target="actions_dd">
-                        <i class="fas fa-user"></i>{{ current_user.email }}<i class="fas fa-ellipsis-v right"></i>
+                        <i class="fas fa-user"></i>{{ current_user.email }}{{ ' - реселлер' if current_user.reseller else '' }}<i class="fas fa-ellipsis-v right"></i>
                     </a></li>
                     <ul id="actions_dd" class="dropdown-content">
                         <li class="divider"></li>
@@ -79,6 +93,7 @@
             <div class="modal-footer">
                 {% if not current_user.is_authenticated %}
                     <form id="auth">
+                        <span class="reg-info" style="font-size: 90%">Регистрация аккаунта, введите ваши данные</span>
                         <div class="input-field col m6 s12">
                             <input id="email" type="email" required>
                             <label for="email" class="active">Email</label>
@@ -88,16 +103,17 @@
                             <label for="pass" class="active">Пароль</label>
                         </div>
                         <br>
-                        <span style="font-size: 90%">Если Вы забыли пароль, введите только email</span>
+                        <br>
+                        <span style="font-size: 90%" class="sign-info">Если Вы забыли пароль, введите только email</span>
                         <div class="input-field col s12">
                             <button data-action="reset" type="submit"
-                                    class="btn waves-effect waves-light grey white-text reset">Сбросить пароль
+                                    class="btn waves-effect waves-light grey white-text reset sign-info">Сбросить пароль
                             </button>
                             <button data-action="signup" type="submit"
-                                    class="btn waves-effect waves-light grey white-text signup">Зарегистрироваться
+                                    class="btn waves-effect waves-light cyan white-text signup reg-info">Зарегистрироваться
                             </button>
                             <button data-action="login" type="submit"
-                                    class="btn waves-effect waves-light green white-text login">Войти
+                                    class="btn waves-effect waves-light green white-text login sign-info">Войти
                             </button>
                         </div>
                     </form>
@@ -160,6 +176,28 @@
                 </form>
             </div>
         </div>
+{#        <div class="modal modal-confirm modal-reg">#}
+{#            <div class="modal-footer">#}
+{#                {% if not current_user.is_authenticated %}#}
+{#                    <form id="auth">#}
+{#                        <span style="font-size: 90%">Регистрация аккаунта, введите ваши данные</span>#}
+{#                        <div class="input-field col m6 s12">#}
+{#                            <input id="email" type="email" required>#}
+{#                            <label for="email" class="active">Email</label>#}
+{#                        </div>#}
+{#                        <div class="input-field col m6 s12">#}
+{#                            <input id="pass" type="password" required>#}
+{#                            <label for="pass" class="active">Пароль</label>#}
+{#                        </div>#}
+{#                        <div class="input-field col s12">#}
+{#                            <button data-action="signup" type="submit"#}
+{#                                    class="btn waves-effect waves-light cyan white-text signup">Зарегистрироваться#}
+{#                            </button>#}
+{#                        </div>#}
+{#                    </form>#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        </div>#}
     {% endcall %}
 </main>
 <footer class="page-footer transparent">
@@ -177,7 +215,7 @@
                         <a href="info/youtube" class="white-text"><i class="fab fa-youtube"></i></a>
                         <a href="info/twitter" class="white-text"><i class="fab fa-twitter"></i></a>
                     <li>
-                        {% if request.remote_addr|country != 'UA' %}
+{#                        {% if request.remote_addr|country != 'UA' %}#}
                             <!-- Yandex.Metrika informer -->
                             <a href="https://metrika.yandex.ru/stat/?id=51062585&amp;from=informer" target="_blank"
                                rel="nofollow">
@@ -221,7 +259,7 @@
                                           alt=""/></div>
                             </noscript>
                             <!-- /Yandex.Metrika counter -->
-                        {% endif %}
+{#                        {% endif %}#}
                     </li>
                 </ul>
             </div>
@@ -255,7 +293,7 @@
         <div class="container">
             <div class="row no-mar-bot">
                 <div class="col m6">
-                    <span>Copyright © </span><a class="pink-text text-lighten-3" href="/">{{ app_name }}, 2018</a>
+                    <span>Copyright © </span><a class="pink-text text-lighten-3" href="/">{{ app_name }}, {{ now.year }}</a>
                 </div>
                 <div class="col m6 right-align">
                     <a href="https://flionic.ml/">
@@ -337,8 +375,16 @@
         $(".dropdown-trigger").dropdown();
         $('select').formSelect();
 
-        $('.btn-login').click(function () {
+        $('.btn-login, .btn-reg').click(function () {
             modals[0].open();
+        });
+        $('.btn-login').click(function () {
+            $('.reg-info').hide();
+            $('.sign-info').show();
+        });
+        $('.btn-reg').click(function () {
+            $('.sign-info').hide();
+            $('.reg-info').show();
         });
         $('.btn-deposit').click(function () {
             $('[name=ik_pm_no]').val('PM_' + makeid());
