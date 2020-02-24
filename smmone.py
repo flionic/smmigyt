@@ -51,7 +51,7 @@ login_manager.login_view = "users.login"
 sess = Session(app)
 db = SQLAlchemy(app)
 # mail = MailSendGrid()
-app.config['MAIL_SENDGRID_API_KEY'] = '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'
+app.config['MAIL_SENDGRID_API_KEY'] = ''
 mail = MailSendGrid(app)
 whooshee = Whooshee(app)
 
